@@ -78,39 +78,47 @@ export default function ServicedBrandStrip({
   const sectionRef = useRef<HTMLDivElement>(null);
   const partnersTrackRef = useRef<HTMLDivElement>(null);
   const servicedTrackRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [startAnimation, setStartAnimation] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Start true to prevent hydration mismatch
+  const [startAnimation, setStartAnimation] = useState(true); // Start true for immediate visibility
+  const [isClient, setIsClient] = useState(true); // Start true to prevent hydration mismatch
 
-  // Set client state and start animation
+  // Client-side only effects
   useEffect(() => {
-    setIsClient(true);
+    // Double-check we're on client and setup animations
+    if (typeof window === 'undefined') return;
+    
     // Check for reduced motion preference
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!mq.matches) {
-      setTimeout(() => setStartAnimation(true), 100);
+    if (mq.matches) {
+      setStartAnimation(false);
+      return;
     }
-  }, []);
 
-  // Intersection observer for visibility
-  useEffect(() => {
-    if (!isClient) return;
-    
+    // Setup intersection observer for performance
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
+            // Start animations when visible
             if (partnersTrackRef.current) {
               partnersTrackRef.current.style.animationPlayState = 'running';
             }
             if (servicedTrackRef.current) {
               servicedTrackRef.current.style.animationPlayState = 'running';
             }
+          } else {
+            // Pause animations when not visible for performance
+            if (partnersTrackRef.current) {
+              partnersTrackRef.current.style.animationPlayState = 'paused';
+            }
+            if (servicedTrackRef.current) {
+              servicedTrackRef.current.style.animationPlayState = 'paused';
+            }
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
     if (sectionRef.current) {
@@ -122,7 +130,7 @@ export default function ServicedBrandStrip({
         observer.unobserve(sectionRef.current);
       }
     };
-  }, [isClient]);
+  }, []); // Empty dependency array for single setup
 
   const hasAnimated = !!items?.length;
   const hasPartners = !!partners?.length;
@@ -148,7 +156,7 @@ export default function ServicedBrandStrip({
             <div className="relative mb-6">
               <h2 
                 id="partners-title"
-                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight ${isRTL ? 'font-arabic' : ''}`}
+                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-6 sm:mb-8 leading-tight ${isRTL ? 'font-arabic' : ''}`}
               >
                 {partnersTitle}
               </h2>

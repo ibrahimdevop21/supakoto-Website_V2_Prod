@@ -1,18 +1,58 @@
-# robots.txt
+# SupaKoto - Professional Paint Protection Film Services
+# robots.txt for https://supakoto.com
+
 User-agent: *
 Allow: /
 
-# If you ever add private areas, disallow here:
-# Disallow: /private/
+# Optimize crawl budget - disallow non-essential paths
+Disallow: /api/
+Disallow: /_astro/
+Disallow: /assets/temp/
+Disallow: /admin/
+Disallow: /private/
 
-# Dedicated AI crawler directives (some vendors also read robots.txt)
+# Allow important assets for SEO
+Allow: /assets/og-image.png
+Allow: /assets/twitter-card.png
+Allow: /assets/logo.png
+Allow: /icon-logo.svg
+Allow: /favicon.ico
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Dedicated AI crawler directives
 User-agent: GPTBot
 Allow: /
+Crawl-delay: 2
+
 User-agent: Google-Extended
 Allow: /
+Crawl-delay: 2
+
 User-agent: AnthropicAI
 Allow: /
+Crawl-delay: 2
+
 User-agent: PerplexityAI
 Allow: /
+Crawl-delay: 2
 
+User-agent: ChatGPT-User
+Allow: /
+Crawl-delay: 2
+
+User-agent: CCBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Claude-Web
+Allow: /
+Crawl-delay: 2
+
+# Sitemaps
 Sitemap: https://supakoto.com/sitemap-index.xml
+Sitemap: https://supakoto.com/sitemap-0.xml
+
+# Host directive for preferred domain
+Host: https://supakoto.com

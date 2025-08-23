@@ -33,7 +33,7 @@ const StandardizedHeading: React.FC<StandardizedHeadingProps> = ({
     <div className={`text-center mb-12 ${className}`}>
       <div className="relative mb-6">
         <h2 
-          className={`${sizeClasses[size]} font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight ${isRTL ? 'font-arabic' : ''}`}
+          className={`${sizeClasses[size]} font-bold text-white mb-6 sm:mb-8 leading-tight ${isRTL ? 'font-arabic' : ''}`}
         >
           {title}
         </h2>
@@ -41,7 +41,7 @@ const StandardizedHeading: React.FC<StandardizedHeadingProps> = ({
       </div>
       
       {subtitle && (
-        <p className={`${subtitleSizeClasses[size]} text-gray-600 dark:text-gray-300 mb-8 max-w-4xl mx-auto px-4 leading-relaxed font-medium ${isRTL ? 'font-arabic' : ''}`}>
+        <p className={`${subtitleSizeClasses[size]} text-gray-200 mb-8 max-w-4xl mx-auto px-4 leading-relaxed font-medium ${isRTL ? 'font-arabic' : ''}`}>
           {subtitle}
         </p>
       )}

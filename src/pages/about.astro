@@ -1,39 +1,54 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
 import OurStory from '../components/about/OurStory';
 import Timeline from '../components/about/Timeline';
 import OurPhilosophy from '../components/about/OurPhilosophy';
 import ServicesCTA from '../components/services/ServicesCTA';
 import { t } from '../i18n/index';
+import { getSEOData } from '../utils/seo-content';
+import { generateBreadcrumbSchema } from '../utils/seo-schemas';
 
-const lang = Astro.currentLocale || 'en';
-const currentLang = lang;
-const rtl = false;
+const lang = (Astro.currentLocale || 'en') as 'en' | 'ar';
+const isRTL = lang === 'ar';
+
+// Get SEO-optimized content
+const seoData = getSEOData('about', lang);
+
+// Generate breadcrumb schema for about page
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: lang === 'ar' ? 'الرئيسية' : 'Home', url: 'https://supakoto.com' },
+	{ name: lang === 'ar' ? 'عن سوباكوتو' : 'About SupaKoto', url: `https://supakoto.com${lang === 'ar' ? '/ar' : ''}/about` }
+]);
 ---
 
-<Layout title={t('pages.about.title')} description={t('pages.about.description')}>
+<Layout 
+	title={seoData.title}
+	description={seoData.description}
+	keywords={seoData.keywords}
+	type="website"
+	schema={breadcrumbSchema}
+>
   <section class="py-16 md:py-20 lg:py-24">
 
     
     <!-- Our Story Section -->
     <div class="mb-24 md:mb-32">
-      <OurStory client:visible currentLocale={currentLang} isRTL={rtl} />
+      <OurStory client:visible currentLocale={lang} isRTL={isRTL} />
     </div>
     
     <!-- Timeline Section -->
     <div class="mb-24 md:mb-32">
-      <Timeline client:visible currentLocale={currentLang} isRTL={rtl} />
+      <Timeline client:visible currentLocale={lang} isRTL={isRTL} />
     </div>
     
     <!-- Our Philosophy Section -->
     <div class="mb-24 md:mb-32">
-      <OurPhilosophy client:visible currentLocale={currentLang} isRTL={rtl} />
+      <OurPhilosophy client:visible currentLocale={lang} isRTL={isRTL} />
     </div>
     
     <!-- CTA Section -->
     <div>
-      <ServicesCTA client:visible currentLocale={currentLang} isRTL={rtl} />
+      <ServicesCTA client:visible currentLocale={lang} isRTL={isRTL} />
     </div>
   </section>
 </Layout>

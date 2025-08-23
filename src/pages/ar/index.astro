@@ -6,7 +6,7 @@ import Testimonials from '../../components/carousels/Testimonials';
 import ServicesCTA from '../../components/services/ServicesCTA';
 import PPFComparison from '../../components/shared/PPFComparison';
 import ServiceTiers from '../../components/services/ServiceTiers';
-import TechnicalHighlights from '../../components/services/TechnicalHighlights';
+
 import LifestyleUseCases from '../../components/services/LifestyleUseCases';
 import { t } from '../../i18n/index';
 
@@ -38,12 +38,7 @@ const rtl = currentLang === 'ar';
 		<!-- PPF Comparison Section -->
 		<PPFComparison locale={currentLang as "en" | "ar"} client:visible />
 		
-		<!-- Technical Highlights Section -->
-		<section class="py-12 md:py-16 bg-muted/30">
-			<div class="container mx-auto px-4">
-				<TechnicalHighlights client:visible currentLocale={currentLang} isRTL={rtl} />
-			</div>
-		</section>
+
 
 		<!-- Lifestyle Use Cases Section -->
 		<section class="py-12 md:py-16">

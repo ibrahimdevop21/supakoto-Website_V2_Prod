@@ -4,21 +4,19 @@ import ColoredPhoneIcon from '../icons/ColoredPhoneIcon';
 import ColoredWhatsappIcon from '../icons/ColoredWhatsappIcon';
 import MobileNavigation from './MobileNavigation';
 import { useSwitchLocalePath } from '../../i18n/react';
+import { useGeoRegion } from '../../hooks/useGeoRegion';
+import { toWhatsAppHref } from '../../utils/phone';
 import type { NavItem } from '../../data/navigation';
 
 interface NavBarProps {
   locale: 'en' | 'ar';
   navItems: NavItem[];
-  phone: string;
-  whatsAppUrl: string;
   currentPath: string;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
   locale,
   navItems,
-  phone,
-  whatsAppUrl,
   currentPath,
 }) => {
 
@@ -26,6 +24,9 @@ const NavBar: React.FC<NavBarProps> = ({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const switchLocalePath = useSwitchLocalePath();
+  
+  // Get geo-based contact numbers
+  const { numbers, region } = useGeoRegion({ locale });
   
   const isRTL = locale === 'ar';
   
@@ -123,9 +124,9 @@ const NavBar: React.FC<NavBarProps> = ({
           <div className="flex items-center gap-2">
             {/* Call Button */}
             <a
-              href={`tel:${phone}`}
+              href={`tel:${numbers.call.replace(/\s+/g, "")}`}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-brand border border-white/20 text-white hover:bg-supakoto-red hover:text-white hover:border-supakoto-red transition-all duration-300"
-              aria-label="Call us"
+              aria-label={`Call SupaKoto (${region})`}
             >
               <ColoredPhoneIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Call</span>
@@ -133,11 +134,11 @@ const NavBar: React.FC<NavBarProps> = ({
 
             {/* WhatsApp Button */}
             <a
-              href={whatsAppUrl}
+              href={toWhatsAppHref(numbers.whatsapp)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-brand border border-white/20 text-white hover:bg-supakoto-red hover:text-white hover:border-supakoto-red transition-all duration-300"
-              aria-label="Contact us on WhatsApp"
+              aria-label={`WhatsApp SupaKoto (${region})`}
             >
               <ColoredWhatsappIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">WhatsApp</span>

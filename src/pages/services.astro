@@ -1,22 +1,46 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { t } from '../i18n/index';
 import ServicesHero from '../components/services/ServicesHero';
 import ServiceTiers from '../components/services/ServiceTiers';
-import TechCraftsmanship from '../components/services/TechCraftsmanship';
 import FinishOptions from '../components/services/FinishOptions';
+import TechCraftsmanship from '../components/services/TechCraftsmanship';
+import PPFComparison from '../components/shared/PPFComparison';
 import TechnicalHighlights from '../components/services/TechnicalHighlights';
 import LifestyleUseCases from '../components/services/LifestyleUseCases';
-
 import ServicesCTA from '../components/services/ServicesCTA';
+import { getSEOData } from '../utils/seo-content';
+import { generateBreadcrumbSchema, generateServiceSchema } from '../utils/seo-schemas';
 
 // For locale-specific pages, we know the locale from the folder structure
-const currentLang = Astro.currentLocale || 'en';
+const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 // English is LTR, so rtl is false
 const rtl = currentLang === 'ar';
+
+// Get SEO-optimized content
+const seoData = getSEOData('services', currentLang);
+
+// Generate breadcrumb and service schemas
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: currentLang === 'ar' ? 'الرئيسية' : 'Home', url: 'https://supakoto.com' },
+	{ name: currentLang === 'ar' ? 'خدماتنا' : 'Our Services', url: `https://supakoto.com${currentLang === 'ar' ? '/ar' : ''}/services` }
+]);
+
+const serviceSchema = generateServiceSchema(
+	currentLang === 'ar' ? 'خدمات حماية الطلاء الاحترافية' : 'Professional Paint Protection Film Services',
+	currentLang
+);
+
+const combinedSchema = [breadcrumbSchema, serviceSchema];
 ---
 
-<Layout title={t('services.meta.title')} description={t('services.meta.description')}>
+<Layout 
+	title={seoData.title}
+	description={seoData.description}
+	keywords={seoData.keywords}
+	type="service"
+	schema={combinedSchema}
+>
+	<ServicesHero currentLocale={currentLang} isRTL={rtl} slot="hero" />
 	<main id="content" class="flex flex-col">
 		<!-- Hero Section -->
 		<section class="relative">

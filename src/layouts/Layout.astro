@@ -7,18 +7,55 @@ import Footer from '../components/layout/Footer.astro';
 import { Navbar } from '../components/layout';
 import Preload from '../components/shared/Preload.astro';
 import RespondIO from '../components/integrations/RespondIO.astro';
+import SEOHead from '../components/seo/SEOHead.astro';
 import { t, isRTL } from '../i18n/index';
+import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
 
 export interface Props {
 	title: string;
 	description?: string;
+	keywords?: string;
+	image?: string;
+	type?: 'website' | 'article' | 'product' | 'service';
+	noindex?: boolean;
+	nofollow?: boolean;
+	schema?: Record<string, any>;
 }
 
-const { title, description } = Astro.props;
-const currentLang = Astro.currentLocale || 'en';
+const { 
+	title, 
+	description, 
+	keywords,
+	image,
+	type = 'website',
+	noindex = false,
+	nofollow = false,
+	schema 
+} = Astro.props;
+
+const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 const rtl = isRTL(Astro);
 const siteTitle = t('site.title');
 const siteDescription = description || t('site.description');
+
+// Generate structured data
+const organizationSchema = generateOrganizationSchema(currentLang);
+const websiteSchema = generateWebsiteSchema(currentLang);
+
+// Combine schemas
+const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [organizationSchema, websiteSchema];
+
+// Generate alternate language URLs
+const currentPath = Astro.url.pathname;
+const baseURL = 'https://supakoto.com';
+const enPath = currentPath.replace(/^\/ar/, '') || '/';
+const arPath = currentPath.startsWith('/ar') ? currentPath : `/ar${currentPath}`;
+
+const alternateLocales = [
+	{ locale: 'en', url: `${baseURL}${enPath}` },
+	{ locale: 'ar', url: `${baseURL}${arPath}` },
+	{ locale: 'x-default', url: `${baseURL}${enPath}` }
+];
 ---
 
 <!doctype html>
@@ -26,16 +63,26 @@ const siteDescription = description || t('site.description');
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="description" content={siteDescription} />
 		
-		<!-- SEO and Canonical URLs -->
-		<link rel="canonical" href={new URL(Astro.url.pathname, 'https://supakoto.com').toString()} />
-		<link rel="alternate" hreflang="en" href={`https://supakoto.com${Astro.url.pathname.replace(/^\/ar/, '')}`} />
-		<link rel="alternate" hreflang="ar" href={`https://supakoto.com/ar${Astro.url.pathname.replace(/^\/ar/, '')}`} />
+		<!-- Comprehensive SEO Head -->
+		<SEOHead 
+			title={`${title} | ${siteTitle}`}
+			description={siteDescription}
+			keywords={keywords}
+			image={image}
+			type={type}
+			locale={currentLang}
+			alternateLocales={alternateLocales}
+			noindex={noindex}
+			nofollow={nofollow}
+			schema={combinedSchema}
+		/>
 		
 		<!-- Theme and Color Scheme -->
-		<meta name="theme-color" content="#000000" />
+		<meta name="theme-color" content="#bf1e2e" />
 		<meta name="color-scheme" content="dark" />
+		<meta name="msapplication-TileColor" content="#bf1e2e" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		
 		<!-- Preload critical resources -->
 		<Preload />
@@ -165,25 +212,8 @@ const siteDescription = description || t('site.description');
 		<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
 		<link rel="manifest" href="/assets/site.webmanifest" />
 		<meta name="msapplication-config" content="/assets/browserconfig.xml" />
-		<meta name="msapplication-TileColor" content="#ffffff" />
-		<meta name="theme-color" content="#ffffff" />
-		
-		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content={Astro.url} />
-		<meta property="og:title" content={`${title} | ${siteTitle}`} />
-		<meta property="og:description" content={siteDescription} />
-		<meta property="og:image" content={new URL('/assets/og-image.png', Astro.url)} />
-		
-		<!-- Twitter -->
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content={Astro.url} />
-		<meta property="twitter:title" content={`${title} | ${siteTitle}`} />
-		<meta property="twitter:description" content={siteDescription} />
-		<meta property="twitter:image" content={new URL('/assets/twitter-card.png', Astro.url)} />
 		
 		<meta name="generator" content={Astro.generator} />
-		<title>{title} | {siteTitle}</title>
 		<style is:global>
 			/* Critical CSS for performance */
 			:root {

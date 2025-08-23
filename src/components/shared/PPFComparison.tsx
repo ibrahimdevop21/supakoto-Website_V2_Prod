@@ -245,25 +245,18 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
           </div>
 
           {/* Main Heading */}
-          <h1 className={clsx(
-            'text-3xl md:text-4xl lg:text-5xl font-bold mb-4',
-            'bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent',
-            isRTL ? 'text-right' : 'text-left'
-          )}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white text-center">
             {locale === 'en' 
-              ? 'Takai PPF vs Other Options — Feature-by-Feature'
-              : 'تاكاي PPF مقابل الخيارات الأخرى — ميزة بميزة'
+              ? 'Takai PPF vs Other Options'
+              : 'تاكاي PPF مقابل الخيارات الأخرى'
             }
           </h1>
 
-          {/* Helper Line */}
-          <p className={clsx(
-            'text-gray-400 text-sm md:text-base mb-8',
-            isRTL ? 'text-right' : 'text-left'
-          )}>
+          {/* Helper Line - Only visible on mobile/tablet */}
+          <p className="text-gray-200 text-sm md:text-base mb-8 text-center md:hidden">
             {locale === 'en' 
-              ? 'Swipe horizontally on mobile/tablet to compare. First column and header stay sticky.'
-              : 'اسحب أفقياً على الجوال/التابلت للمقارنة. العمود الأول والرأس يبقيان ثابتين.'
+              ? 'Swipe horizontally on mobile/tablet to compare. '
+              : 'اسحب أفقياً على الجوال/التابلت للمقارنة..'
             }
           </p>
 
@@ -313,13 +306,14 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                   isRTL ? 'left-0' : 'right-0'
                 )} />
 
-                {/* Swipe Hint Overlay */}
+                {/* Swipe Hint Overlay - Only visible on mobile/tablet */}
                 {!hasScrolled && (
                   <div className={clsx(
                     'absolute top-1/2 z-20 transform -translate-y-1/2 px-3 py-2',
                     'bg-slate-800/90 backdrop-blur-sm rounded-lg border border-slate-600/50',
                     'text-xs text-gray-300 font-medium pointer-events-none',
                     'animate-pulse transition-opacity duration-1000',
+                    'md:hidden', // Hide on desktop
                     isRTL ? 'left-4' : 'right-4'
                   )}>
                   <div className="flex items-center gap-2">
@@ -396,36 +390,7 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
 
 
 
-        {/* Global CTA Section */}
-        <div className="mt-16 md:mt-20 text-center">
-          <div className="max-w-2xl mx-auto">
-            <h3 className={`text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-              {locale === 'en' ? 'Ready to Experience Premium Protection?' : 'مستعد لتجربة الحماية المتميزة؟'}
-            </h3>
-            <p className={`text-gray-300 mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
-              {locale === 'en' 
-                ? 'Contact us today for a personalized consultation and quote for your vehicle.'
-                : 'اتصل بنا اليوم للحصول على استشارة شخصية وعرض سعر لمركبتك.'
-              }
-            </p>
-            <div className={`flex flex-col sm:flex-row gap-4 justify-center ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
-              <a
-                href={`tel:${contacts.phone}`}
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl @media (hover: hover) { hover:scale-105 }"
-              >
-                {locale === 'en' ? 'Call Now' : 'اتصل الآن'}
-              </a>
-              <a
-                href={`https://wa.me/${contacts.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl @media (hover: hover) { hover:scale-105 }"
-              >
-                {locale === 'en' ? 'WhatsApp' : 'واتساب'}
-              </a>
-            </div>
-          </div>
-        </div>
+
       </div>
     </section>
   );

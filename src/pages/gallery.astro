@@ -2,24 +2,42 @@
 import Layout from '../layouts/Layout.astro';
 import SimpleGallery, { type SimpleGalleryImage } from '../components/gallery/SimpleGallery';
 import { t } from '../i18n';
+import { getSEOData } from '../utils/seo-content';
+import { generateBreadcrumbSchema } from '../utils/seo-schemas';
 
-const currentLang = 'en';
-const rtl = false;
+const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
+const rtl = currentLang === 'ar';
+
+// Get SEO-optimized content
+const seoData = getSEOData('gallery', currentLang);
+
+// Generate breadcrumb schema for gallery page
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: currentLang === 'ar' ? 'الرئيسية' : 'Home', url: 'https://supakoto.com' },
+	{ name: currentLang === 'ar' ? 'معرض الأعمال' : 'Gallery', url: `https://supakoto.com${currentLang === 'ar' ? '/ar' : ''}/gallery` }
+]);
 
 // Generate gallery images from the 238 webp files in public/gallery
 const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
   const imageNumber = String(i + 1).padStart(3, '0');
   return {
     src: `/gallery/supa-${imageNumber}.webp`,
-    alt: `SupaKoto PPF Installation ${imageNumber}`,
-    caption: `Professional PPF Installation — Project ${imageNumber}`
+    alt: currentLang === 'ar' 
+      ? `تركيب حماية الطلاء سوباكوتو ${imageNumber}`
+      : `SupaKoto PPF Installation ${imageNumber}`,
+    caption: currentLang === 'ar'
+      ? `تركيب حماية طلاء احترافي — مشروع ${imageNumber}`
+      : `Professional PPF Installation — Project ${imageNumber}`
   };
 });
 ---
 
 <Layout 
-  title={t('gallery.title')}
-  description={t('gallery.description')}
+	title={seoData.title}
+	description={seoData.description}
+	keywords={seoData.keywords}
+	type="website"
+	schema={breadcrumbSchema}
 >
   <!-- Main content with consistent spacing - matching home/services page structure -->
   <section class="py-16 md:py-20 lg:py-24">

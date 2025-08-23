@@ -26,10 +26,10 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollTrackRef = useRef<HTMLDivElement>(null);
   const [expandedTestimonials, setExpandedTestimonials] = useState<number[]>([]);
-  const [screenWidth, setScreenWidth] = useState(0);
-  const [isVisible, setIsVisible] = useState(false); // Start false to prevent flash
-  const [startAnimation, setStartAnimation] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(1024); // Start with desktop width to prevent hydration mismatch
+  const [isVisible, setIsVisible] = useState(true); // Start true to prevent hydration mismatch
+  const [startAnimation, setStartAnimation] = useState(true); // Start true for immediate visibility
+  const [isClient, setIsClient] = useState(true); // Start true to prevent hydration mismatch
 
   // Function to toggle expanded state of a testimonial
   const toggleExpand = (id: number) => {
@@ -40,9 +40,12 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
     );
   };
 
-  // Set screen width and client state on client side only
+  // Client-side only effects
   useEffect(() => {
-    setIsClient(true);
+    // Double-check we're on client and setup responsive behavior
+    if (typeof window === 'undefined') return;
+    
+    // Set actual screen width
     setScreenWidth(window.innerWidth);
     
     const handleResize = () => {
@@ -51,7 +54,7 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, []); // Empty dependency array for single setup
 
   // Enhanced testimonial content with read more/less toggle
   const renderTestimonialContent = (testimonial: Testimonial) => {
@@ -129,64 +132,63 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
     },
   ];
 
-  // Control continuous scrolling animation
+  // Control continuous scrolling animation - client-side only
   useEffect(() => {
-    // Start animation immediately
+    // Double-check we're on client
+    if (typeof window === 'undefined') return;
     if (!startAnimation) return;
     
-    // Set a continuous scroll animation
-    // Faster animation for testimonials (20 seconds)
-    const duration = 40; 
-    
-    if (scrollTrackRef.current) {
-      // Calculate track width to adjust animation speed properly based on content
-      const trackWidth = scrollTrackRef.current.scrollWidth;
-      const containerWidth = scrollContainerRef.current?.clientWidth || 800;
-      
-      // Calculate optimal duration based on content amount
-      const optimalDuration = Math.max(duration, trackWidth / containerWidth * 20);
-      
-      // Use the same animation approach as other components
-      // Add the animate-scroll class which handles RTL automatically via CSS
-      scrollTrackRef.current.classList.add('animate-scroll');
-      
-      // Override duration if needed
-      if (optimalDuration !== 40) {
-        scrollTrackRef.current.style.animationDuration = `${optimalDuration}s`;
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      if (scrollTrackRef.current) {
+        // Calculate track width to adjust animation speed properly based on content
+        const trackWidth = scrollTrackRef.current.scrollWidth;
+        const containerWidth = scrollContainerRef.current?.clientWidth || 800;
+        
+        // Calculate optimal duration based on content amount
+        const duration = 40;
+        const optimalDuration = Math.max(duration, trackWidth / containerWidth * 20);
+        
+        // Use the same animation approach as other components
+        // Add the animate-scroll class which handles RTL automatically via CSS
+        scrollTrackRef.current.classList.add('animate-scroll');
+        
+        // Override duration if needed
+        if (optimalDuration !== 40) {
+          scrollTrackRef.current.style.animationDuration = `${optimalDuration}s`;
+        }
       }
-    }
-    
-    // Optional: add event listener to pause on hover if desired
-    const scrollContainer = scrollContainerRef.current;
-    const scrollTrack = scrollTrackRef.current;
-    
-    if (scrollContainer && scrollTrack) {
-      const handleMouseEnter = () => {
-        scrollTrack.style.animationPlayState = 'paused';
-      };
       
-      const handleMouseLeave = () => {
-        scrollTrack.style.animationPlayState = 'running';
-      };
+      // Optional: add event listener to pause on hover if desired
+      const scrollContainer = scrollContainerRef.current;
+      const scrollTrack = scrollTrackRef.current;
       
-      scrollContainer.addEventListener('mouseenter', handleMouseEnter);
-      scrollContainer.addEventListener('mouseleave', handleMouseLeave);
-      
-      return () => {
-        scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
-        scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
-      };
-    }
-  }, [isArabic, startAnimation]);
+      if (scrollContainer && scrollTrack) {
+        const handleMouseEnter = () => {
+          scrollTrack.style.animationPlayState = 'paused';
+        };
+        
+        const handleMouseLeave = () => {
+          scrollTrack.style.animationPlayState = 'running';
+        };
+        
+        scrollContainer.addEventListener('mouseenter', handleMouseEnter);
+        scrollContainer.addEventListener('mouseleave', handleMouseLeave);
+        
+        return () => {
+          scrollContainer.removeEventListener('mouseenter', handleMouseEnter);
+          scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
+        };
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array for single setup
   
-  // Start animation after component mounts
+  // Intersection observer for visibility and performance - client-side only
   useEffect(() => {
-    setTimeout(() => setStartAnimation(true), 100);
-  }, []);
-  
-  // Fade-in animation on scroll - only run on client side
-  useEffect(() => {
-    if (!isClient) return;
+    // Double-check we're on client
+    if (typeof window === 'undefined') return;
     
     const observer = new IntersectionObserver(
       (entries) => {
@@ -196,10 +198,15 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
             if (scrollTrackRef.current) {
               scrollTrackRef.current.style.animationPlayState = 'running';
             }
+          } else {
+            // Pause animations when not visible for performance
+            if (scrollTrackRef.current) {
+              scrollTrackRef.current.style.animationPlayState = 'paused';
+            }
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
     if (sectionRef.current) {
@@ -211,7 +218,7 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
         observer.unobserve(sectionRef.current);
       }
     };
-  }, [isClient]);
+  }, []); // Empty dependency array for single setup
 
   // Create 3 sets of testimonials for continuous loop effect
   const duplicateTestimonials = [...testimonials, ...testimonials, ...testimonials];
