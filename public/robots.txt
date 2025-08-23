@@ -1,0 +1,18 @@
+# robots.txt
+User-agent: *
+Allow: /
+
+# If you ever add private areas, disallow here:
+# Disallow: /private/
+
+# Dedicated AI crawler directives (some vendors also read robots.txt)
+User-agent: GPTBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: AnthropicAI
+Allow: /
+User-agent: PerplexityAI
+Allow: /
+
+Sitemap: https://supakoto.com/sitemap-index.xml

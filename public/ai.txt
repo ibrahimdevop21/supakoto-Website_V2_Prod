@@ -1,0 +1,18 @@
+# ai.txt — guidance for AI crawlers
+# Adjust per policy. For now, allow reputable AI bots and deny unknowns.
+
+User-Agent: GPTBot
+Allow: /
+
+User-Agent: Google-Extended
+Allow: /
+
+User-Agent: AnthropicAI
+Allow: /
+
+User-Agent: PerplexityAI
+Allow: /
+
+# Block all other unidentified AI bots by default
+User-Agent: *
+Disallow: /private/

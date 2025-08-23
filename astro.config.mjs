@@ -3,6 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import compress from 'astro-compress';
 import icon from 'astro-icon';
+import sitemap from '@astrojs/sitemap';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 // Guard compression for CI builds
@@ -10,8 +11,18 @@ const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://supakoto.com', // TODO: update to final domain
   output: 'static',
   integrations: [
+    sitemap({ 
+      i18n: { 
+        defaultLocale: 'en', 
+        locales: {
+          en: 'en',
+          ar: 'ar'
+        }
+      } 
+    }),
     icon({
       include: {
         mdi: ["*"],

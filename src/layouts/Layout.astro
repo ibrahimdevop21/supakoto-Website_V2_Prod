@@ -28,6 +28,15 @@ const siteDescription = description || t('site.description');
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={siteDescription} />
 		
+		<!-- SEO and Canonical URLs -->
+		<link rel="canonical" href={new URL(Astro.url.pathname, 'https://supakoto.com').toString()} />
+		<link rel="alternate" hreflang="en" href={`https://supakoto.com${Astro.url.pathname.replace(/^\/ar/, '')}`} />
+		<link rel="alternate" hreflang="ar" href={`https://supakoto.com/ar${Astro.url.pathname.replace(/^\/ar/, '')}`} />
+		
+		<!-- Theme and Color Scheme -->
+		<meta name="theme-color" content="#000000" />
+		<meta name="color-scheme" content="dark" />
+		
 		<!-- Preload critical resources -->
 		<Preload />
 		
@@ -253,6 +262,37 @@ const siteDescription = description || t('site.description');
 					}
 				}).observe({ entryTypes: ['navigation'] });
 			}
+		</script>
+		
+		<!-- JSON-LD Structured Data -->
+		<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@type": "Organization",
+		  "name": "SupaKoto",
+		  "url": "https://supakoto.com",
+		  "logo": "https://supakoto.com/assets/logo.png",
+		  "sameAs": [
+		    "https://instagram.com/supakoto",
+		    "https://facebook.com/supakoto"
+		  ]
+		}
+		</script>
+
+		<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@type": "AutoBodyShop",
+		  "name": "SupaKoto Dubai",
+		  "address": {
+		    "@type": "PostalAddress",
+		    "addressLocality": "Al Quoz 3",
+		    "addressRegion": "Dubai",
+		    "addressCountry": "AE"
+		  },
+		  "telephone": "+971506265404",
+		  "url": "https://supakoto.com"
+		}
 		</script>
 	</head>
 	<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-foreground font-sans antialiased" class:list={[rtl && 'font-arabic']}>

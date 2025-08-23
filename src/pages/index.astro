@@ -1,8 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ModernHeroCarousel from '../components/hero/ModernHeroCarousel.astro';
-import ModernTrustedBy from '../components/shared/ModernTrustedBy.astro';
-
+import ModernTrustedBy from '../components/shared/ModernTrustedBy';
 import Testimonials from '../components/carousels/Testimonials';
 import CallToAction from '../components/shared/CallToAction';
 import PPFComparison from '../components/shared/PPFComparison';
@@ -12,7 +11,7 @@ import LifestyleUseCases from '../components/services/LifestyleUseCases';
 import { t } from '../i18n/index';
 
 // We can now use Astro's built-in i18n system
-const currentLang = Astro.currentLocale || 'en';
+const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 // English is LTR, so rtl is false
 const rtl = currentLang === 'ar';
 ---
@@ -25,7 +24,7 @@ const rtl = currentLang === 'ar';
 		<!-- Trusted By Section -->
 		<section class="py-12 sm:py-16 md:py-20 lg:py-24">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-				<ModernTrustedBy />
+				<ModernTrustedBy client:visible locale={currentLang} />
 			</div>
 		</section>
 

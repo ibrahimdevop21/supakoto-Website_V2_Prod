@@ -1,0 +1,10 @@
+/* TEAM */
+Developer: Ibrahim Mohamed
+Marketing Lead: Ibrahim Mohamed
+Company: SupaKoto
+Locations: Cairo (Egypt), Dubai (UAE)
+
+/* SITE */
+Last update: 2025-08-23
+Stack: Astro, React, TailwindCSS
+Contact: hello@supakoto.com

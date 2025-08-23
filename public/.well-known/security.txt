@@ -1,0 +1,6 @@
+# security.txt
+Contact: mailto:security@supakoto.com
+Preferred-Languages: en, ar
+Expires: 2025-12-31T23:59:00Z
+Policy: https://supakoto.com/security
+Acknowledgments: https://supakoto.com/security#hall-of-fame

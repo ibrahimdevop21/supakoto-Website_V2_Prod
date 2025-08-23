@@ -1,0 +1,58 @@
+{
+  "name": "SupaKoto",
+  "description_en": "Premium Japanese Paint Protection Film (PPF), ceramic coating, and detailing. Cairo & Dubai.",
+  "description_ar": "سوپا كوتو: حماية طلاء يابانية فاخرة (PPF)، نانو سيراميك، وتفاصيل السيارات. القاهرة ودبي.",
+  "website": "https://supakoto.com",
+  "contacts": {
+    "email": "hello@supakoto.com",
+    "phone_eg": "+20 1128859849",
+    "phone_uae": "+971 506265404",
+    "whatsapp": "https://wa.me/201128859849"
+  },
+  "branches": [
+    {
+      "country": "Egypt",
+      "city": "Cairo – 5th Settlement",
+      "address_ar": "داخل محطة شيل أوت – أمام المستشفى الجوي",
+      "phone": "+20 1128859849"
+    },
+    {
+      "country": "Egypt",
+      "city": "Zahraa El Maadi",
+      "address_ar": "داخل توكيل سكودا – معادي سنتر",
+      "phone": "+20 1156608134"
+    },
+    {
+      "country": "Egypt",
+      "city": "Sheikh Zayed",
+      "address_ar": "مدخل 3 – وصلة دهشور – بجوار أوتو سمير ريان",
+      "phone": "+20 1127232340"
+    },
+    {
+      "country": "Egypt",
+      "city": "New Damietta",
+      "address_ar": "أمام كلية فنون تطبيقية – خلف هادي مول",
+      "phone": "+20 1551007183"
+    },
+    {
+      "country": "UAE",
+      "city": "Dubai – Al Quoz 4",
+      "address_en": "Industrial Area – Al Quoz 3",
+      "phone": "+971 506265404",
+      "map": "https://maps.app.goo.gl/5UeA3Gm8X1jVJs9M8"
+    }
+  ],
+  "services": [
+    "Paint Protection Film (PPF)",
+    "Ceramic Coating",
+    "Luxury Detailing"
+  ],
+  "warranty": {
+    "egypt": "10 years (Takai Gold) typical",
+    "uae": "15 years"
+  },
+  "social": {
+    "instagram": "https://instagram.com/supakoto",
+    "facebook": "https://facebook.com/supakoto"
+  }
+}
