@@ -1,0 +1,9 @@
+---
+import RespondIOWidget from './RespondIO.tsx';
+
+// Only load in production builds; flip to true to test locally if you want.
+const enabled = true; // Changed to true for local testing - set back to import.meta.env.PROD for production
+const cId = 'c4efdb49fca2257b1a2cfcff1f9741f'; // TODO: Replace with your actual respond.io cId from dashboard
+const loadStrategy = 'immediate'; // Changed to immediate for reliable loading
+---
+{enabled ? <RespondIOWidget client:load cId={cId} enabled={enabled} loadStrategy={loadStrategy} /> : null}

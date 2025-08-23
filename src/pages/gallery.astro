@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SimpleGallery, { type SimpleGalleryImage } from '../components/gallery/SimpleGallery';
+import { t } from '../i18n';
+
+const currentLang = 'en';
+const rtl = false;
+
+// Example gallery images - replace with your real images
+const images: SimpleGalleryImage[] = [
+  { 
+    src: "/images/gallery/01.webp", 
+    alt: "Porsche 911 GT3 PPF Installation", 
+    caption: "Porsche 911 GT3 — Ultra Gloss PPF",
+    srcSet: ["/images/gallery/01_800.webp 800w", "/images/gallery/01_1200.webp 1200w"]
+  },
+  { 
+    src: "/images/gallery/02.webp", 
+    alt: "BMW M5 Stealth PPF", 
+    caption: "BMW M5 — Stealth Matte Finish",
+    srcSet: ["/images/gallery/02_800.webp 800w", "/images/gallery/02_1200.webp 1200w"]
+  },
+  { 
+    src: "/images/gallery/03.webp", 
+    alt: "Mercedes AMG G63 Full Body PPF", 
+    caption: "AMG G63 — Full Body Protection",
+    srcSet: ["/images/gallery/03_800.webp 800w", "/images/gallery/03_1200.webp 1200w"]
+  },
+  { 
+    src: "/images/gallery/04.webp", 
+    alt: "Audi RS7 Gloss PPF", 
+    caption: "Audi RS7 — Premium Gloss Finish",
+    srcSet: ["/images/gallery/04_800.webp 800w", "/images/gallery/04_1200.webp 1200w"]
+  },
+  { 
+    src: "/images/gallery/05.webp", 
+    alt: "Lamborghini Huracán PPF", 
+    caption: "Lamborghini Huracán — Track Ready",
+    srcSet: ["/images/gallery/05_800.webp 800w", "/images/gallery/05_1200.webp 1200w"]
+  },
+  { 
+    src: "/images/gallery/06.webp", 
+    alt: "Ferrari 488 Spider PPF", 
+    caption: "Ferrari 488 Spider — Showroom Finish",
+    srcSet: ["/images/gallery/06_800.webp 800w", "/images/gallery/06_1200.webp 1200w"]
+  }
+];
+---
+
+<Layout 
+  title={t('gallery.title')}
+  description={t('gallery.description')}
+>
+  <!-- Main content with consistent spacing - matching home/services page structure -->
+  <section class="py-16 md:py-20 lg:py-24">
+    <!-- Gallery Hero Section with proper spacing -->
+    <div class="mb-24 md:mb-32">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 tracking-tight">
+          {t('gallery.hero.title', {}, Astro)}
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+          {t('gallery.hero.subtitle', {}, Astro)}
+        </p>
+        <div class="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full"></div>
+      </div>
+    </div>
+    
+    <!-- Gallery Section -->
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <SimpleGallery 
+        client:load 
+        locale={currentLang as "en" | "ar"} 
+        images={images}
+        heightClass="h-[56vh] md:h-[68vh]"
+        showCounter={true}
+        showCaptions={true}
+      />
+    </div>
+  </section>
+</Layout>
+
+

@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+import OurStory from '../components/about/OurStory';
+import Timeline from '../components/about/Timeline';
+import OurPhilosophy from '../components/about/OurPhilosophy';
+import CTA from '../components/shared/CTA';
+import { t } from '../i18n/index';
+
+const lang = Astro.currentLocale || 'en';
+const currentLang = lang;
+const rtl = false;
+---
+
+<Layout title={t('pages.about.title')} description={t('pages.about.description')}>
+  <section class="py-16 md:py-20 lg:py-24">
+
+    
+    <!-- Our Story Section -->
+    <div class="mb-24 md:mb-32">
+      <OurStory client:visible currentLocale={currentLang} isRTL={rtl} />
+    </div>
+    
+    <!-- Timeline Section -->
+    <div class="mb-24 md:mb-32">
+      <Timeline client:visible currentLocale={currentLang} isRTL={rtl} />
+    </div>
+    
+    <!-- Our Philosophy Section -->
+    <div class="mb-24 md:mb-32">
+      <OurPhilosophy client:visible currentLocale={currentLang} isRTL={rtl} />
+    </div>
+    
+    <!-- CTA Section -->
+    <div>
+      <CTA client:visible currentLocale={currentLang} isRTL={rtl} contactUrl="/services" />
+    </div>
+  </section>
+</Layout>

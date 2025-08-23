@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ModernHeroCarousel from '../components/hero/ModernHeroCarousel.astro';
+import ModernTrustedBy from '../components/shared/ModernTrustedBy.astro';
+
+import Testimonials from '../components/carousels/Testimonials';
+import CallToAction from '../components/shared/CallToAction';
+import PPFComparison from '../components/shared/PPFComparison';
+import ServiceTiers from '../components/services/ServiceTiers';
+import TechnicalHighlights from '../components/services/TechnicalHighlights';
+import LifestyleUseCases from '../components/services/LifestyleUseCases';
+import { t } from '../i18n/index';
+
+// We can now use Astro's built-in i18n system
+const currentLang = Astro.currentLocale || 'en';
+// English is LTR, so rtl is false
+const rtl = currentLang === 'ar';
+---
+
+<Layout title={t('pages.home.title')}>
+	<ModernHeroCarousel slot="hero" />
+	
+	<!-- Main content with responsive container and consistent spacing -->
+	<main class="w-full">
+		<!-- Trusted By Section -->
+		<section class="py-12 sm:py-16 md:py-20 lg:py-24">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<ModernTrustedBy />
+			</div>
+		</section>
+
+		<!-- Protection Tiers Section -->
+		<section class="py-12 md:py-16">
+			<div class="container mx-auto px-4">
+				<ServiceTiers client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- PPF Comparison Section -->
+		<PPFComparison locale={currentLang as "en" | "ar"} client:visible />
+		 
+		<!-- Technical Highlights Section -->
+		<section class="py-12 md:py-16 bg-muted/30">
+			<div class="container mx-auto px-4">
+				<TechnicalHighlights client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- Lifestyle Use Cases Section -->
+		<section class="py-12 md:py-16">
+			<div class="container mx-auto px-4">
+				<LifestyleUseCases client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- Testimonials Section -->
+		<section class="py-12 sm:py-16 md:py-20 lg:py-24">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<Testimonials currentLocale={currentLang as "en" | "ar"} client:visible />
+			</div>
+		</section>
+
+		<!-- Call to Action Section -->
+		<CallToAction locale={currentLang as "en" | "ar"} client:visible />
+	</main>
+</Layout>

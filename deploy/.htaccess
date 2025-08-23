@@ -1,0 +1,66 @@
+# SupaKoto Website - Static Deployment Configuration
+# Basic security headers
+Header set X-Content-Type-Options "nosniff"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+
+# Cache hashed static assets aggressively
+<FilesMatch "\.(js|css|svg|webp|avif|woff2|woff)$">
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+
+# Reasonable cache for images and videos
+<FilesMatch "\.(png|jpg|jpeg|gif|webm|mp4)$">
+  Header set Cache-Control "public, max-age=2592000"
+</FilesMatch>
+
+# Short cache for HTML to allow quick updates
+<FilesMatch "\.(html|htm)$">
+  Header set Cache-Control "public, max-age=3600"
+</FilesMatch>
+
+# Gzip compression for text-based files
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json text/xml application/xml
+</IfModule>
+
+# Enable clean URLs for Astro-generated pages
+Options +MultiViews
+DirectoryIndex index.html
+
+# Handle Astro's clean URL structure
+RewriteEngine On
+
+# Force HTTPS (uncomment when SSL is configured)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Handle Arabic locale routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ar/(.*)$ /ar/$1/index.html [L]
+
+# Handle English (default) locale routing
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ /$1/index.html [L]
+
+# Prevent access to source files and sensitive directories
+<FilesMatch "\.(astro|ts|tsx|jsx|md|env|gitignore|gitattributes)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Block access to development and build files
+RedirectMatch 404 /\.git
+RedirectMatch 404 /node_modules
+RedirectMatch 404 /src
+RedirectMatch 404 /\.env
+RedirectMatch 404 /package\.json
+RedirectMatch 404 /tsconfig\.json
+RedirectMatch 404 /astro\.config\.mjs
+
+# Custom error pages (create these in your dist folder)
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html

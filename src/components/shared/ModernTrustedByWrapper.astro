@@ -1,0 +1,289 @@
+---
+import { t } from '../../i18n/index';
+import ModernTrustedBy from './ModernTrustedBy';
+
+// Get current locale and setup i18n
+const currentLocale = (Astro.currentLocale || 'en') as 'en' | 'ar';
+
+// Partners data with verified logo paths - matching ServicedBrand type
+const partners = [
+  {
+    name: 'Jetour',
+    slug: 'jetour',
+    logoSrc: '/partners/jetour.svg',
+    alt: {
+      en: 'Jetour Logo',
+      ar: 'شعار جيتور'
+    }
+  },
+  {
+    name: 'Skoda',
+    slug: 'skoda',
+    logoSrc: '/partners/skoda.svg',
+    alt: {
+      en: 'Skoda Logo',
+      ar: 'شعار سكودا'
+    }
+  },
+  {
+    name: 'Citroen',
+    slug: 'citroen',
+    logoSrc: '/partners/citroen.svg',
+    alt: {
+      en: 'Citroen Logo',
+      ar: 'شعار سيتروين'
+    }
+  },
+  {
+    name: 'Nissan',
+    slug: 'nissan',
+    logoSrc: '/partners/nissan-6.svg',
+    alt: {
+      en: 'Nissan Logo',
+      ar: 'شعار نيسان'
+    }
+  },
+  {
+    name: 'Kia',
+    slug: 'kia',
+    logoSrc: '/partners/kia-4.svg',
+    alt: {
+      en: 'Kia Logo',
+      ar: 'شعار كيا'
+    }
+  },
+  {
+    name: 'Peugeot',
+    slug: 'peugeot',
+    logoSrc: '/partners/peugeot-8.svg',
+    alt: {
+      en: 'Peugeot Logo',
+      ar: 'شعار بيجو'
+    }
+  },
+  {
+    name: 'Toyota',
+    slug: 'toyota',
+    logoSrc: '/partners/toyota-tile.svg',
+    alt: {
+      en: 'Toyota Logo',
+      ar: 'شعار تويوتا'
+    }
+  },
+  {
+    name: 'Hyundai',
+    slug: 'hyundai',
+    logoSrc: '/partners/hyundai-motor-company-2.svg',
+    alt: {
+      en: 'Hyundai Logo',
+      ar: 'شعار هيونداي'
+    }
+  },
+  {
+    name: 'Renault',
+    slug: 'renault',
+    logoSrc: '/partners/renault.svg',
+    alt: {
+      en: 'Renault Logo',
+      ar: 'شعار رينو'
+    }
+  },
+  {
+    name: 'BMW',
+    slug: 'bmw',
+    logoSrc: '/partners/bmw-7.svg',
+    alt: {
+      en: 'BMW Logo',
+      ar: 'شعار بي إم دبليو'
+    }
+  },
+  {
+    name: 'Mercedes',
+    slug: 'mercedes',
+    logoSrc: '/partners/mercedes-benz-9.svg',
+    alt: {
+      en: 'Mercedes Logo',
+      ar: 'شعار مرسيدس'
+    }
+  },
+  {
+    name: 'Volkswagen',
+    slug: 'volkswagen',
+    logoSrc: '/partners/volkswagen-10.svg',
+    alt: {
+      en: 'Volkswagen Logo',
+      ar: 'شعار فولكس واجن'
+    }
+  }
+];
+
+const translations = {
+  title: t('partners.title', {}, { locale: currentLocale }),
+  description: t('partners.description', {}, { locale: currentLocale })
+};
+---
+
+<ModernTrustedBy 
+  locale={currentLocale}
+  partners={partners}
+  client:load
+/>
+
+<style is:global>
+  /* Enhanced hover effects for the scroll container */
+  .partners-scroll-container {
+    will-change: transform;
+  }
+
+  /* Smooth scrolling track */
+  .scroll-track {
+    will-change: transform;
+  }
+
+  /* Smooth continuous horizontal scrolling animations */
+  @keyframes scroll-ltr {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes scroll-rtl {
+    0% {
+      transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .animate-scroll-ltr {
+    animation: scroll-ltr 40s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .animate-scroll-rtl {
+    animation: scroll-rtl 40s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Pause animation on hover */
+  .partners-scroll-container:hover .scroll-track {
+    animation-play-state: paused;
+  }
+
+  /* Mask edges for smooth appearance/disappearance */
+  .mask-edges {
+    position: relative;
+  }
+
+  .mask-edges::before,
+  .mask-edges::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .mask-edges::before {
+    left: 0;
+    background: linear-gradient(to right, 
+      rgb(255 255 255 / 1) 0%, 
+      rgb(255 255 255 / 0.8) 30%, 
+      rgb(255 255 255 / 0) 100%);
+  }
+
+  .mask-edges::after {
+    right: 0;
+    background: linear-gradient(to left, 
+      rgb(255 255 255 / 1) 0%, 
+      rgb(255 255 255 / 0.8) 30%, 
+      rgb(255 255 255 / 0) 100%);
+  }
+
+  /* Dark mode mask edges */
+  .dark .mask-edges::before {
+    background: linear-gradient(to right, 
+      rgb(15 23 42 / 1) 0%, 
+      rgb(15 23 42 / 0.8) 30%, 
+      rgb(15 23 42 / 0) 100%);
+  }
+
+  .dark .mask-edges::after {
+    background: linear-gradient(to left, 
+      rgb(15 23 42 / 1) 0%, 
+      rgb(15 23 42 / 0.8) 30%, 
+      rgb(15 23 42 / 0) 100%);
+  }
+
+  /* Continuous subtle float animation for logos */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) scale(1);
+    }
+    50% {
+      transform: translateY(-3px) scale(1.02);
+    }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  /* Stagger animation delays for different logos */
+  .partner-logo:nth-child(1) .animate-float {
+    animation-delay: 0s;
+  }
+  .partner-logo:nth-child(2) .animate-float {
+    animation-delay: 0.5s;
+  }
+  .partner-logo:nth-child(3) .animate-float {
+    animation-delay: 1s;
+  }
+  .partner-logo:nth-child(4) .animate-float {
+    animation-delay: 1.5s;
+  }
+  .partner-logo:nth-child(5) .animate-float {
+    animation-delay: 2s;
+  }
+  .partner-logo:nth-child(6) .animate-float {
+    animation-delay: 2.5s;
+  }
+  .partner-logo:nth-child(7) .animate-float {
+    animation-delay: 3s;
+  }
+  .partner-logo:nth-child(8) .animate-float {
+    animation-delay: 3.5s;
+  }
+  .partner-logo:nth-child(9) .animate-float {
+    animation-delay: 0.2s;
+  }
+  .partner-logo:nth-child(10) .animate-float {
+    animation-delay: 0.7s;
+  }
+  .partner-logo:nth-child(11) .animate-float {
+    animation-delay: 1.2s;
+  }
+  .partner-logo:nth-child(12) .animate-float {
+    animation-delay: 1.7s;
+  }
+
+  /* Enhanced image brightness on hover for better visibility */
+  .partner-slide img {
+    filter: brightness(0.9) contrast(0.9);
+    transition: all 0.3s ease;
+  }
+
+  .partner-slide:hover img {
+    filter: brightness(1) contrast(1);
+  }
+</style>

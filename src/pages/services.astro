@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { t } from '../i18n/index';
+import ServicesHero from '../components/services/ServicesHero';
+import ServiceTiers from '../components/services/ServiceTiers';
+import TechCraftsmanship from '../components/services/TechCraftsmanship';
+import FinishOptions from '../components/services/FinishOptions';
+import TechnicalHighlights from '../components/services/TechnicalHighlights';
+import LifestyleUseCases from '../components/services/LifestyleUseCases';
+
+import ServicesCTA from '../components/services/ServicesCTA';
+
+// For locale-specific pages, we know the locale from the folder structure
+const currentLang = Astro.currentLocale || 'en';
+// English is LTR, so rtl is false
+const rtl = currentLang === 'ar';
+---
+
+<Layout title={t('services.meta.title')} description={t('services.meta.description')}>
+	<main id="content" class="flex flex-col">
+		<!-- Hero Section -->
+		<section class="relative">
+			<ServicesHero client:load currentLocale={currentLang} isRTL={rtl} />
+		</section>
+
+		<!-- Service Tiers Section -->
+		<section id="tiers" class="py-12 md:py-16">
+			<div class="container mx-auto px-4">
+				<ServiceTiers client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- Technology & Craftsmanship Section -->
+		<section class="py-12 md:py-16 bg-muted/30">
+			<div class="container mx-auto px-4">
+				<TechCraftsmanship client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- Finish Options Section -->
+		<section class="py-12 md:py-16">
+			<div class="container mx-auto px-4">
+				<FinishOptions client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- Technical Highlights Section -->
+		<section class="py-12 md:py-16 bg-muted/30">
+			<div class="container mx-auto px-4">
+				<TechnicalHighlights client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+		<!-- Lifestyle Use Cases Section -->
+		<section class="py-12 md:py-16">
+			<div class="container mx-auto px-4">
+				<LifestyleUseCases client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+
+
+
+		<!-- Closing CTA Section -->
+		<section class="py-16 md:py-24">
+			<div class="container mx-auto px-4">
+				<ServicesCTA client:visible currentLocale={currentLang} isRTL={rtl} />
+			</div>
+		</section>
+	</main>
+</Layout>

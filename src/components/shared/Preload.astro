@@ -1,0 +1,64 @@
+---
+// Preload critical resources to improve performance
+---
+
+<Fragment>
+  <!-- Preload critical resources for better performance -->
+  
+  <!-- Preload critical fonts -->
+  <link
+    rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <link
+    rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  
+  <!-- Preload critical CSS -->
+  <link rel="preload" href="/src/styles/global.css" as="style" />
+  
+  <!-- DNS prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+  <link rel="dns-prefetch" href="https://unpkg.com" />
+  <link rel="dns-prefetch" href="https://basemaps.cartocdn.com" />
+  
+  <!-- Preconnect to critical origins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <!-- Preload hero images with responsive loading -->
+  <link
+    rel="preload"
+    href="/images/optimized/hero-mobile.webp"
+    as="image"
+    media="(max-width: 640px)"
+    fetchpriority="high"
+  />
+  <link
+    rel="preload"
+    href="/images/optimized/hero-tablet.webp"
+    as="image"
+    media="(min-width: 641px) and (max-width: 1023px)"
+    fetchpriority="high"
+  />
+  <link
+    rel="preload"
+    href="/images/optimized/hero-desktop.webp"
+    as="image"
+    media="(min-width: 1024px)"
+    fetchpriority="high"
+  />
+  
+  <!-- Preload logo -->
+  <link rel="preload" href="/logo.svg" as="image" fetchpriority="high" />
+  
+  <!-- Resource hints for better performance -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+</Fragment>

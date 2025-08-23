@@ -1,0 +1,131 @@
+/* Car Gallery Styles */
+.car-gallery {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Arabic font support */
+.font-arabic {
+  font-family: 'Noto Sans Arabic', 'Amiri', 'Tajawal', 'Cairo', sans-serif;
+  font-weight: 500;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar for modal */
+.car-gallery ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.car-gallery ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.car-gallery ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.car-gallery ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Smooth animations */
+.car-gallery * {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus styles for accessibility */
+.car-gallery button:focus,
+.car-gallery input:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+/* Image loading animation */
+.car-gallery img {
+  transition: opacity 0.3s ease;
+}
+
+.car-gallery img[loading="lazy"] {
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .car-gallery .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .car-gallery .flex-wrap {
+    justify-content: center;
+  }
+  
+  .car-gallery .text-6xl {
+    font-size: 2.5rem;
+  }
+}
+
+/* RTL support */
+[dir="rtl"] .car-gallery {
+  text-align: right;
+}
+
+[dir="rtl"] .car-gallery .flex {
+  flex-direction: row-reverse;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .car-gallery .bg-gray-100 {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+  }
+  
+  .car-gallery .text-gray-600 {
+    color: #212529;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .car-gallery *,
+  .car-gallery *::before,
+  .car-gallery *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .car-gallery button,
+  .car-gallery .fixed {
+    display: none !important;
+  }
+  
+  .car-gallery .grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

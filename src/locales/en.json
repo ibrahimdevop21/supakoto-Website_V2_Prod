@@ -1,0 +1,381 @@
+{
+  "site": {
+    "title": "Supakoto",
+    "description": "Your premier destination for luxury automotive services and solutions"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "gallery": "Gallery",
+    "about": "About",
+    "contact": "Contact",
+    "locations": "Locations",
+    "offers": "Offers",
+    "faq": "FAQ",
+    "language": "Language"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية"
+  },
+  "hero": {
+    "welcome": "Welcome to",
+    "tagline": "Your premier destination for luxury automotive services and solutions",
+    "experience": "Experience Automotive Excellence",
+    "description": "Discover our range of premium automotive services designed to exceed your expectations and elevate your driving experience.",
+    "services": "Our Services",
+    "contact": "Contact Us",
+    "title": "Japan's Strongest Protection",
+    "subtitle": "From Cairo to Dubai, SupaKoto is the choice of luxury car owners",
+    "trust": {
+      "certified": "Premium Japanese PPF — original, certified, proven",
+      "experience": "Master Installers — detail-obsessed, factory trained",
+      "warranty": "Exclusive Warranty — up to 15 years"
+    },
+    "cta": {
+      "primary": "Protect Your Car Today",
+      "secondary": "See Our Work"
+    }
+  },
+  "features": {
+    "premium": {
+      "title": "Premium Services",
+      "description": "We pride ourselves on delivering top-notch automotive services that exceed your expectations.",
+      "link": "Learn more"
+    },
+    "locations": {
+      "title": "Luxury Locations",
+      "description": "Find us at premium, convenient locations across the region to serve your automotive needs.",
+      "link": "Find nearest"
+    },
+    "offers": {
+      "title": "Exclusive Offers",
+      "description": "Take advantage of our limited-time luxury automotive service offers and promotions.",
+      "link": "View offers"
+    }
+  },
+  "gallery": {
+    "title": "Gallery",
+    "description": "Explore our portfolio of premium automotive transformations and professional detailing work",
+    "hero": {
+      "title": "Our Work Gallery",
+      "subtitle": "Discover the artistry and precision behind every project. From paint protection films to ceramic coatings, witness the transformation of luxury vehicles through our expert craftsmanship."
+    }
+  },
+  "latestWork": {
+    "title": "Latest Work",
+    "description": "Explore our latest automotive projects and premium craftsmanship"
+  },
+  "partners": {
+    "title": "Trusted By",
+    "description": "Proud partners with the world's leading automotive brands"
+  },
+  "cta": {
+    "title": "Ready to Experience Luxury?",
+    "description": "Contact us today to learn more about our premium automotive services.",
+    "enquire": "Enquire Now",
+    "book": "Book Now",
+    "whatsapp": "Chat on WhatsApp"
+  },
+  "testimonials": {
+    "subtitle": "Client Testimonials",
+    "description": "Read what our clients have to say about their experience with our services.",
+    "readMore": "Read More",
+    "readLess": "Read Less",
+    "location": "Branch"
+  },
+  "footer": {
+    "title": "Footer",
+    "tagline": "Driving excellence with premium protection and unparalleled customization.",
+    "company_section_title": "Company",
+    "support_section_title": "Support",
+    "contact_section_title": "Get in Touch",
+    "contact_address_dubai": "Jebel Ali Industrial 1, Dubai, UAE",
+    "contact_address_egypt": "Nasr City, Auto Mall, Cairo, Egypt",
+    "contact_phone_dubai": "+971 50 123 4567",
+    "contact_phone_egypt": "+20 100 456 7890",
+    "contact_email": "info@supakoto.com",
+    "copyright": "All rights reserved."
+  },
+  "contact": {
+    "heading": "Contact Us",
+    "subheading": "We'd love to hear from you. Reach out to us with any questions or inquiries.",
+    "description": "Get in touch with our team today. We're here to help answer your questions and provide the support you need.",
+    "our_locations": "Our Locations",
+    "get_in_touch": "Get in Touch",
+    "our_branches": "Our Branches",
+    "form": {
+      "name": "Your Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "message": "Your Message",
+      "submit": "Send Message",
+      "required": "Required field",
+      "invalid_email": "Please enter a valid email address",
+      "invalid_phone": "Please enter a valid phone number",
+      "success": "Thank you! Your message has been sent successfully.",
+      "error": "An error occurred. Please try again later.",
+      "sending": "Sending..."
+    },
+    "branch": {
+      "address": "Address",
+      "phone": "Phone",
+      "hours": "Working Hours",
+      "whatsapp": "Chat on WhatsApp",
+      "call": "Call Now"
+    },
+    "faq": {
+      "heading": "Frequently Asked Questions",
+      "subheading": "Find answers to common questions about our services.",
+      "description": "Find answers to common questions about our services.",
+      "view_all": "View All FAQs",
+      "contact_support": "Can't find what you're looking for? Contact our support team."
+    }
+  },
+  "about": {
+    "heading": "About Supakoto",
+    "subheading": "Learn more about our company, mission, and values",
+    "description": "Supakoto is a leading company dedicated to providing exceptional services and solutions. We pride ourselves on our commitment to excellence and customer satisfaction.",
+    "our_story": "Our Story",
+    "story_content": "Supakoto was founded with a simple mission: to provide exceptional services and solutions to our clients. Since our establishment, we have grown to become a trusted name in the industry.",
+    "mission": "Our Mission",
+    "mission_content": "To deliver exceptional value through innovative solutions and outstanding customer service.",
+    "values": "Our Values",
+    "values_content": "We believe in integrity, excellence, and putting our customers first in everything we do.",
+    "leadership_team": "Leadership Team",
+    "leadership_description": "Meet the dedicated professionals who lead Supakoto with vision and expertise."
+  },
+  "faq": {
+    "heading": "Frequently Asked Questions",
+    "subheading": "Find answers to common questions",
+    "description": "Here are some of the most frequently asked questions about our services."
+  },
+  "locations": {
+    "heading": "Our Locations",
+    "subheading": "Find us near you",
+    "description": "Visit us at one of our convenient locations."
+  },
+  "offers": {
+    "heading": "Special Offers",
+    "subheading": "Discover our latest deals and promotions",
+    "description": "Take advantage of our current special offers and save on our premium services."
+  },
+  "pages": {
+    "home": {
+      "title": "Home - Supakoto",
+      "description": "Your premier destination for luxury automotive services and solutions"
+    },
+    "about": {
+      "title": "About Us - Supakoto",
+      "description": "Learn more about our company, mission, and values"
+    },
+    "contact": {
+      "title": "Contact Us - Supakoto",
+      "description": "Get in touch with our team today. We're here to help answer your questions and provide the support you need."
+    },
+    "services": {
+      "title": "Services - Supakoto",
+      "description": "Discover our comprehensive range of professional services"
+    },
+    "locations": {
+      "title": "Locations - Supakoto",
+      "description": "Visit us at one of our convenient locations."
+    },
+    "offers": {
+      "title": "Special Offers - Supakoto",
+      "description": "Take advantage of our current special offers and save on our premium services."
+    },
+    "faq": {
+      "title": "FAQ - Supakoto",
+      "description": "Find answers to common questions about our services."
+    },
+    "gallery": {
+      "title": "Gallery - Supakoto",
+      "description": "Discover our portfolio of premium automotive services and transformations."
+    }
+  },
+  "services": {
+    "meta": {
+      "title": "Services - Supakoto",
+      "description": "Advanced Japanese PPF and nano-coatings for ultimate automotive protection."
+    },
+    "hero": {
+      "title": "Unmatched Automotive Protection — Engineered for Perfection",
+      "subtitle": "From advanced Japanese PPF to nano-coatings — discover the best in car care.",
+      "cta": "Explore Our Protection Solutions"
+    },
+    "tiers": {
+      "title": "Protection Tiers",
+      "subtitle": "Choose the perfect level of protection for your vehicle",
+      "ultimate": {
+        "title": "Ultimate Protection",
+        "description": "Full exterior PPF coverage, interior film, nano coatings, longest warranty, and premium finish options.",
+        "feature1": "Complete vehicle coverage with premium PPF",
+        "feature2": "Interior protection and nano-ceramic coatings",
+        "feature3": "15-year manufacturer warranty"
+      },
+      "premium": {
+        "title": "Premium Protection",
+        "description": "Full-body PPF, interior add-ons, self-healing & anti-yellowing properties, expert manual installation.",
+        "feature1": "Full-body paint protection film",
+        "feature2": "Self-healing and anti-yellowing technology",
+        "feature3": "Professional manual installation"
+      },
+      "standard": {
+        "title": "Standard Protection",
+        "description": "Exterior coverage with premium PPF, optional glass/interior protection — balanced cost & durability.",
+        "feature1": "Key area exterior coverage",
+        "feature2": "Optional glass and interior protection",
+        "feature3": "Balanced cost and durability"
+      },
+      "essential": {
+        "title": "Essential Protection",
+        "description": "Key area coverage for scratch and chip resistance — perfect entry-level choice.",
+        "feature1": "High-impact area protection",
+        "feature2": "Scratch and chip resistance",
+        "feature3": "Entry-level pricing"
+      },
+      "learnMore": "Learn More",
+      "showLess": "Show Less",
+      "requestQuote": "Request Quote"
+    },
+    "specs": {
+      "thickness": "Thickness",
+      "stretch": "Stretch",
+      "features": "Key Features",
+      "performance": "Performance",
+      "selfHealing": "Self-Healing",
+      "uvProtection": "UV Protection",
+      "antiYellowing": "Anti-Yellowing"
+    },
+    "tech": {
+      "title": "Why SupaKoto?",
+      "subtitle": "Advanced technology and expert craftsmanship for superior protection",
+      "takai": {
+        "title": "Takai Japanese PPF",
+        "description": "Precision-engineered clarity & strength from Japan's leading manufacturer."
+      },
+      "precision": {
+        "title": "Manual-Cut Precision",
+        "description": "Flawless fit without panel removal using expert hand-cutting techniques."
+      },
+      "nano": {
+        "title": "Nano-Ceramic Coatings",
+        "description": "Advanced protection for glass, rims & interior surfaces."
+      },
+      "warranty": {
+        "title": "Warranty You Can Trust",
+        "description": "Up to 15 years manufacturer-backed warranty for peace of mind."
+      },
+      "certified": "Certified Installation",
+      "professional": "Professional Grade",
+      "guaranteed": "Quality Guaranteed"
+    },
+    "finishes": {
+      "title": "Finish Options",
+      "subtitle": "Choose between ultra-gloss or stealth matte finishes",
+      "gloss": {
+        "title": "Ultra Gloss",
+        "description": "Deep mirror finish that enhances your vehicle's natural beauty with stunning clarity.",
+        "feature1": "Mirror-like reflection and depth",
+        "feature2": "Enhanced color vibrancy",
+        "feature3": "Show-quality appearance"
+      },
+      "matte": {
+        "title": "Stealth Matte",
+        "description": "Satin, understated elegance with a sophisticated non-reflective finish.",
+        "feature1": "Non-reflective satin finish",
+        "feature2": "Sophisticated understated look",
+        "feature3": "Unique texture and feel"
+      },
+      "keyFeatures": "Key Features",
+      "clarity": "Clarity",
+      "reflection": "Reflection",
+      "previewPlaceholder": "Finish Preview"
+    },
+    "technical": {
+      "title": "Technical Highlights",
+      "subtitle": "Detailed specifications and performance characteristics",
+      "material": {
+        "title": "Material Specifications",
+        "thickness": "Film Thickness",
+        "stretch": "Stretchability",
+        "clarity": "Optical Clarity",
+        "clarityValue": "Crystal Clear",
+        "adhesive": "Adhesive Type",
+        "adhesiveValue": "Pressure-Sensitive"
+      },
+      "performance": {
+        "title": "Performance Features",
+        "selfHealing": "Self-Healing",
+        "selfHealingValue": "Heat Activated",
+        "uvBlocking": "UV Blocking",
+        "irRejection": "IR Rejection",
+        "antiYellowing": "Anti-Yellowing",
+        "antiYellowingValue": "Guaranteed"
+      },
+      "craftsmanship": {
+        "title": "Installation Craftsmanship",
+        "cutting": "Cutting Method",
+        "cuttingValue": "Hand-Cut Precision",
+        "installation": "Installation",
+        "installationValue": "Expert Manual",
+        "disassembly": "Panel Removal",
+        "disassemblyValue": "Minimal Required",
+        "finish": "Edge Finish",
+        "finishValue": "Seamless Wrap"
+      },
+      "maintenance": {
+        "title": "Care & Maintenance",
+        "washing": "Washing",
+        "washingValue": "Standard Car Wash",
+        "frequency": "Maintenance",
+        "frequencyValue": "Minimal Required",
+        "products": "Cleaning Products",
+        "productsValue": "Any pH Neutral",
+        "inspection": "Inspection",
+        "inspectionValue": "Annual Recommended"
+      },
+      "disclaimer": "Specifications may vary by country and specific product selection. Contact us for detailed information."
+    },
+    "lifestyle": {
+      "title": "Lifestyle Use Cases",
+      "subtitle": "Protection tailored to your driving needs and environment",
+      "longTerm": {
+        "title": "Long-Term Ownership",
+        "description": "Preserve your vehicle's showroom appearance and maintain maximum resale value over years of ownership.",
+        "benefit1": "Maintains showroom appearance",
+        "benefit2": "Preserves resale value"
+      },
+      "harsh": {
+        "title": "Harsh Climates",
+        "description": "Defend against extreme heat, UV radiation, and sand abrasion in challenging environmental conditions.",
+        "benefit1": "UV and heat protection",
+        "benefit2": "Sand and debris resistance"
+      },
+      "performance": {
+        "title": "Performance Cars",
+        "description": "Protect aerodynamic surfaces and maintain paint integrity during high-speed driving and track use.",
+        "benefit1": "Aerodynamic surface protection",
+        "benefit2": "High-speed debris resistance"
+      },
+      "luxury": {
+        "title": "Luxury Vehicles",
+        "description": "Discreet protection that maintains the premium aesthetic while providing comprehensive coverage.",
+        "benefit1": "Invisible protection",
+        "benefit2": "Premium finish options"
+      },
+      "cta": "Find your perfect protection solution"
+    },
+
+    "cta": {
+      "title": "Ready for the Ultimate Protection?",
+      "subtitle": "Let our experts provide a free consultation and quote for your vehicle. Experience the SupaKoto difference today.",
+      "bookInstallation": "Book Your Installation",
+      "requestQuote": "Request a Quote",
+      "freeConsultation": "Free Consultation",
+      "expertInstallation": "Expert Installation",
+      "warrantyIncluded": "Warranty Included"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.jsx",
+    "src/pages/en/**/*.astro",
+    "src/pages/ar/**/*.astro",
+    "src/pages/index.astro",
+    "src/layouts/**/*.astro",
+    "jest.setup.ts",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "dist", 
+    "node_modules", 
+    "src/components/_deprecated/**/*", 
+    "src/components/_deprecated_archive/**/*", 
+    "**/node_modules/**"
+  ]
+}

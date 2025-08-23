@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { t } from '../../i18n/index';
+
+// For locale-specific pages, we know the locale from the folder structure
+const currentLang = Astro.currentLocale || 'ar';
+// Arabic is RTL, so rtl is true
+const rtl = currentLang === 'ar';
+---
+
+<Layout title={t('pages.offers.title')}>
+  <section class="py-16 md:py-24">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-foreground mb-4">{t('offers.heading')}</h1>
+      <p class="text-xl text-muted-foreground max-w-3xl mx-auto mb-12">{t('offers.subheading')}</p>
+      <div class="text-center text-muted-foreground">
+        <p>{t('offers.description')}</p>
+        <p class="mt-8"><em>قريباً المزيد من العروض...</em></p>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,273 @@
+---
+import '../styles/global.css';
+import '../styles/rtl-support.css';
+import '../styles/gallery.css';
+import '../styles/navbar-glass.css';
+import Footer from '../components/layout/Footer.astro';
+import { Navbar } from '../components/layout';
+import Preload from '../components/shared/Preload.astro';
+import RespondIO from '../components/integrations/RespondIO.astro';
+import { t, isRTL } from '../i18n/index';
+
+export interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description } = Astro.props;
+const currentLang = Astro.currentLocale || 'en';
+const rtl = isRTL(Astro);
+const siteTitle = t('site.title');
+const siteDescription = description || t('site.description');
+---
+
+<!doctype html>
+<html lang={currentLang} dir={rtl ? 'rtl' : 'ltr'} class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={siteDescription} />
+		
+		<!-- Preload critical resources -->
+		<Preload />
+		
+		<!-- Critical CSS for performance optimization -->
+		<style>
+			/* SupaKoto 2025 Critical CSS - Above the fold styles */
+			:root {
+				/* SupaKoto 2025 Brand Colors */
+				--supakoto-red: #bf1e2e;
+				--supakoto-deep-burgundy: #6a343a;
+				--primary: #bf1e2e;
+				--supakoto-deep-burgundy: #6a343a;
+				--foreground: 210 40% 98%;
+				--background: 222.2 84% 4.9%;
+				--muted: 217.2 32.6% 17.5%;
+				--border: 217.2 32.6% 17.5%;
+			}
+			
+			/* Prevent layout shifts */
+			html {
+				font-size: 16px;
+				line-height: 1.5;
+				-webkit-text-size-adjust: 100%;
+			}
+			
+			body {
+				font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+				min-height: 100vh;
+				overflow-x: hidden;
+				margin: 0;
+				padding: 0;
+				background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+			}
+			
+			/* Hero section critical styles */
+			.hero-container, .hero-carousel-wrapper {
+				height: clamp(70vh, 85vh, 95vh);
+				position: relative;
+				overflow: hidden;
+			}
+			
+			/* Navigation critical styles */
+			.nav-container {
+				position: fixed;
+				top: 0;
+				width: 100%;
+				z-index: 50;
+				backdrop-filter: blur(10px);
+			}
+			
+			/* Critical button styles */
+			.btn-primary {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 1rem 2rem;
+				background-color: var(--primary);
+				color: white;
+				font-weight: 600;
+				border-radius: 0.5rem;
+				box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+				transition: all 0.3s;
+				text-decoration: none;
+			}
+			
+			.btn-primary:hover {
+				background-color: var(--supakoto-deep-burgundy);
+				transform: scale(1.02);
+				box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+			}
+			
+			/* Loading states */
+			.animate-pulse {
+				animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+			}
+			
+			@keyframes pulse {
+				0%, 100% { opacity: 1; }
+				50% { opacity: .5; }
+			}
+			
+			/* Image optimization */
+			img {
+				max-width: 100%;
+				height: auto;
+				font-style: italic;
+				background-repeat: no-repeat;
+				background-size: cover;
+			}
+			
+			/* Prevent FOUC */
+			.animate-fade-in {
+				animation: fadeIn 0.6s ease-out forwards;
+			}
+			
+			@keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			
+			/* Mobile optimizations */
+			@media (max-width: 640px) {
+				.hero-container, .hero-carousel-wrapper {
+					height: 70vh;
+				}
+				
+				.btn-primary {
+					padding: 0.75rem 1.5rem;
+					font-size: 0.875rem;
+				}
+			}
+		</style>
+		
+		<!-- Font preconnect for performance -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<!-- Load fonts asynchronously to prevent render blocking -->
+		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+		<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet"></noscript>
+		
+		<!-- Favicon and App Icons - SVG first approach -->
+		<link rel="icon" href="/icon-logo.svg" type="image/svg+xml" />
+		<!-- Only used by browsers that don't support SVG favicons -->
+		<link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
+		<!-- Apple Touch Icon for iOS devices -->
+		<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+		<link rel="manifest" href="/assets/site.webmanifest" />
+		<meta name="msapplication-config" content="/assets/browserconfig.xml" />
+		<meta name="msapplication-TileColor" content="#ffffff" />
+		<meta name="theme-color" content="#ffffff" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={`${title} | ${siteTitle}`} />
+		<meta property="og:description" content={siteDescription} />
+		<meta property="og:image" content={new URL('/assets/og-image.png', Astro.url)} />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta property="twitter:title" content={`${title} | ${siteTitle}`} />
+		<meta property="twitter:description" content={siteDescription} />
+		<meta property="twitter:image" content={new URL('/assets/twitter-card.png', Astro.url)} />
+		
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | {siteTitle}</title>
+		<style is:global>
+			/* Critical CSS for performance */
+			:root {
+				--accent: 136, 58, 234;
+				--accent-light: 224, 204, 250;
+				--accent-dark: 49, 10, 101;
+				--accent-gradient: linear-gradient(
+					45deg,
+					rgb(var(--accent)),
+					rgb(var(--accent-light)) 30%,
+					white 60%
+				);
+			}
+			
+			/* Prevent layout shifts */
+			html {
+				font-size: 16px;
+				line-height: 1.5;
+				-webkit-text-size-adjust: 100%;
+				-moz-text-size-adjust: 100%;
+				text-size-adjust: 100%;
+			}
+			
+			/* Base font styling with fallbacks */
+			html, body {
+				font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				font-display: swap;
+			}
+			
+			/* Prevent FOUC and layout shifts */
+			body {
+				min-height: 100vh;
+				overflow-x: hidden;
+			}
+			
+			/* Image optimization */
+			img {
+				max-width: 100%;
+				height: auto;
+				font-style: italic;
+				background-repeat: no-repeat;
+				background-size: cover;
+				shape-margin: 0.75rem;
+			}
+			
+			/* RTL Support */
+			[dir="rtl"] {
+				text-align: right;
+			}
+			
+			/* Arabic Font Support with fallbacks */
+			.font-arabic {
+				font-family: 'Noto Sans Arabic', 'Noto Kufi Arabic', 'Arabic UI Text', 'SF Arabic', 'Segoe UI Arabic', sans-serif;
+				font-display: swap;
+			}
+			
+			/* Load Arabic font asynchronously */
+			@font-face {
+				font-family: 'Noto Sans Arabic';
+				font-style: normal;
+				font-weight: 300 700;
+				font-display: swap;
+				src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+			}
+		</style>
+			<link rel="stylesheet" href="/src/styles/critical.css" media="print" onload="this.media='all'">
+		<noscript><link rel="stylesheet" href="/src/styles/critical.css"></noscript>
+		<script>
+			// Inline critical performance monitoring
+			if ('PerformanceObserver' in window) {
+				new PerformanceObserver((list) => {
+					for (const entry of list.getEntries()) {
+						if (entry.entryType === 'navigation') {
+							console.log('Navigation timing:', entry.duration + 'ms');
+						}
+					}
+				}).observe({ entryTypes: ['navigation'] });
+			}
+		</script>
+	</head>
+	<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-foreground font-sans antialiased" class:list={[rtl && 'font-arabic']}>
+		<Navbar currentLocale={currentLang} isRTL={rtl} activePath={Astro.url.pathname} />
+		
+		<!-- Full-width slot for hero sections and other full-width components -->
+		<slot name="hero" />
+		
+		<main class="flex-grow container mx-auto px-4">
+			<slot />
+		</main>
+		
+		<Footer />
+		
+		<!-- respond.io Website Chat (lazy, prod-only) -->
+		<RespondIO />
+	</body>
+</html>

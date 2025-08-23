@@ -1,0 +1,40 @@
+/* Custom animations for logo strips - matches Testimonials component */
+
+/* Continuous scrolling animations */
+@keyframes scroll-ltr {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 3));
+  }
+}
+
+@keyframes scroll-rtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100% / 3));
+  }
+}
+
+.animate-scroll {
+  animation: scroll-ltr 40s linear infinite;
+}
+
+[dir="rtl"] .animate-scroll {
+  animation: scroll-rtl 40s linear infinite;
+}
+
+/* Pause animation on hover */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll {
+    animation: none;
+  }
+}

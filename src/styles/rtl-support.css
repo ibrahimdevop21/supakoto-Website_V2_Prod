@@ -1,0 +1,78 @@
+/* RTL Support Styles */
+
+/* General RTL adjustments */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* Partners grid RTL adjustments */
+.partners-grid-rtl {
+  direction: rtl;
+}
+
+/* Prevent unnecessary flipping of logos in RTL mode */
+.rtl-flip-none {
+  transform: scaleX(1) !important;
+}
+
+/* RTL-specific animations */
+[dir="rtl"] .animate-slideInScale {
+  animation-name: rtlSlideInScale;
+}
+
+@keyframes rtlSlideInScale {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* RTL spacing adjustments */
+[dir="rtl"] .space-x-4 > * + * {
+  margin-right: 1rem;
+  margin-left: 0;
+}
+
+/* RTL gradient direction adjustments */
+[dir="rtl"] .bg-gradient-to-r {
+  background-image: linear-gradient(to left, var(--tw-gradient-stops));
+}
+
+[dir="rtl"] .bg-gradient-to-l {
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+/* RTL icon adjustments */
+[dir="rtl"] .ml-1,
+[dir="rtl"] .ml-2,
+[dir="rtl"] .ml-3,
+[dir="rtl"] .ml-4 {
+  margin-left: 0;
+  margin-right: 0.25rem;
+}
+
+[dir="rtl"] .mr-1,
+[dir="rtl"] .mr-2,
+[dir="rtl"] .mr-3,
+[dir="rtl"] .mr-4 {
+  margin-right: 0;
+  margin-left: 0.25rem;
+}
+
+/* RTL flex direction adjustments */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+/* RTL text alignment in specific components */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}

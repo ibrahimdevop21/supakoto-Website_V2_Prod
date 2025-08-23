@@ -1,0 +1,115 @@
+
+/* SupaKoto 2025 Critical CSS - Above the fold styles */
+/* This CSS should be inlined in the head for fastest rendering */
+
+:root {
+  /* SupaKoto 2025 Brand Colors */
+  --supakoto-red: #bf1e2e;
+  --supakoto-deep-burgundy: #6a343a;
+  --primary: #bf1e2e;
+  --supakoto-deep-burgundy: #6a343a;
+  --foreground: 210 40% 98%;
+  --background: 222.2 84% 4.9%;
+  --muted: 217.2 32.6% 17.5%;
+  --border: 217.2 32.6% 17.5%;
+}
+
+/* Prevent layout shifts */
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hero section critical styles */
+.hero-container {
+  height: clamp(70vh, 85vh, 95vh);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Navigation critical styles */
+/* DISABLED: Conflicts with new glass navbar - blocking clicks
+.nav-container {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+}
+*/
+
+/* SupaKoto 2025 Critical button styles */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background-color: var(--supakoto-red);
+  color: white;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--supakoto-deep-burgundy);
+  transform: scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading states */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+/* Image optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  font-style: italic;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Prevent FOUC */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .hero-container {
+    height: 70vh;
+  }
+  
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
