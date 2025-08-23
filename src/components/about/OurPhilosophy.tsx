@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gem, ShieldCheck, Zap } from '../icons/LightweightIcons';
+import { Wrench, Handshake, Award, ShieldCheck, Star, FileText } from 'lucide-react';
 
 interface OurPhilosophyProps {
   currentLocale: string;
@@ -8,19 +8,34 @@ interface OurPhilosophyProps {
 
 const philosophies = [
   {
-    icon: Gem,
-    title: { en: 'The Pursuit of Precision', ar: 'السعي نحو الدقة' },
-    description: { en: 'Inspired by Japanese Takumi, we treat every application as a work of art. Millimeter-perfect alignment and flawless finishes are our standard.', ar: 'مستوحون من "تاكومي" اليابانية، نتعامل مع كل تطبيق كعمل فني. المحاذاة المثالية بالمليمتر والتشطيبات الخالية من العيوب هي معيارنا.' },
-  },
-  {
     icon: ShieldCheck,
-    title: { en: 'Uncompromising Quality', ar: 'جودة لا تقبل المساومة' },
-    description: { en: 'We use only the most advanced, rigorously tested materials. Our films provide superior protection without sacrificing your vehicle’s original beauty.', ar: 'نحن نستخدم فقط المواد الأكثر تقدمًا والتي تم اختبارها بصرامة. توفر أفلامنا حماية فائقة دون التضحية بالجمال الأصلي لسيارتك.' },
+    title: { en: 'Exclusive TAKAI PPF Distributor', ar: 'الموزع الحصري لـ TAKAI PPF' },
+    description: { en: 'Exclusive distributor of TAKAI PPF in Egypt - world-renowned, high quality, durable protection films.', ar: 'الموزع الحصري لـ TAKAI PPF في مصر - أفلام حماية عالمية الشهرة وعالية الجودة ومتينة.' },
   },
   {
-    icon: Zap,
-    title: { en: 'Relentless Innovation', ar: 'الابتكار المتواصل' },
-    description: { en: 'Our commitment to R&D means we are always at the forefront of protection technology, constantly improving to deliver the best to our clients.', ar: 'التزامنا بالبحث والتطوير يعني أننا دائمًا في طليعة تكنولوجيا الحماية، ونتحسن باستمرار لتقديم الأفضل لعملائنا.' },
+    icon: Star,
+    title: { en: 'Wide Range of Products', ar: 'مجموعة واسعة من المنتجات' },
+    description: { en: 'Customers can choose the right film for their needs from our comprehensive product range.', ar: 'يمكن للعملاء اختيار الفيلم المناسب لاحتياجاتهم من مجموعة منتجاتنا الشاملة.' },
+  },
+  {
+    icon: Award,
+    title: { en: 'Commitment to Quality', ar: 'الالتزام بالجودة' },
+    description: { en: 'We use the best materials and follow best practices to ensure superior quality.', ar: 'نستخدم أفضل المواد ونتبع أفضل الممارسات لضمان جودة فائقة.' },
+  },
+  {
+    icon: Wrench,
+    title: { en: 'Expert Installation', ar: 'تركيب خبير' },
+    description: { en: 'Our installers use proper methods to ensure maximum protection for your investment.', ar: 'يستخدم المركبون لدينا الطرق الصحيحة لضمان أقصى حماية لاستثمارك.' },
+  },
+  {
+    icon: Handshake,
+    title: { en: 'Excellent Customer Service', ar: 'خدمة عملاء ممتازة' },
+    description: { en: 'Our knowledgeable and helpful team is committed to providing excellent customer service.', ar: 'فريقنا المتمرس والمفيد ملتزم بتقديم خدمة عملاء ممتازة.' },
+  },
+  {
+    icon: FileText,
+    title: { en: 'Warranty Coverage', ar: 'تغطية الضمان' },
+    description: { en: 'All products include warranty coverage for your peace of mind.', ar: 'جميع المنتجات تشمل تغطية الضمان لراحة بالك.' },
   },
 ];
 
@@ -28,12 +43,12 @@ const OurPhilosophy: React.FC<OurPhilosophyProps> = ({ currentLocale, isRTL }) =
   const isArabic = currentLocale === 'ar';
 
   const sectionTitle = {
-    en: 'The Spirit of Takumi',
-    ar: 'روح التاكومي',
+    en: 'Why Choose SupaKoto',
+    ar: 'لماذا تختار سوباكوتو',
   };
   const sectionSubtitle = {
-    en: 'Our work is guided by the Japanese principle of master craftsmanship.',
-    ar: 'عملنا يسترشد بالمبدأ الياباني للحرفية المتقنة.',
+    en: 'Our commitment to excellence sets us apart in the protective film industry.',
+    ar: 'التزامنا بالتميز يميزنا في صناعة أفلام الحماية.',
   };
 
   return (
@@ -47,7 +62,7 @@ const OurPhilosophy: React.FC<OurPhilosophyProps> = ({ currentLocale, isRTL }) =
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-fadeInUp">
           <div className="relative">
-            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent ${isArabic ? 'font-arabic' : ''}`}>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight bg-gradient-to-r from-[#bf1e2e] via-orange-400 to-[#bf1e2e] bg-clip-text text-transparent ${isArabic ? 'font-arabic' : ''}`}>
               {sectionTitle[isArabic ? 'ar' : 'en']}
             </h2>
             <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
@@ -66,11 +81,11 @@ const OurPhilosophy: React.FC<OurPhilosophyProps> = ({ currentLocale, isRTL }) =
             <div className="h-px w-16 bg-gradient-to-l from-transparent via-red-500/50 to-transparent"></div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {philosophies.map((item, index) => (
             <div 
               key={index} 
-              className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-[1.02] hover:border-red-500/60 cursor-pointer p-8 text-center flex flex-col items-center animate-fadeInUp"
+              className="group relative rounded-2xl border border-slate-700/60 bg-slate-900/70 shadow-2xl backdrop-blur supports-[backdrop-filter]:backdrop-blur-xl hover:shadow-3xl transition-all duration-700 hover:scale-[1.02] hover:border-red-500/60 cursor-pointer p-8 text-center flex flex-col items-center animate-fadeInUp"
               style={{ animationDelay: `${index * 150}ms` }}
             >
               {/* Glowing border effect */}
@@ -78,7 +93,7 @@ const OurPhilosophy: React.FC<OurPhilosophyProps> = ({ currentLocale, isRTL }) =
               
               <div className="relative z-10">
                 <div className="mb-6 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/30 group-hover:border-red-500/60 transition-all duration-500">
-                  <item.icon className="w-8 h-8 text-red-400 group-hover:text-red-300 transition-colors duration-500" />
+                  <item.icon className="w-6 h-6 text-[#bf1e2e] group-hover:text-red-300 transition-colors duration-500" />
                 </div>
                 <h3 className={`text-2xl font-bold mb-3 text-white group-hover:text-red-100 transition-colors duration-500 ${isArabic ? 'font-arabic' : ''}`}>
                   {item.title[isArabic ? 'ar' : 'en']}

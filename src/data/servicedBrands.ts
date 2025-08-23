@@ -52,6 +52,48 @@ export const SERVICED_BRANDS: ServicedBrand[] = [
     alt: { en: 'Jetour — vehicle serviced by SupaKoto', ar: 'جيتور — تم خدمتها لدى سوباكوتو' }
   },
   {
+    slug: 'baic',
+    name: 'BAIC',
+    logoSrc: '/partners/BAICLogoVector.svg',
+    alt: { en: 'BAIC — vehicle serviced by SupaKoto', ar: 'بايك — تم خدمتها لدى سوباكوتو' }
+  },
+  {
+    slug: 'byd',
+    name: 'BYD Auto',
+    logoSrc: '/partners/byd-auto-1.svg',
+    alt: { en: 'BYD Auto — vehicle serviced by SupaKoto', ar: 'بي واي دي أوتو — تم خدمتها لدى سوباكوتو' }
+  },
+  {
+    slug: 'changan',
+    name: 'Changan',
+    logoSrc: '/partners/changan-icon-seeklogo.svg',
+    alt: { en: 'Changan — vehicle serviced by SupaKto', ar: 'شانجان — تم خدمتها لدى سوباكوتو' }
+  },
+  {
+    slug: 'chery',
+    name: 'Chery',
+    logoSrc: '/partners/chery-3.svg',
+    alt: { en: 'Chery — vehicle serviced by SupaKoto', ar: 'شيري — تم خدمتها لدى سوباكوتو' }
+  },
+  {
+    slug: 'geely',
+    name: 'Geely',
+    logoSrc: '/partners/geely-logo-2.svg',
+    alt: { en: 'Geely — vehicle serviced by SupaKoto', ar: 'جيلي — تم خدمتها لدى سوباكوتو' }
+  },
+  {
+    slug: 'mg',
+    name: 'MG',
+    logoSrc: '/partners/mg-1.svg',
+    alt: { en: 'MG — vehicle serviced by SupaKoto', ar: 'إم جي — تم خدمتها لدى سوباكوتو' }
+  },
+  {
+    slug: 'haval',
+    name: 'Haval',
+    logoSrc: '/partners/haval-logo.svg',
+    alt: { en: 'Haval — vehicle serviced by SupaKoto', ar: 'هافال — تم خدمتها لدى سوباكوتو' }
+  },
+  {
     name: 'Kia',
     slug: 'kia',
     logoSrc: '/partners/kia-4.svg',

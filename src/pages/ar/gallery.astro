@@ -6,45 +6,16 @@ import { t } from '../../i18n';
 const currentLang = 'ar';
 const rtl = true;
 
-// Example gallery images - replace with your real images
-const images: SimpleGalleryImage[] = [
-  { 
-    src: "/images/gallery/01.webp", 
-    alt: "تركيب فيلم حماية لبورش 911 GT3", 
-    caption: "بورش 911 GT3 — فيلم حماية فائق اللمعان",
-    srcSet: ["/images/gallery/01_800.webp 800w", "/images/gallery/01_1200.webp 1200w"]
-  },
-  { 
-    src: "/images/gallery/02.webp", 
-    alt: "فيلم حماية خفي لبي إم دبليو M5", 
-    caption: "بي إم دبليو M5 — لمسة نهائية مطفية خفية",
-    srcSet: ["/images/gallery/02_800.webp 800w", "/images/gallery/02_1200.webp 1200w"]
-  },
-  { 
-    src: "/images/gallery/03.webp", 
-    alt: "فيلم حماية كامل للجسم مرسيدس AMG G63", 
-    caption: "AMG G63 — حماية كاملة للجسم",
-    srcSet: ["/images/gallery/03_800.webp 800w", "/images/gallery/03_1200.webp 1200w"]
-  },
-  { 
-    src: "/images/gallery/04.webp", 
-    alt: "فيلم حماية لامع لأودي RS7", 
-    caption: "أودي RS7 — لمسة نهائية لامعة فاخرة",
-    srcSet: ["/images/gallery/04_800.webp 800w", "/images/gallery/04_1200.webp 1200w"]
-  },
-  { 
-    src: "/images/gallery/05.webp", 
-    alt: "فيلم حماية لامبورغيني هوراكان", 
-    caption: "لامبورغيني هوراكان — جاهز للمضمار",
-    srcSet: ["/images/gallery/05_800.webp 800w", "/images/gallery/05_1200.webp 1200w"]
-  },
-  { 
-    src: "/images/gallery/06.webp", 
-    alt: "فيلم حماية فيراري 488 Spider", 
-    caption: "فيراري 488 Spider — لمسة نهائية لصالة العرض",
-    srcSet: ["/images/gallery/06_800.webp 800w", "/images/gallery/06_1200.webp 1200w"]
-  }
-];
+// Generate gallery images from the 238 webp files in public/gallery
+const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
+  const imageNumber = String(i + 1).padStart(3, '0');
+  return {
+    src: `/gallery/supa-${imageNumber}.webp`,
+    alt: `تركيب PPF احترافي من سوباكوتو ${imageNumber}`,
+    caption: `تركيب PPF احترافي — مشروع ${imageNumber}`
+  };
+});
+
 ---
 
 <Layout 

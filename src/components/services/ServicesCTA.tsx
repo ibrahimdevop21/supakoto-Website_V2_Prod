@@ -21,79 +21,65 @@ const ServicesCTA: React.FC<ServicesCTAProps> = ({ currentLocale, isRTL }) => {
   };
 
   return (
-    <div className={`relative overflow-hidden ${isRTL ? 'rtl font-arabic' : 'ltr'}`}>
-      {/* Background with subtle motion */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-red-500/15 to-orange-500/20 opacity-80"></div>
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-red-500/30 to-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-orange-500/25 to-red-500/25 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-      </div>
-
-      <div className="relative z-10 py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="relative rounded-3xl p-10 md:p-16 text-center shadow-2xl bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 overflow-hidden">
-            {/* Glowing background effects */}
-            <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-red-500/15 to-orange-500/20 opacity-80"></div>
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-red-500/30 to-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-orange-500/25 to-red-500/25 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+    <div className={`py-12 md:py-16 ${isRTL ? 'rtl font-arabic' : 'ltr'}`}>
+      <div className="container mx-auto px-4">
+        <div className="relative rounded-2xl border border-slate-700/60 bg-slate-900/70 shadow-2xl backdrop-blur supports-[backdrop-filter]:backdrop-blur-xl p-10 md:p-16 text-center overflow-hidden">
+          {/* Clean subtle background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/2 rounded-2xl"></div>
+          
+          <div className="relative z-10">
+            {/* Main Headline */}
+            <div className="relative mb-8">
+              <h2 className={`text-3xl md:text-5xl font-bold mb-6 text-white tracking-tight bg-gradient-to-r from-[#bf1e2e] via-orange-400 to-[#bf1e2e] bg-clip-text text-transparent ${isRTL ? 'font-arabic' : ''}`}>
+                {t('services.cta.title')}
+              </h2>
+            </div>
             
-            <div className="relative z-10">
-              {/* Main Headline */}
-              <div className="relative mb-8">
-                <h2 className={`text-3xl md:text-5xl font-bold mb-6 text-white tracking-tight bg-gradient-to-r from-red-400 via-red-300 to-orange-300 bg-clip-text text-transparent ${isRTL ? 'font-arabic' : ''}`}>
-                  {t('services.cta.title')}
-                </h2>
-                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-              </div>
+            <p className={`text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-8 leading-relaxed ${isRTL ? 'font-arabic' : ''}`}>
+              {t('services.cta.subtitle')}
+            </p>
+            
+            {/* Decorative Elements */}
+            <div className="flex justify-center items-center space-x-4 mb-8">
+              <div className="h-px w-16 bg-gradient-to-r from-transparent via-slate-400/50 to-transparent"></div>
+              <div className="w-2 h-2 bg-[#bf1e2e] rounded-full"></div>
+              <div className="h-px w-16 bg-gradient-to-r from-transparent via-slate-400/50 to-transparent"></div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button
+                onClick={handleBookInstallation}
+                data-track="services-bottom-cta"
+                className={`group px-8 py-4 bg-[#bf1e2e] hover:bg-[#a01a26] text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 ${isRTL ? 'font-arabic' : ''}`}
+              >
+                <span>{t('services.cta.bookInstallation')}</span>
+                <div className="w-2 h-2 bg-white/40 rounded-full group-hover:bg-white/60 transition-colors"></div>
+              </button>
               
-              <p className={`text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-8 leading-relaxed ${isRTL ? 'font-arabic' : ''}`}>
-                {t('services.cta.subtitle')}
-              </p>
-              
-              {/* Decorative Elements */}
-              <div className="flex justify-center items-center space-x-4 mb-8">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent via-red-400/50 to-transparent"></div>
-                <div className="w-2 h-2 bg-gradient-to-r from-red-500 to-orange-500 rounded-full animate-pulse"></div>
-                <div className="h-px w-12 bg-gradient-to-r from-transparent via-red-400/50 to-transparent"></div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button
-                  onClick={handleBookInstallation}
-                  data-track="services-bottom-cta"
-                  className={`group px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 ${isRTL ? 'font-arabic' : ''}`}
-                >
-                  <span>{t('services.cta.bookInstallation')}</span>
-                  <div className="w-2 h-2 bg-white/30 rounded-full group-hover:bg-white/50 transition-colors"></div>
-                </button>
-                
-                <button
-                  onClick={handleRequestQuote}
-                  data-track="services-bottom-cta"
-                  className={`group px-8 py-4 bg-transparent border-2 border-red-500 hover:bg-red-500/10 text-red-400 hover:text-red-300 font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-3 ${isRTL ? 'font-arabic' : ''}`}
-                >
-                  <Phone size={20} className="group-hover:scale-110 transition-transform" />
-                  <span>{t('services.cta.requestQuote')}</span>
-                </button>
-              </div>
+              <button
+                onClick={handleRequestQuote}
+                data-track="services-bottom-cta"
+                className={`group px-8 py-4 bg-transparent border-2 border-slate-600 hover:border-slate-500 hover:bg-slate-800/50 text-slate-300 hover:text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 ${isRTL ? 'font-arabic' : ''}`}
+              >
+                <Phone size={20} className="group-hover:scale-110 transition-transform" />
+                <span>{t('services.cta.requestQuote')}</span>
+              </button>
+            </div>
 
-              {/* Additional Trust Elements */}
-              <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-6 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className={isRTL ? 'font-arabic' : ''}>{t('services.cta.freeConsultation')}</span>
-                </div>
-                <div className="hidden sm:block w-px h-4 bg-gray-600"></div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-                  <span className={isRTL ? 'font-arabic' : ''}>{t('services.cta.expertInstallation')}</span>
-                </div>
-                <div className="hidden sm:block w-px h-4 bg-gray-600"></div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
-                  <span className={isRTL ? 'font-arabic' : ''}>{t('services.cta.warrantyIncluded')}</span>
-                </div>
+            {/* Additional Trust Elements */}
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-slate-300">
+              <div className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+                <div className="w-3 h-3 bg-emerald-500 rounded-full flex-shrink-0"></div>
+                <span className={`font-medium ${isRTL ? 'font-arabic' : ''}`}>{t('services.cta.freeConsultation')}</span>
+              </div>
+              <div className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+                <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                <span className={`font-medium ${isRTL ? 'font-arabic' : ''}`}>{t('services.cta.expertInstallation')}</span>
+              </div>
+              <div className="flex items-center justify-center gap-3 p-4 rounded-xl bg-slate-800/30 border border-slate-700/50">
+                <div className="w-3 h-3 bg-violet-500 rounded-full flex-shrink-0"></div>
+                <span className={`font-medium ${isRTL ? 'font-arabic' : ''}`}>{t('services.cta.warrantyIncluded')}</span>
               </div>
             </div>
           </div>

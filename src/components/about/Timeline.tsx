@@ -8,23 +8,13 @@ interface TimelineProps {
 const timelineEvents = [
   {
     year: '2018',
-    title: { en: 'The Genesis of Supakoto', ar: 'ولادة سوباكوتو' },
-    description: { en: 'Founded with a mission to redefine automotive protection through Japanese principles of quality and precision.', ar: 'تأسست بهدف إعادة تعريف حماية السيارات من خلال مبادئ الجودة والدقة اليابانية.' },
+    title: { en: 'SupaKoto Established', ar: 'تأسيس سوباكوتو' },
+    description: { en: 'SupaKoto established in Egypt as a leading provider of protective films for automotive and architectural applications.', ar: 'تأسست سوباكوتو في مصر كمزود رائد لأفلام الحماية للتطبيقات السيارات والمعمارية.' },
   },
   {
-    year: '2020',
-    title: { en: 'Launch of Self-Healing Film', ar: 'إطلاق فيلم الشفاء الذاتي' },
-    description: { en: 'Introduced our revolutionary second-generation paint protection film with advanced self-healing capabilities.', ar: 'قدمنا الجيل الثاني الثوري من أفلام حماية الطلاء بقدرات شفاء ذاتي متقدمة.' },
-  },
-  {
-    year: '2022',
-    title: { en: 'Global Expansion', ar: 'التوسع العالمي' },
-    description: { en: 'Expanded our distribution network to over 20 countries, becoming a globally recognized brand.', ar: 'وسعنا شبكة التوزيع لدينا لتشمل أكثر من 20 دولة، لنصبح علامة تجارية معترف بها عالميًا.' },
-  },
-  {
-    year: '2024',
-    title: { en: 'Automotive Excellence Award', ar: 'جائزة التميز في السيارات' },
-    description: { en: 'Awarded "Best Paint Protection Film" for innovation, durability, and clarity by industry experts.', ar: 'حصلنا على جائزة "أفضل فيلم لحماية الطلاء" للابتكار والمتانة والوضوح من قبل خبراء الصناعة.' },
+    year: '2023',
+    title: { en: 'Dubai Branch Opened', ar: 'افتتاح فرع دبي' },
+    description: { en: 'Expanded operations with the opening of our Dubai branch, strengthening our presence in the Middle East region.', ar: 'توسعت العمليات مع افتتاح فرع دبي، مما عزز حضورنا في منطقة الشرق الأوسط.' },
   },
 ];
 
@@ -32,14 +22,14 @@ const Timeline: React.FC<TimelineProps> = ({ currentLocale, isRTL }) => {
   const isArabic = currentLocale === 'ar';
 
   const sectionTitle = {
-    en: 'A Journey of Innovation',
-    ar: 'رحلة من الابتكار',
+    en: 'Our Journey',
+    ar: 'رحلتنا',
   };
 
   return (
     <section className={`py-16 md:py-24 text-white ${isArabic ? 'rtl font-arabic' : 'ltr'}`}>
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 tracking-tight animate-fadeInUp">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 tracking-tight animate-fadeInUp bg-gradient-to-r from-[#bf1e2e] via-orange-400 to-[#bf1e2e] bg-clip-text text-transparent">
           {sectionTitle[isArabic ? 'ar' : 'en']}
         </h2>
         <div className="relative">

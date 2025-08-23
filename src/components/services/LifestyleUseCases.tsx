@@ -1,6 +1,7 @@
 import React from 'react';
 import { createTranslator } from '../../i18n/index';
 import { Clock, Shield, Zap, Gem } from '../icons/LightweightIcons';
+import StandardizedHeading from '../shared/StandardizedHeading';
 
 interface LifestyleUseCasesProps {
   currentLocale: string;
@@ -59,14 +60,13 @@ const LifestyleUseCases: React.FC<LifestyleUseCasesProps> = ({ currentLocale, is
 
   return (
     <div className={`${isRTL ? 'rtl font-arabic' : 'ltr'}`}>
-      <div className="text-center mb-12">
-        <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-white ${isRTL ? 'font-arabic' : ''}`}>
-          {t('services.lifestyle.title')}
-        </h2>
-        <p className={`text-lg text-gray-300 max-w-2xl mx-auto ${isRTL ? 'font-arabic' : ''}`}>
-          {t('services.lifestyle.subtitle')}
-        </p>
-      </div>
+      <StandardizedHeading
+        title={t('services.lifestyle.title')}
+        subtitle={t('services.lifestyle.subtitle')}
+        locale={currentLocale as 'en' | 'ar'}
+        size="medium"
+        className="mb-8"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {useCases.map((useCase, index) => {

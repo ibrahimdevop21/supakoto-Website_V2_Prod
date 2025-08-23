@@ -14,6 +14,27 @@ interface ServicedBrandStripProps {
 
 const DEFAULT_PARTNERS: ServicedBrand[] = [
   {
+    slug: 'mansour-group',
+    name: 'Mansour Group',
+    logoSrc: 'partners/mansour-group-logo.svg',
+    url: 'https://www.mansourgroup.com',
+    alt: { en: 'Mansour Group', ar: 'مجموعة منصور' },
+  },
+  {
+    slug: 'mercedes-benz',
+    name: 'Mercedes-Benz',
+    logoSrc: 'partners/mercedes-benz-9.svg',
+    url: 'https://www.mercedes-benz.com',
+    alt: { en: 'Mercedes-Benz', ar: 'مرسيدس-بنز' },
+  },
+  {
+    slug: 'avatar-technology',
+    name: 'Avatar Technology',
+    logoSrc: 'partners/Avatr_Technology_logo.svg',
+    url: 'https://www.avatr.com',
+    alt: { en: 'Avatar Technology', ar: 'أفاتار تكنولوجي' },
+  },
+  {
     slug: 'skoda',
     name: 'Škoda',
     logoSrc: 'partners/skoda.svg',
@@ -28,19 +49,20 @@ const DEFAULT_PARTNERS: ServicedBrand[] = [
     alt: { en: 'Citroën', ar: 'ستروين' },
   },
   {
-    slug: 'jetour',
-    name: 'Jetour',
-    logoSrc: 'partners/jetour.svg',
-    url: 'https://www.jetour.com',
-    alt: { en: 'Jetour', ar: 'جيتور' },
-  },
-  {
     slug: 'samir-rayan',
     name: 'Samir Rayan',
     logoSrc: 'partners/samer.webp',
     url: 'https://samirrayan.com',
     alt: { en: 'Samir Rayan', ar: 'سمير ريان' },
   },
+  {
+    slug: 'jetour',
+    name: 'Jetour',
+    logoSrc: 'partners/jetour.svg',
+    url: 'https://www.jetour.com',
+    alt: { en: 'Jetour', ar: 'جيتور' },
+  },
+
 ];
 
 export default function ServicedBrandStrip({
@@ -51,6 +73,7 @@ export default function ServicedBrandStrip({
   const isRTL = locale === 'ar';
   const title = isRTL ? 'السيارات التي خدمناها' : "Vehicles We've Protected";
   const partnersTitle = isRTL ? 'الشركاء الرسميون' : 'Official Partners';
+  const partnersSubtitle = isRTL ? 'نفخر بشراكتنا مع أفضل العلامات التجارية في صناعة السيارات' : 'Proud to partner with the finest brands in the automotive industry';
   
   const sectionRef = useRef<HTMLDivElement>(null);
   const partnersTrackRef = useRef<HTMLDivElement>(null);
@@ -120,24 +143,32 @@ export default function ServicedBrandStrip({
       {/* Official Partners Section */}
       {hasPartners && (
         <div className="mb-16">
-          {/* Partners Title - Same style as Testimonials main heading */}
-          <div className="text-center mb-8">
-            <div className="relative">
+          {/* Partners Title & Subtitle - Enhanced styling */}
+          <div className="text-center mb-12">
+            <div className="relative mb-6">
               <h2 
                 id="partners-title"
-                className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight ${isRTL ? 'font-arabic' : ''}`}
+                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight ${isRTL ? 'font-arabic' : ''}`}
               >
                 {partnersTitle}
               </h2>
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
             </div>
-            <div className="flex justify-center items-center space-x-4 mb-4">
-              <div className="h-px w-16 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
+            
+            {/* Enhanced subtitle */}
+            <p className={`text-lg sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-4xl mx-auto px-4 leading-relaxed font-medium ${isRTL ? 'font-arabic' : ''}`}>
+              {partnersSubtitle}
+            </p>
+            
+            {/* Enhanced decorative elements */}
+            <div className="flex justify-center items-center space-x-6 mb-6">
+              <div className="h-px w-20 bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
               <div className="relative">
-                <div className="h-2 w-20 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full"></div>
-                <div className="absolute inset-0 h-2 w-20 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full animate-pulse opacity-75"></div>
+                <div className="h-3 w-24 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full shadow-lg"></div>
+                <div className="absolute inset-0 h-3 w-24 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full animate-pulse opacity-75"></div>
+                <div className="absolute -inset-1 h-5 w-26 bg-gradient-to-r from-red-600/20 via-red-500/20 to-orange-500/20 rounded-full blur-sm"></div>
               </div>
-              <div className="h-px w-16 bg-gradient-to-l from-transparent via-red-500/50 to-transparent"></div>
+              <div className="h-px w-20 bg-gradient-to-l from-transparent via-red-500/60 to-transparent"></div>
             </div>
           </div>
 
@@ -162,14 +193,14 @@ export default function ServicedBrandStrip({
                   href={brand.url || '#'}
                   target={brand.url ? '_blank' : undefined}
                   rel={brand.url ? 'noopener noreferrer' : undefined}
-                  className="shrink-0 flex items-center justify-center rounded-xl bg-black/10 hover:bg-black/15 transition-colors focus:outline-none focus:ring-2 focus:ring-white/40 h-24 w-44 md:h-28 md:w-56 p-4 md:p-5"
+                  className="shrink-0 flex items-center justify-center rounded-xl bg-black/10 hover:bg-black/15 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-500/40 hover:shadow-lg hover:scale-105 h-28 w-52 md:h-32 md:w-64 p-5 md:p-6"
                   aria-label={brand.alt?.[locale] || `${brand.name}`}
                 >
                   <img
                     src={brand.logoSrc}
                     alt={brand.alt?.[locale] || `${brand.name}`}
-                    width={200}
-                    height={112}
+                    width={240}
+                    height={140}
                     loading="lazy"
                     className="max-h-full max-w-full object-contain opacity-90 hover:opacity-100 transition"
                   />

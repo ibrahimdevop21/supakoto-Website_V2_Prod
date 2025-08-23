@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, WhatsApp, Globe } from '../ui/Icon';
+import { Globe } from '../ui/Icon';
+import ColoredPhoneIcon from '../icons/ColoredPhoneIcon';
+import ColoredWhatsappIcon from '../icons/ColoredWhatsappIcon';
 import MobileNavigation from './MobileNavigation';
 import { useSwitchLocalePath } from '../../i18n/react';
 import type { NavItem } from '../../data/navigation';
@@ -125,7 +127,7 @@ const NavBar: React.FC<NavBarProps> = ({
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-brand border border-white/20 text-white hover:bg-supakoto-red hover:text-white hover:border-supakoto-red transition-all duration-300"
               aria-label="Call us"
             >
-              <Phone className="w-4 h-4" aria-hidden="true" />
+              <ColoredPhoneIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Call</span>
             </a>
 
@@ -137,7 +139,7 @@ const NavBar: React.FC<NavBarProps> = ({
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-brand border border-white/20 text-white hover:bg-supakoto-red hover:text-white hover:border-supakoto-red transition-all duration-300"
               aria-label="Contact us on WhatsApp"
             >
-              <WhatsApp className="w-4 h-4" aria-hidden="true" />
+              <ColoredWhatsappIcon className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">WhatsApp</span>
             </a>
 

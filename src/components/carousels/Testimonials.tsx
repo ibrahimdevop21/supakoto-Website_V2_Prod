@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslations } from '../../i18n/react';
+import StandardizedHeading from '../shared/StandardizedHeading';
 
 interface Testimonial {
   id: number;
   name: string;
   branch: string;
   content: string;
-  image?: string;
   rating: number;
 }
 
@@ -28,7 +28,6 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
   const [expandedTestimonials, setExpandedTestimonials] = useState<number[]>([]);
   const [screenWidth, setScreenWidth] = useState(0);
   const [isVisible, setIsVisible] = useState(false); // Start false to prevent flash
-  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [startAnimation, setStartAnimation] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
@@ -91,7 +90,6 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
       name: 'Michaelangelo D\'Sa',
       branch: 'Dubai Al Quoz',
       content: "I had done a month of research, which included reading about PPF and the options I had here in Dubai. I even visited the 3 companies shortlisted for the job. I decided to use Supakoto purely due to the fact that Japan quality goes without question, and moreover, I managed to get the Ramadan deal that was on offer. This also included complete window tinting. After meeting up with Mr Hisham, I was convinced that I would not be disappointed. On the day I received my 2025 Lexus nx350h from the showroom, I drove directly to Al quoz and handed my car to Mr Hisham. It took almost a week, but the final outcome was nice.",
-      image: '/reviews/michaelangelo-dsa.webp',
       rating: 5,
     },
     {
@@ -99,7 +97,6 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
       name: 'Mahmoud Fathy',
       branch: 'Al Sheikh Zayed',
       content: "انا سعيد بتجربتي مع سوباكوتو … ان شاءالله تتكرر في السيارات القادمة … مستوى عالي من الاحترافية والمهنية في التعامل و الدقة في المواعيد والاسعار مناسبة جدا وكذلك المصداقية في المنتج من خلال التاكيد على انه اصلي بالسريال من الشركة المصنعة و كذلك المتابعة وخدمة ما بعد البيع …. كل شئ كان ممتازت",
-      image: '',
       rating: 5
     },
     {
@@ -108,14 +105,12 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
       branch: 'Maadi, Inside Skoda Center',
       content: "I recently had a protection Film for 2 Cars in New Cairo Branch.They really have an excellent Professional Team and a very good customer service. A very good after sale follow up. I am very satisfied with their provided service. A big thank you to Mr Mohamed - The Branch Manager for handling all the issues.",
       rating: 5,
-      image: '',
     },
     {
       id: 4,
       name: 'Alber Wadea',
       branch: 'Al Sheikh Zayed',
-      content: "I recently had a PPF installed on my vehicle, and I couldn’t be more impressed with the quality of service and the final result. From start to finish, the team demonstrated top-tier professionalism, attention to detail, and deep product knowledge. The consultation was clear and informative—they explained the different film options, coverage areas, and long-term benefits, helping me choose the best package for my needs. The installation itself was meticulous. The film was applied seamlessly, with no bubbles, visible edges, or imperfections. You can barely tell it’s there, but the protection is immediately noticeable. What truly stood out was the pride the team took in their work. They treated my car with care as if it were their own. I was also impressed with the turnaround time and the follow-up instructions to ensure the film cures properly.",
-      image: '',
+      content: "I recently had a PPF installed on my vehicle, and I couldn't be more impressed with the quality of service and the final result. From start to finish, the team demonstrated top-tier professionalism, attention to detail, and deep product knowledge. The consultation was clear and informative—they explained the different film options, coverage areas, and long-term benefits, helping me choose the best package for my needs. The installation itself was meticulous. The film was applied seamlessly, with no bubbles, visible edges, or imperfections. You can barely tell it's there, but the protection is immediately noticeable. What truly stood out was the pride the team took in their work. They treated my car with care as if it were their own. I was also impressed with the turnaround time and the follow-up instructions to ensure the film cures properly.",
       rating: 5
     },
     {
@@ -123,7 +118,6 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
       name: 'Amel Fathy',
       branch: 'Maadi, Inside Skoda Center',
       content: "I had a protection film as well as internal protection 3 months ago. I was really impressed by the quality of the products and the professionality of the staff.The results were outstanding. And what is really special is their after sale follow up every now and then to check on the film and if I have any comments ❤️comments ❤️ To sum up, I am totally satisfied with the service and I highly recommend them to everyone.",
-      image: '',
       rating: 5
     },
     {
@@ -131,15 +125,14 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
       name: 'Mohamed Samy',
       branch: 'New Cairo, 5th Settlement',
       content: "من أحسن التجارب اللي مريت بيها بصراحة بعد مقارنة بين كذا شركة. اخترت شركة Supa Koto بناءً على ترشيحات كتير وفعلاً كانوا قد التوقعات. فريق العمل محترم جدًا وملتزم من أول ما تواصلت معاهم لحد ما استلمت العربية، كل حاجة كانت ماشية بسلاسة ومنظمة جدًا. خامات ممتازة حسيت إني واخد قيمة حقيقية مقابل اللي دفعتُه. الأستاذ محمد سويلم قمة في الذوق والرُقي وخلاني مرتاح جدًا في التعامل معاهم. استلمت العربية قبل الميعاد وده خلاني أحترمهم أكتر. تجربة محترمة وأنصح أي حد بيهم.",
-      image: '',
       rating: 5
     },
   ];
 
   // Control continuous scrolling animation
   useEffect(() => {
-    // Only start animation once images are loaded
-    if (!imagesLoaded || !startAnimation) return;
+    // Start animation immediately
+    if (!startAnimation) return;
     
     // Set a continuous scroll animation
     // Faster animation for testimonials (20 seconds)
@@ -184,44 +177,12 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
         scrollContainer.removeEventListener('mouseleave', handleMouseLeave);
       };
     }
-  }, [isArabic, imagesLoaded, startAnimation]);
+  }, [isArabic, startAnimation]);
   
-  // Preload images to avoid glitchy appearance
+  // Start animation after component mounts
   useEffect(() => {
-    // Create array of testimonial images that exist
-    const imageUrls = testimonials
-      .filter(testimonial => testimonial.image)
-      .map(testimonial => testimonial.image as string);
-      
-    // If no images, just start animation
-    if (imageUrls.length === 0) {
-      setImagesLoaded(true);
-      setTimeout(() => setStartAnimation(true), 100);
-      return;
-    }
-    
-    let loadedCount = 0;
-    
-    // Preload all images
-    imageUrls.forEach(url => {
-      const img = new Image();
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === imageUrls.length) {
-          setImagesLoaded(true);
-          setTimeout(() => setStartAnimation(true), 100);
-        }
-      };
-      img.onerror = () => {
-        loadedCount++;
-        if (loadedCount === imageUrls.length) {
-          setImagesLoaded(true);
-          setTimeout(() => setStartAnimation(true), 100);
-        }
-      };
-      img.src = url;
-    });
-  }, [testimonials]);
+    setTimeout(() => setStartAnimation(true), 100);
+  }, []);
   
   // Fade-in animation on scroll - only run on client side
   useEffect(() => {
@@ -259,7 +220,7 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
   const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial, index: number }) => (
     <div 
       key={`${testimonial.id}-${index}`} 
-      className={`testimonial-card flex-none min-w-[300px] w-[300px] sm:min-w-[350px] sm:w-[350px] md:min-w-[400px] md:w-[400px] mx-4 ${!imagesLoaded ? 'opacity-0' : 'opacity-100'} transition-opacity duration-700`}
+      className={`testimonial-card flex-none min-w-[300px] w-[300px] sm:min-w-[350px] sm:w-[350px] md:min-w-[400px] md:w-[400px] mx-4 opacity-100 transition-opacity duration-700`}
     >
       <div className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-[1.02] hover:border-red-500/60 cursor-pointer h-full">
         {/* Animated background gradient */}
@@ -300,18 +261,7 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
           
           {/* Client info */}
           <div className="mt-4 flex items-center">
-            {testimonial.image && (
-              <div className="mr-3 rtl:mr-0 rtl:ml-3 flex-shrink-0">
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-red-500/50">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            )}
+
             <div>
               <h4 className="font-bold text-white text-sm sm:text-base">
                 {testimonial.name}
@@ -358,28 +308,13 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
     >
       <div className="w-full">
         {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16 md:mb-20 lg:mb-24">
-          <div className="relative">
-            <h2 
-              id="testimonials-heading"
-              className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight ${isArabic ? 'font-arabic' : ''}`}
-            >
-              {t('testimonials.subtitle')}
-            </h2>
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-          </div>
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto px-4 leading-relaxed">
-            {t('testimonials.description')}
-          </p>
-          <div className="flex justify-center items-center space-x-4 mb-4">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
-            <div className="relative">
-              <div className="h-2 w-20 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full"></div>
-              <div className="absolute inset-0 h-2 w-20 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full animate-pulse opacity-75"></div>
-            </div>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent via-red-500/50 to-transparent"></div>
-          </div>
-        </div>
+        <StandardizedHeading
+          title={t('testimonials.subtitle')}
+          subtitle={t('testimonials.description')}
+          locale={currentLocale}
+          size="large"
+          className="mb-12 sm:mb-16 md:mb-20 lg:mb-24"
+        />
         
         {/* Continuous Scrolling Testimonials */}
         <div 

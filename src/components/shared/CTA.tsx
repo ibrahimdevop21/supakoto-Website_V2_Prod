@@ -41,8 +41,13 @@ const CTA: React.FC<CTAProps> = ({ currentLocale, isRTL, contactUrl }) => {
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
             </div>
             
-            <p className={`text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-8 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
+            <p className={`text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-4 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
               {subheadline[isArabic ? 'ar' : 'en']}
+            </p>
+            
+            {/* Warranty note */}
+            <p className={`text-sm text-gray-300 max-w-xl mx-auto mb-8 ${isArabic ? 'font-arabic' : ''}`}>
+              {isArabic ? 'جميع الأفلام تشمل تغطية الضمان.' : 'All films include warranty coverage.'}
             </p>
             
             {/* Decorative Elements */}

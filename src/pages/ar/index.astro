@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import ModernHeroCarousel from '../../components/hero/ModernHeroCarousel.astro';
 import ModernTrustedBy from '../../components/shared/ModernTrustedBy';
 import Testimonials from '../../components/carousels/Testimonials';
-import CallToAction from '../../components/shared/CallToAction';
+import ServicesCTA from '../../components/services/ServicesCTA';
 import PPFComparison from '../../components/shared/PPFComparison';
 import ServiceTiers from '../../components/services/ServiceTiers';
 import TechnicalHighlights from '../../components/services/TechnicalHighlights';
@@ -60,6 +60,6 @@ const rtl = currentLang === 'ar';
 		</section>
 
 		<!-- Call to Action Section -->
-		<CallToAction locale={currentLang as "en" | "ar"} client:visible />
+		<ServicesCTA client:visible currentLocale={currentLang} isRTL={rtl} />
 	</main>
 </Layout>

@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import OurStory from '../components/about/OurStory';
 import Timeline from '../components/about/Timeline';
 import OurPhilosophy from '../components/about/OurPhilosophy';
-import CTA from '../components/shared/CTA';
+import ServicesCTA from '../components/services/ServicesCTA';
 import { t } from '../i18n/index';
 
 const lang = Astro.currentLocale || 'en';
@@ -33,7 +33,7 @@ const rtl = false;
     
     <!-- CTA Section -->
     <div>
-      <CTA client:visible currentLocale={currentLang} isRTL={rtl} contactUrl="/services" />
+      <ServicesCTA client:visible currentLocale={currentLang} isRTL={rtl} />
     </div>
   </section>
 </Layout>

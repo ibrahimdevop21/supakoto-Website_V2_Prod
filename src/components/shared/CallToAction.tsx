@@ -1,4 +1,5 @@
 import React from 'react';
+import StandardizedHeading from './StandardizedHeading';
 
 interface CallToActionProps {
   locale?: 'en' | 'ar';
@@ -15,33 +16,19 @@ const CallToAction: React.FC<CallToActionProps> = ({
     <section className={`py-20 md:py-28 lg:py-32 ${className}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header - Centered */}
-        <div className="text-center mb-12 sm:mb-16 md:mb-20">
-          <div className="relative">
-            <h2 
-              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight ${isRTL ? 'font-arabic' : ''}`}
-            >
-              {locale === 'en' 
-                ? 'Ready to Protect Your Vehicle?'
-                : 'هل أنت مستعد لحماية مركبتك؟'
-              }
-            </h2>
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-          </div>
-          <p className={`text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 sm:mb-12 max-w-4xl mx-auto leading-relaxed ${isRTL ? 'font-arabic' : ''}`}>
-            {locale === 'en'
-              ? 'Experience the ultimate protection with our certified Takai PPF technology. Contact us for a free consultation and quote.'
-              : 'اختبر الحماية المثلى مع تقنية تاكاي المعتمدة لأفلام حماية الطلاء. اتصل بنا للحصول على استشارة وعرض سعر مجاني.'
-            }
-          </p>
-          <div className="flex justify-center items-center space-x-4 mb-8">
-            <div className="h-px w-20 bg-gradient-to-r from-transparent via-red-500/50 to-transparent"></div>
-            <div className="relative">
-              <div className="h-3 w-24 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full"></div>
-              <div className="absolute inset-0 h-3 w-24 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full animate-pulse opacity-75"></div>
-            </div>
-            <div className="h-px w-20 bg-gradient-to-l from-transparent via-red-500/50 to-transparent"></div>
-          </div>
-        </div>
+        <StandardizedHeading
+          title={locale === 'en' 
+            ? 'Ready to Protect Your Vehicle?'
+            : 'هل أنت مستعد لحماية مركبتك؟'
+          }
+          subtitle={locale === 'en'
+            ? 'Experience the ultimate protection with our certified Takai PPF technology. Contact us for a free consultation and quote.'
+            : 'اختبر الحماية المثلى مع تقنية تاكاي المعتمدة لأفلام حماية الطلاء. اتصل بنا للحصول على استشارة وعرض سعر مجاني.'
+          }
+          locale={locale}
+          size="large"
+          className="mb-12 sm:mb-16 md:mb-20"
+        />
 
         {/* CTA Buttons Container */}
         <div className="relative group max-w-2xl mx-auto">
