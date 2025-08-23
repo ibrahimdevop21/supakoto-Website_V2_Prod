@@ -5,8 +5,12 @@ import compress from 'astro-compress';
 import icon from 'astro-icon';
 import { visualizer } from 'rollup-plugin-visualizer';
 
+// Guard compression for CI builds
+const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
+
 // https://astro.build/config
 export default defineConfig({
+  output: 'static',
   integrations: [
     icon({
       include: {
@@ -17,7 +21,7 @@ export default defineConfig({
       applyBaseStyles: false
     }),
     react(),
-    compress({
+    ...(USE_COMPRESS ? [compress({
     CSS: {
       csso: {
         restructure: true,
@@ -109,7 +113,7 @@ export default defineConfig({
         ]
       }
     }
-  })
+  })] : [])
   ],
   // Built-in i18n configuration
   i18n: {
@@ -222,7 +226,6 @@ export default defineConfig({
           moduleSideEffects: false,
           propertyReadSideEffects: false,
           unknownGlobalSideEffects: false,
-          preset: 'recommended',
         },
         plugins: [
           // Bundle analyzer - only in production builds
@@ -242,6 +245,9 @@ export default defineConfig({
       ssr: {
         noExternal: ['react-icons', 'lucide-react'],
       },
+    },
+    build: { 
+      sourcemap: false 
     }
   }
 });

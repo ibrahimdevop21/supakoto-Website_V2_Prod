@@ -20,7 +20,7 @@ const rtl = currentLang === 'ar';
 	<main id="content" class="flex flex-col">
 		<!-- Hero Section -->
 		<section class="relative">
-			<ServicesHero client:load currentLocale={currentLang} isRTL={rtl} />
+			<ServicesHero client:idle currentLocale={currentLang} isRTL={rtl} />
 		</section>
 
 		<!-- Service Tiers Section -->

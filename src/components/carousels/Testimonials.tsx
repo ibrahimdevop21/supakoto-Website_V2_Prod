@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslations } from '../../i18n/react';
-import './testimonials.css'; // Import for custom animations
 
 interface Testimonial {
   id: number;

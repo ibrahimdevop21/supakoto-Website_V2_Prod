@@ -152,6 +152,94 @@ SupaKoto-website/
 - **Code Splitting** - Automatic bundle optimization
 - **Lazy Loading** - Performance-optimized component loading
 
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 20.x (specified in engines)
+- npm (single lockfile - no yarn/pnpm)
+
+### Installation
+```bash
+# Clone the repository
+git clone <repository-url>
+cd supakoto-website
+
+# Install dependencies
+npm ci --no-audit --no-fund
+
+# Start development server
+npm run dev
+```
+
+## 🏗️ Build & Deployment
+
+### Fast CI/Local Builds (Recommended)
+```bash
+# Fast local/CI build (used by Vercel) - skips heavy compression
+ASTRO_COMPRESS=false npm run build
+# OR use the dedicated script:
+npm run build:ci
+```
+
+### Production Builds
+```bash
+# Full production build with compression (manual releases only)
+ASTRO_COMPRESS=true npm run build
+# OR use the standard script:
+npm run build:production
+```
+
+### Development Commands
+```bash
+npm run dev          # Start development server
+npm run preview      # Preview production build
+npm run clean        # Clean node_modules, .astro, and dist
+```
+
+### Analysis & Performance
+```bash
+# Analyze bundles with visualizer
+ANALYZE=true npm run build && open dist/bundle-analysis.html
+
+# Performance testing
+npm run test:performance    # Lighthouse mobile + desktop
+npm run lighthouse:mobile   # Mobile-only Lighthouse audit
+npm run lighthouse:desktop  # Desktop-only Lighthouse audit
+```
+
+## 🚀 Vercel Deployment Settings
+
+**Install Command:** `npm ci --no-audit --no-fund`  
+**Build Command:** `npm run build:ci`  
+**Output Directory:** `dist`  
+**Node Version:** `20.x`
+
+### Environment Variables (Optional)
+- `ASTRO_COMPRESS=false` (automatically set by build:ci script)
+- `ASTRO_LOG_LEVEL=info` (for better CI logging)
+
+## ⚡ Performance Optimizations
+
+### Build Speed Optimizations
+- **Compression Guarded**: `astro-compress` disabled in CI via `ASTRO_COMPRESS=false`
+- **Sourcemaps Disabled**: No sourcemaps in production builds
+- **Static Output**: Pure static site generation (no SSR)
+- **Bundle Splitting**: Optimized Vite chunks for faster builds
+
+### Runtime Performance Features
+- **Lazy Loading**: Respond.io widget loads on `client:idle`
+- **Interactive Maps**: Leaflet maps load on user interaction
+- **React Islands**: Optimized hydration with `client:visible` and `client:idle`
+- **Image Optimization**: WebP/AVIF with proper dimensions
+- **Critical CSS**: Inlined above-the-fold styles
+
+### Performance Targets
+- **Lighthouse Mobile**: ≥ 90
+- **Lighthouse Desktop**: ≥ 95
+- **CLS**: < 0.1
+- **TBT**: < 300ms
+- **Initial JS per route**: ≤ 120KB (gzipped, excluding framework)
+
 ## 🧞 Commands
 
 All commands are run from the root of the project, from a terminal:

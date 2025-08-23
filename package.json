@@ -2,28 +2,24 @@
   "name": "supakoto",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "build:production": "NODE_ENV=production astro build --config astro.config.mjs",
+    "build:ci": "ASTRO_COMPRESS=false ASTRO_LOG_LEVEL=info astro build",
+    "build:production": "NODE_ENV=production astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "build:optimized": "NODE_ENV=production astro build --config astro.config.mjs --vite-config vite.config.optimized.ts",
+    "clean": "rimraf node_modules .astro dist",
     "analyze": "ANALYZE=true NODE_ENV=production astro build",
     "analyze:source-map": "npm run build:production && npx source-map-explorer 'dist/assets/js/*.js'",
-    "analyze:full": "npm run analyze && npm run analyze:source-map",
-    "analyze:complete": "npm run build:production && npm run analyze",
     "lighthouse": "npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html",
-    "build:analyze": "npm run build:optimized && npx bundlesize",
-    "purge:css": "purgecss --css dist/**/*.css --content dist/**/*.html --output dist/css/",
-    "optimize:images": "imagemin src/assets/**/*.{jpg,jpeg,png,webp} --out-dir=src/assets/optimized/",
-    "test:lighthouse": "lighthouse http://localhost:4321 --output=html --output-path=./reports/lighthouse.html --chrome-flags=\"--headless\"",
-    "test:performance": "npm run build:production && npm run preview & sleep 5 && npm run test:lighthouse && kill %1",
     "lighthouse:mobile": "lighthouse http://localhost:4321 --preset=mobile --output=html --output-path=./reports/lighthouse-mobile.html",
     "lighthouse:desktop": "lighthouse http://localhost:4321 --preset=desktop --output=html --output-path=./reports/lighthouse-desktop.html",
-    "performance:test": "npm run build:optimized && npm run preview & sleep 5 && npm run lighthouse:mobile && npm run lighthouse:desktop && kill %1",
-    "compress:images": "imagemin src/assets/**/*.{jpg,jpeg,png} --out-dir=src/assets/optimized/ --plugin=imagemin-webp"
+    "test:performance": "npm run build:production && npm run preview & sleep 5 && npm run lighthouse:mobile && npm run lighthouse:desktop && kill %1"
   },
   "dependencies": {
     "@astrojs/react": "^3.0.0",
@@ -63,8 +59,10 @@
     "imagemin-webp": "^4.1.0",
     "lighthouse": "^12.8.1",
     "purgecss": "^5.0.0",
+    "rimraf": "^6.0.1",
     "rollup-plugin-visualizer": "^6.0.3",
     "sharp": "^0.34.2",
-    "source-map-explorer": "^2.5.3"
+    "source-map-explorer": "^2.5.3",
+    "ts-prune": "^0.10.3"
   }
 }

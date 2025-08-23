@@ -71,7 +71,6 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
 }) => {
   const { title, columns, rows } = data;
   const isRTL = locale === 'ar';
-  const stickySide = isRTL ? 'right-0' : 'left-0';
 
   const enhanceContent = (content: string, type: string) => {
     if (typeof content !== 'string') return content;
@@ -120,10 +119,10 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
 
   return (
     <section 
-      className={`relative isolate overflow-hidden py-20 md:py-28 lg:py-32 ${className}`}
+      className={`w-full overflow-hidden py-20 md:py-28 lg:py-32 ${className}`}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      <div className="relative w-full">
+      <div className="w-full">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16 md:mb-20 lg:mb-24">
           <div className="relative">
@@ -150,118 +149,190 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
           </div>
         </div>
 
-        {/* Horizontally Scrollable Table */}
-        <div
-          className="
-            overflow-x-auto touch-pan-x overscroll-x-contain scroll-smooth
-            rounded-3xl shadow-2xl
-            bg-transparent
-            border border-gray-700/30 relative
-          "
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          {/* Edge fade indicators */}
-          <div className="pointer-events-none absolute top-0 left-0 h-full w-6 bg-gradient-to-r from-black/40 to-transparent z-10" />
-          <div className="pointer-events-none absolute top-0 right-0 h-full w-6 bg-gradient-to-l from-black/40 to-transparent z-10" />
-
-          <table className="w-full border-collapse bg-transparent min-w-[48rem]">
-            <caption className="sr-only">{title[locale]}</caption>
-
-            <thead className="sticky top-0 z-30 bg-transparent">
-              <tr className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 supports-[backdrop-filter]:backdrop-blur-sm">
-                {columns.map((column, index) => {
-                  const isFeature = index === 0;
-                  const thBase =
-                    "px-4 py-4 text-left font-semibold text-white border-b-2 border-gray-700 align-bottom";
-                  const stickyClasses = isFeature
-                    ? `sticky ${stickySide} z-40 bg-slate-900/80 supports-[backdrop-filter]:backdrop-blur-xl backdrop-saturate-150 ring-1 ring-white/10`
-                    : "";
-                  const width =
-                    isFeature
-                      ? "min-w-[12rem] sm:min-w-[14rem]"
-                      : "min-w-[14rem] sm:min-w-[16rem]";
-                  return (
+        {/* Desktop Table */}
+        <div className="hidden md:block group relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-[1.02] hover:border-red-500/60">
+          {/* Animated background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 via-transparent to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          
+          {/* Glowing border effect */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+          
+          {/* Table wrapper */}
+          <div className="relative bg-gradient-to-br from-white/5 to-white/2 rounded-2xl overflow-hidden">
+            <table className="w-full bg-transparent">
+              <thead className="bg-transparent">
+                <tr className="bg-transparent border-b border-gray-700/50">
+                  {columns.map((column, index) => (
                     <th
                       key={column.key}
-                      scope="col"
-                      className={`${thBase} ${stickyClasses} ${width} ${isRTL ? 'text-right' : 'text-left'}`}
+                      className={`
+                        bg-transparent px-6 py-6 font-bold text-white border-b border-gray-700/50
+                        ${index === 0 ? 'bg-gradient-to-br from-red-600/20 to-red-800/20 text-red-300' : 'text-gray-200'}
+                        ${isRTL ? 'text-right' : 'text-left'}
+                      `}
                     >
                       {column[locale]}
                     </th>
-                  );
-                })}
-              </tr>
-            </thead>
-
-            <tbody className="bg-transparent">
-              {rows.map((row, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  className={`
-                    transition-colors duration-200
-                    ${rowIndex % 2 === 0 ? 'bg-slate-900/20' : 'bg-slate-800/20'}
-                    hover:bg-slate-800/30
-                  `}
-                >
-                  {/* Sticky Feature cell */}
-                  <th
-                    scope="row"
-                    className={`
-                      px-4 py-4 font-semibold text-white border-b border-gray-700
-                      sticky ${stickySide} z-20
-                      bg-slate-900/80 supports-[backdrop-filter]:backdrop-blur-xl backdrop-saturate-150
-                      ring-1 ring-white/10
-                      min-w-[12rem] sm:min-w-[14rem]
-                      ${isRTL ? 'text-right' : 'text-left'}
-                    `}
-                  >
-                    {row.feature[locale]}
-                  </th>
-
-                  {/* SupaKoto column */}
-                  <td
-                    className={`
-                      px-4 py-4 border-b border-gray-700 relative
-                      bg-gradient-to-br from-supakoto-red/10 to-supakoto-deep-burgundy/10
-                      hover:from-supakoto-red/20 hover:to-supakoto-deep-burgundy/20
-                      min-w-[14rem] sm:min-w-[16rem]
-                      ${isRTL ? 'text-right' : 'text-left'}
-                    `}
-                  >
-                    <div className="relative z-10 text-white font-medium">
-                      {enhanceContent(row.supa[locale], 'supa')}
-                    </div>
-                    <div className="absolute inset-0 rounded opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-supakoto-red/10 to-transparent" />
-                  </td>
-
-                  {/* XPEL/3M */}
-                  <td
-                    className={`
-                      px-4 py-4 border-b border-gray-700 text-white font-medium
-                      min-w-[14rem] sm:min-w-[16rem]
-                      ${isRTL ? 'text-right' : 'text-left'}
-                    `}
-                  >
-                    {enhanceContent(row.xpel3m[locale], 'xpel3m')}
-                  </td>
-
-                  {/* Chinese */}
-                  <td
-                    className={`
-                      px-4 py-4 border-b border-gray-700 text-gray-300 font-medium
-                      min-w-[14rem] sm:min-w-[16rem]
-                      ${isRTL ? 'text-right' : 'text-left'}
-                    `}
-                  >
-                    {row.china[locale]}
-                  </td>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-transparent">
+                {rows.map((row, index) => (
+                  <tr key={index} className="bg-transparent border-b border-gray-700/30 hover:bg-slate-800/20 transition-all duration-300 group">
+                    <th className={`
+                      bg-transparent px-6 py-6 font-bold text-white border-b border-gray-700/50 group-hover:text-gray-100 transition-colors duration-300
+                      ${isRTL ? 'text-right' : 'text-left'}
+                    `}>
+                      {row.feature[locale]}
+                    </th>
+                    <td className={`
+                      bg-transparent px-6 py-6 border-b border-gray-700/50 relative
+                      bg-gradient-to-br from-red-600/10 to-red-800/10
+                      hover:from-red-600/20 hover:to-red-800/20 group-hover:shadow-lg
+                      transition-all duration-300
+                      ${isRTL ? 'text-right' : 'text-left'}
+                    `}>
+                      <div className="relative z-10 text-white font-medium">
+                        {typeof enhanceContent(row.supa[locale], 'supa') === 'string' 
+                          ? enhanceContent(row.supa[locale], 'supa')
+                          : enhanceContent(row.supa[locale], 'supa')
+                        }
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+                    </td>
+                    <td className={`bg-transparent px-6 py-6 text-gray-400 font-medium transition-colors duration-300 group-hover:text-gray-300 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {row.xpel3m[locale]}
+                    </td>
+                    <td className={`bg-transparent px-6 py-6 text-gray-400 font-medium transition-colors duration-300 group-hover:text-gray-300 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {typeof enhanceContent(row.xpel3m[locale], 'xpel3m') === 'string' 
+                        ? enhanceContent(row.xpel3m[locale], 'xpel3m')
+                        : enhanceContent(row.xpel3m[locale], 'xpel3m')
+                      }
+                    </td>
+                    <td className={`bg-transparent px-6 py-6 text-gray-400 font-medium transition-colors duration-300 group-hover:text-gray-300 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {row.china[locale]}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
+        {/* Mobile Cards */}
+        <div className="md:hidden space-y-6">
+          {rows.map((row, index) => (
+            <div key={index} className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-[1.02] hover:border-red-500/60">
+              {/* Animated background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 via-transparent to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              
+              {/* Glowing border effect */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+              
+              {/* Card content */}
+              <div className="relative bg-gradient-to-br from-white/5 to-white/2 rounded-2xl p-6">
+                <h3 className={`text-lg font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {row.feature[locale]}
+                </h3>
+                
+                {/* SupaKoto PPF */}
+                <div className="mb-4 p-4 bg-gradient-to-br from-red-600/10 to-red-800/10 rounded-lg border border-red-500/20">
+                  <div className={`font-semibold text-red-300 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {columns[0][locale]}
+                  </div>
+                  <div className={`text-gray-300 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {typeof enhanceContent(row.supa[locale], 'supa') === 'string' 
+                      ? enhanceContent(row.supa[locale], 'supa')
+                      : enhanceContent(row.supa[locale], 'supa')
+                    }
+                  </div>
+                </div>
+                
+                {/* XPEL Ultimate */}
+                <div className="mb-4 p-4 bg-slate-800/30 rounded-lg border border-slate-600/30">
+                  <div className={`font-semibold text-blue-300 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {columns[1][locale]}
+                  </div>
+                  <div className={`text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {row.xpel3m[locale]}
+                  </div>
+                </div>
+                
+                {/* 3M Scotchgard */}
+                <div className="mb-4 p-4 bg-slate-800/30 rounded-lg border border-slate-600/30">
+                  <div className={`font-semibold text-green-300 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {columns[2][locale]}
+                  </div>
+                  <div className={`text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {typeof enhanceContent(row.xpel3m[locale], 'xpel3m') === 'string' 
+                      ? enhanceContent(row.xpel3m[locale], 'xpel3m')
+                      : enhanceContent(row.xpel3m[locale], 'xpel3m')
+                    }
+                  </div>
+                </div>
+                
+                {/* Chinese PPF */}
+                <div className="p-4 bg-slate-900/30 rounded-lg border border-slate-700/30">
+                  <div className={`font-semibold text-gray-300 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {columns[3][locale]}
+                  </div>
+                  <div className={`text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {row.china[locale]}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
+        {/* Bottom CTA Section */}
+        <div className="mt-20 text-center">
+          <div className="group relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:scale-[1.02] hover:border-red-500/60 p-8">
+            {/* Animated background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 via-transparent to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            
+            {/* Glowing border effect */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500/20 via-orange-500/20 to-red-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
+            
+            {/* Inner content container */}
+            <div className="relative bg-gradient-to-br from-white/5 to-white/2 rounded-2xl p-8">
+              <h3 className={`text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                {locale === 'en' 
+                  ? 'Ready to Protect Your Vehicle with Premium Japanese PPF?'
+                  : 'هل أنت مستعد لحماية مركبتك بأفلام الحماية اليابانية المتطورة؟'
+                }
+              </h3>
+              <p className={`text-gray-300 mb-6 max-w-2xl mx-auto ${isRTL ? 'text-right' : 'text-left'}`}>
+                {locale === 'en'
+                  ? 'Experience the ultimate protection with our certified Takai PPF technology. Contact us for a free consultation and quote.'
+                  : 'اختبر الحماية المثلى مع تقنية تاكاي المعتمدة لأفلام حماية الطلاء. اتصل بنا للحصول على استشارة وعرض سعر مجاني.'
+                }
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a 
+                  href="tel:+971501234567" 
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {locale === 'en' ? 'Call Now' : 'اتصل الآن'}
+                </a>
+                <a 
+                  href="https://wa.me/971501234567" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.097"/>
+                  </svg>
+                  {locale === 'en' ? 'WhatsApp' : 'واتساب'}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
