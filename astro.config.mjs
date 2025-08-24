@@ -13,6 +13,7 @@ const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 export default defineConfig({
   site: 'https://supakoto.com', // TODO: update to final domain
   output: 'static',
+  trailingSlash: 'ignore',
   integrations: [
     sitemap({ 
       i18n: { 
@@ -33,98 +34,30 @@ export default defineConfig({
     }),
     react(),
     ...(USE_COMPRESS ? [compress({
-    CSS: {
-      csso: {
-        restructure: true,
-        forceMediaMerge: true,
-        comments: false
-      }
-    },
-    HTML: {
-      'html-minifier-terser': {
-        removeAttributeQuotes: true,
-        collapseWhitespace: true,
-        removeComments: true,
-        removeRedundantAttributes: true,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        minifyCSS: true,
-        minifyJS: true,
-        useShortDoctype: true
-      }
-    },
-    Image: {
-      webp: {
-        quality: 80,
-        effort: 6
-      },
-      avif: {
-        quality: 75,
-        effort: 9
-      }
-    },
-    JavaScript: {
-      terser: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-          passes: 3,
-          unsafe: true,
-          unsafe_comps: true,
-          unsafe_math: true,
-          unsafe_proto: true,
-          unsafe_regexp: true,
-          hoist_funs: true,
-          hoist_props: true,
-          hoist_vars: true,
-          join_vars: true,
-          loops: true,
-          negate_iife: true,
-          properties: true,
-          reduce_funcs: true,
-          reduce_vars: true,
-          sequences: true,
-          side_effects: true,
-          switches: true,
-          top_retain: false,
-          typeofs: true,
-          unused: true,
-          conditionals: true,
-          dead_code: true,
-          evaluate: true,
-          if_return: true,
-          inline: true,
-          collapse_vars: true,
-          comparisons: true,
-          booleans: true,
-          arrows: true
-        },
-        mangle: {
-          safari10: true,
-          toplevel: true,
-          properties: {
-            regex: /^_/
-          }
-        },
-        format: {
-          comments: false,
-          beautify: false,
-          semicolons: false
+      CSS: {
+        csso: {
+          restructure: true,
+          forceMediaMerge: true,
+          comments: false
         }
-      }
-    },
-    SVG: {
-      svgo: {
-        plugins: [
-          'preset-default',
-          'removeDimensions',
-          'removeViewBox',
-          'cleanupNumericValues'
-        ]
-      }
-    }
-  })] : [])
+      },
+      HTML: {
+        'html-minifier-terser': {
+          removeAttributeQuotes: true,
+          collapseWhitespace: true,
+          removeComments: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          minifyCSS: true,
+          minifyJS: false,
+          useShortDoctype: true
+        }
+      },
+      Image: false,
+      JavaScript: false,
+      SVG: false
+    })] : [])
   ],
   // Built-in i18n configuration
   i18n: {
@@ -142,7 +75,7 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',  // Inline small CSS files
     minify: true,
-    format: 'file',
+    format: 'directory',
   },
   vite: {
     build: {
@@ -256,9 +189,7 @@ export default defineConfig({
       ssr: {
         noExternal: ['react-icons', 'lucide-react'],
       },
+      sourcemap: false,
     },
-    build: { 
-      sourcemap: false 
-    }
   }
 });
