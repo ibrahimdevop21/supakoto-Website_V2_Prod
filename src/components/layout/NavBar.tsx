@@ -22,8 +22,14 @@ const NavBar: React.FC<NavBarProps> = ({
 
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const switchLocalePath = useSwitchLocalePath();
+
+  // Ensure we're on client side before enabling interactions
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   // Get geo-based contact numbers
   const { numbers, region } = useGeoRegion({ locale });
@@ -36,6 +42,8 @@ const NavBar: React.FC<NavBarProps> = ({
 
   // Handle scroll shadow effect
   useEffect(() => {
+    if (!isClient) return;
+    
     const el = navRef.current;
     if (!el) return;
     
@@ -50,7 +58,7 @@ const NavBar: React.FC<NavBarProps> = ({
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [isClient]);
 
 
 
@@ -75,6 +83,7 @@ const NavBar: React.FC<NavBarProps> = ({
   };
 
   const toggleDrawer = () => {
+    if (!isClient) return; // Prevent state changes before hydration
     setIsDrawerOpen(!isDrawerOpen);
   };
 

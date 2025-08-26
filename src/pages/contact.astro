@@ -151,7 +151,7 @@ const selectedEnglishBranch = englishBranches.find(b => b.id === selectedBranchI
           <h3 class="text-lg font-semibold text-white mb-4">Select Branch</h3>
           <div class="relative z-10 max-w-full overflow-x-auto">
             <BranchPicker 
-              client:idle 
+              client:load 
               branches={englishBranches} 
               selectedId={selectedBranch.id} 
             />
@@ -163,7 +163,7 @@ const selectedEnglishBranch = englishBranches.find(b => b.id === selectedBranchI
           <h3 class="text-lg font-semibold text-white mb-4">Branch Location</h3>
           <div class="w-full h-[300px] sm:h-[350px] md:h-[400px]">
             <MapToggle 
-              client:visible 
+              client:load 
               initial={selectedBranch} 
               staticMapUrl=""
               zoom={14} 

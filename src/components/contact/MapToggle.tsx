@@ -10,6 +10,8 @@ interface MapToggleProps {
 export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
   const [currentBranch, setCurrentBranch] = useState(initial);
   const [isClient, setIsClient] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -78,12 +80,18 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
 
   // Load interactive map on component mount
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !isClient) return;
     
     const loadInteractiveMap = async () => {
       try {
-        // Dynamic import of Leaflet
+        setMapError(null);
+        // Dynamic import of Leaflet with better error handling
         const L = await import('leaflet');
+        
+        // Ensure Leaflet is properly loaded
+        if (!L.map || !L.tileLayer) {
+          throw new Error('Leaflet failed to load properly');
+        }
         
         // Leaflet CSS is now loaded in Layout.astro head section
   
@@ -144,15 +152,20 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
   
         // Store references
         leafletMapRef.current = map;
-        markerRef.current = marker;
+        setIsMapLoaded(true);
       } catch (error) {
         console.error('Failed to load interactive map:', error);
+        setMapError('Failed to load interactive map. Please refresh the page.');
       }
     };
     
-    loadInteractiveMap();
-    
-    // Cleanup function
+    // Add a small delay to ensure DOM is ready
+    const timer = setTimeout(loadInteractiveMap, 100);
+    return () => clearTimeout(timer);
+  }, [currentBranch, zoom, isClient]);
+
+  // Cleanup function
+  useEffect(() => {
     return () => {
       if (leafletMapRef.current) {
         leafletMapRef.current.remove();
@@ -161,11 +174,41 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
   }, [currentBranch.lat, currentBranch.lng, zoom]);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="w-full h-full relative overflow-hidden rounded-xl bg-neutral-900">
+      {!isClient && (
+        <div className="w-full h-full flex items-center justify-center text-neutral-400">
+          <div className="text-center">
+            <div className="animate-spin w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-2"></div>
+            <p>Loading map...</p>
+          </div>
+        </div>
+      )}
+      {isClient && mapError && (
+        <div className="w-full h-full flex items-center justify-center text-neutral-400">
+          <div className="text-center p-4">
+            <p className="text-red-400 mb-2">⚠️ {mapError}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-supakoto-red text-white rounded-lg hover:bg-red-600 transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      )}
       <div 
-        ref={mapRef}
-        className="w-full h-full rounded-2xl border border-white/5 bg-neutral-900 shadow-[0_10px_40px_-10px_rgba(0,0,0,.6)] overflow-hidden"
-      ></div>
+        ref={mapRef} 
+        className={`w-full h-full ${!isClient || mapError ? 'hidden' : ''}`}
+        style={{ minHeight: '300px' }}
+      />
+      {isClient && !isMapLoaded && !mapError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/80">
+          <div className="text-center text-neutral-400">
+            <div className="animate-spin w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-2"></div>
+            <p>Initializing map...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

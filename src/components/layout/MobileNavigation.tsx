@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Menu, Close } from '../ui/Icon';
 import type { NavItem } from '../../data/navigation';
 
@@ -17,11 +17,19 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   locale,
   currentPath,
 }) => {
+  const [isClient, setIsClient] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const burgerRef = useRef<HTMLButtonElement>(null);
 
+  // Ensure we're on client side before enabling interactions
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Handle drawer close on escape
   useEffect(() => {
+    if (!isClient) return;
+    
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         onToggle();
@@ -33,7 +41,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
       document.addEventListener('keydown', handleEscape);
       return () => document.removeEventListener('keydown', handleEscape);
     }
-  }, [isOpen, onToggle]);
+  }, [isOpen, onToggle, isClient]);
 
   // Focus trap for drawer
   useEffect(() => {

@@ -3,6 +3,85 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+// Intersection Observer hook for lazy loading
+const useIntersectionObserver = (options?: IntersectionObserverInit) => {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const target = targetRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsIntersecting(entry.isIntersecting);
+    }, options);
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [options]);
+
+  return { targetRef, isIntersecting };
+};
+
+// Optimized image component with lazy loading and error handling
+const OptimizedImage = ({ 
+  src, 
+  alt, 
+  className, 
+  loading = "lazy",
+  onLoad,
+  onError,
+  ...props 
+}: React.ImgHTMLAttributes<HTMLImageElement> & {
+  onLoad?: () => void;
+  onError?: () => void;
+}) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleLoad = () => {
+    setImageLoaded(true);
+    onLoad?.();
+  };
+
+  const handleError = () => {
+    setImageError(true);
+    onError?.();
+  };
+
+  return (
+    <div className={cn("relative overflow-hidden", className)}>
+      {!imageLoaded && !imageError && (
+        <div className="absolute inset-0 bg-neutral-800 animate-pulse flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-neutral-600 border-t-white rounded-full animate-spin"></div>
+        </div>
+      )}
+      {imageError && (
+        <div className="absolute inset-0 bg-neutral-800 flex items-center justify-center">
+          <div className="text-neutral-500 text-xs text-center p-2">
+            <div className="mb-1">⚠️</div>
+            <div>Failed to load</div>
+          </div>
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        loading={loading}
+        decoding="async"
+        onLoad={handleLoad}
+        onError={handleError}
+        className={cn(
+          "transition-opacity duration-300",
+          imageLoaded ? "opacity-100" : "opacity-0",
+          props.className
+        )}
+        {...props}
+      />
+    </div>
+  );
+};
+
 // Inline SVG icons to avoid new dependencies
 const ChevronLeft = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,21 +123,37 @@ export default function SimpleGallery({
   showCaptions = true,
   className,
   thumbSizeClass = "h-16 w-24 md:h-20 md:w-28",
-  itemsPerPage = 20,
+  itemsPerPage = 24, // Optimized for better grid layout
 }: SimpleGalleryProps) {
   const isRTL = locale === "ar";
   const [index, setIndex] = useState(() => clamp(initialIndex, 0, Math.max(0, images.length - 1)));
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [loadedImages, setLoadedImages] = useState(new Set<number>());
+  const [preloadedPages, setPreloadedPages] = useState(new Set([0])); // Preload first page
   const mainRef = useRef<HTMLDivElement | null>(null);
   const stripRef = useRef<HTMLDivElement | null>(null);
   const current = images[index];
   
-  // Calculate pagination
+  // Intersection observer for thumbnail container
+  const { targetRef: thumbnailRef, isIntersecting } = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: '100px'
+  });
+  
+  // Calculate pagination with performance optimizations
   const totalPages = Math.ceil(images.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, images.length);
   const visibleThumbs = images.slice(startIndex, endIndex);
+  
+  // Preload adjacent pages for smoother navigation
+  const preloadPages = useMemo(() => {
+    const pages = new Set([currentPage]);
+    if (currentPage > 0) pages.add(currentPage - 1);
+    if (currentPage < totalPages - 1) pages.add(currentPage + 1);
+    return pages;
+  }, [currentPage, totalPages]);
 
   const t = useMemo(
     () => ({
@@ -81,6 +176,53 @@ export default function SimpleGallery({
       setCurrentPage(newPage);
     }
   }, [index, itemsPerPage, currentPage]);
+  
+  // Preload images for current and adjacent pages
+  useEffect(() => {
+    if (!isIntersecting) return;
+    
+    preloadPages.forEach(pageNum => {
+      if (preloadedPages.has(pageNum)) return;
+      
+      const pageStart = pageNum * itemsPerPage;
+      const pageEnd = Math.min(pageStart + itemsPerPage, images.length);
+      
+      // Preload images for this page
+      for (let i = pageStart; i < pageEnd; i++) {
+        const img = new Image();
+        img.src = images[i].src;
+        img.onload = () => {
+          setLoadedImages(prev => new Set([...prev, i]));
+        };
+      }
+      
+      setPreloadedPages(prev => new Set([...prev, pageNum]));
+    });
+  }, [preloadPages, preloadedPages, itemsPerPage, images, isIntersecting]);
+  
+  // Preload main image and adjacent images
+  useEffect(() => {
+    const preloadMainImages = () => {
+      // Preload current image
+      if (!loadedImages.has(index)) {
+        const img = new Image();
+        img.src = current.src;
+        img.onload = () => setLoadedImages(prev => new Set([...prev, index]));
+      }
+      
+      // Preload next and previous images for smoother navigation
+      [index - 1, index + 1].forEach(i => {
+        if (i >= 0 && i < images.length && !loadedImages.has(i)) {
+          const img = new Image();
+          img.src = images[i].src;
+          img.onload = () => setLoadedImages(prev => new Set([...prev, i]));
+        }
+      });
+    };
+    
+    const timer = setTimeout(preloadMainImages, 100);
+    return () => clearTimeout(timer);
+  }, [index, current.src, images, loadedImages]);
   
   useEffect(() => {
     // keep active thumb visible
@@ -134,19 +276,14 @@ export default function SimpleGallery({
       <div className="rounded-2xl bg-muted/20 border border-white/10 shadow-soft p-2">
         <div
           ref={mainRef}
-          className={cn("relative overflow-hidden rounded-xl", heightClass)}
-          tabIndex={0}
+          className={cn("relative overflow-hidden rounded-2xl bg-neutral-900 border border-white/10", heightClass)}
         >
-          {/* image */}
-          <img
+          <OptimizedImage
             src={current.src}
             alt={current.alt || ""}
-            loading="lazy"
-            decoding="async"
-            srcSet={current.srcSet?.join(", ")}
             className="h-full w-full object-cover"
+            loading="eager"
           />
-
           {/* overlay controls */}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-between p-2">
             <div className="pointer-events-auto">
@@ -190,7 +327,10 @@ export default function SimpleGallery({
       </div>
 
       {/* Thumbnails */}
-      <div className="mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10">
+      <div 
+        ref={thumbnailRef}
+        className="mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10"
+      >
         <div
           ref={stripRef}
           className="flex gap-3 overflow-x-auto px-3 py-3 scrollbar-thin"
@@ -198,6 +338,8 @@ export default function SimpleGallery({
           {visibleThumbs.map((img, i) => {
             const actualIndex = startIndex + i;
             const active = actualIndex === index;
+            const isLoaded = loadedImages.has(actualIndex);
+            
             return (
               <button
                 key={actualIndex}
@@ -205,22 +347,30 @@ export default function SimpleGallery({
                 type="button"
                 onClick={() => setIndex(actualIndex)}
                 className={cn(
-                  "relative shrink-0 overflow-hidden rounded-lg border",
+                  "relative shrink-0 overflow-hidden rounded-lg border transition-all duration-200",
                   thumbSizeClass,
                   active
-                    ? "border-white/70 ring-2 ring-white/40"
-                    : "border-white/10 hover:border-white/30"
+                    ? "border-white/70 ring-2 ring-white/40 scale-105"
+                    : "border-white/10 hover:border-white/30 hover:scale-102"
                 )}
                 aria-current={active ? "true" : undefined}
                 aria-label={img.alt || img.caption || `Image ${actualIndex + 1}`}
               >
-                <img
+                <OptimizedImage
                   src={img.src}
                   alt=""
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover opacity-90 hover:opacity-100 transition"
+                  loading={isIntersecting ? "lazy" : "lazy"}
+                  className={cn(
+                    "h-full w-full object-cover transition-all duration-200",
+                    isLoaded ? "opacity-90 hover:opacity-100" : "opacity-70"
+                  )}
                 />
+                {/* Loading indicator for thumbnails */}
+                {!isLoaded && (
+                  <div className="absolute inset-0 bg-neutral-800/50 flex items-center justify-center">
+                    <div className="w-3 h-3 border border-neutral-500 border-t-white rounded-full animate-spin"></div>
+                  </div>
+                )}
               </button>
             );
           })}
@@ -228,33 +378,48 @@ export default function SimpleGallery({
         
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-4 mt-4 p-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4 p-4">
             <div className="text-xs text-muted-foreground">
               {isRTL 
                 ? `${t.image} ${startIndex + 1}-${endIndex} ${t.of} ${images.length}`
                 : `${t.image} ${startIndex + 1}-${endIndex} ${t.of} ${images.length}`
               }
             </div>
-            {currentPage < totalPages - 1 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={loadMore}
-                className="text-xs"
-              >
-                {t.showMore}
-              </Button>
-            )}
-            {currentPage > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={showLess}
-                className="text-xs"
-              >
-                {t.showLess}
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {/* Previous page button */}
+              {currentPage > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={showLess}
+                  className="text-xs"
+                >
+                  ← {t.showLess}
+                </Button>
+              )}
+              
+              {/* Page indicator */}
+              <div className="text-xs text-muted-foreground px-2">
+                Page {currentPage + 1} of {totalPages}
+              </div>
+              
+              {/* Next page button */}
+              {currentPage < totalPages - 1 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadMore}
+                  className="text-xs"
+                >
+                  {t.showMore} →
+                </Button>
+              )}
+            </div>
+            
+            {/* Performance indicator */}
+            <div className="text-xs text-muted-foreground opacity-70">
+              {loadedImages.size}/{images.length} loaded
+            </div>
           </div>
         )}
       </div>
@@ -263,18 +428,38 @@ export default function SimpleGallery({
       {isFullscreen && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
           <div className="relative w-full h-full flex items-center justify-center p-4">
-            <img
+            <OptimizedImage
               src={current.src}
               alt={current.alt || ""}
               className="max-w-full max-h-full object-contain"
+              loading="eager"
             />
             <button
               onClick={toggleFullscreen}
-              className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+              className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10"
               aria-label={t.close}
             >
               ×
             </button>
+            {/* Fullscreen navigation */}
+            <div className="absolute inset-0 flex items-center justify-between p-8 pointer-events-none">
+              <button
+                onClick={isRTL ? next : prev}
+                className="pointer-events-auto p-3 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                aria-label={t.prev}
+                disabled={index === 0}
+              >
+                <ChevronLeft className={cn("h-6 w-6", isRTL && "rotate-180")} />
+              </button>
+              <button
+                onClick={isRTL ? prev : next}
+                className="pointer-events-auto p-3 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                aria-label={t.next}
+                disabled={index === images.length - 1}
+              >
+                <ChevronRight className={cn("h-6 w-6", isRTL && "rotate-180")} />
+              </button>
+            </div>
           </div>
         </div>
       )}

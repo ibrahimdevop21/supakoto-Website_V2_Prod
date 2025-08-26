@@ -1,2 +1,2 @@
 // Barrel export for layout components - single canonical import point
-export { default as Navbar } from './Navbar.astro';
+// Note: NavBar.tsx is now imported directly in Layout.astro to avoid hydration issues
