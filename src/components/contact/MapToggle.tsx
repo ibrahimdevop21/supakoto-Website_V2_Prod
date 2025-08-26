@@ -9,9 +9,15 @@ interface MapToggleProps {
 
 export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
   const [currentBranch, setCurrentBranch] = useState(initial);
+  const [isClient, setIsClient] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+
+  // Ensure we're on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Listen to branch changes
   useEffect(() => {
@@ -79,11 +85,7 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
         // Dynamic import of Leaflet
         const L = await import('leaflet');
         
-        // Import Leaflet CSS
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
+        // Leaflet CSS is now loaded in Layout.astro head section
   
         // Initialize map with subtle inertia & smooth wheel zoom
         const map = L.map(mapRef.current, {
