@@ -289,12 +289,17 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
               <div 
                 ref={scrollerRef}
                 className={clsx(
-                  'overflow-x-auto scrollbar-gutter-stable touch-pan-x',
+                  'overflow-x-auto scrollbar-gutter-stable',
                   'relative',
                   // iOS momentum scrolling
                   '[&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-800/50 [&::-webkit-scrollbar-thumb]:bg-slate-600/50 [&::-webkit-scrollbar-thumb]:rounded-full'
                 )}
-                style={{ WebkitOverflowScrolling: 'touch' }}
+                style={{ 
+                  WebkitOverflowScrolling: 'touch',
+                  touchAction: 'pan-y pan-x',
+                  overscrollBehaviorX: 'contain',
+                  overscrollBehaviorY: 'auto'
+                }}
               >
                 {/* Edge Fade Masks */}
                 <div className={clsx(

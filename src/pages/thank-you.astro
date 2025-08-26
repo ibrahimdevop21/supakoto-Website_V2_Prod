@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Thank You - SupaKoto" description="Thank you for your interest in SupaKoto's automotive protection services">
+  <main class="min-h-screen text-white flex items-center justify-center">
+    <div class="container mx-auto px-4 text-center">
+      <div class="max-w-2xl mx-auto">
+        <!-- Success Icon -->
+        <div class="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+
+        <!-- Thank You Message -->
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 bg-gradient-to-r from-white via-white to-neutral-300 bg-clip-text text-transparent">
+          Thank You!
+        </h1>
+        
+        <p class="text-xl text-neutral-300 mb-8 leading-relaxed">
+          Your quote request has been successfully submitted. Our team will contact you within the next few hours to discuss your automotive protection needs.
+        </p>
+
+        <!-- What's Next -->
+        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 mb-8">
+          <h2 class="text-2xl font-semibold text-white mb-6">What happens next?</h2>
+          <div class="grid gap-4 md:grid-cols-3 text-left">
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white font-bold text-sm">1</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-white mb-2">Quick Response</h3>
+                <p class="text-neutral-400 text-sm">We'll call you within 2-4 hours during business hours</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white font-bold text-sm">2</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-white mb-2">Custom Quote</h3>
+                <p class="text-neutral-400 text-sm">Receive a personalized quote based on your vehicle and needs</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span class="text-white font-bold text-sm">3</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-white mb-2">Schedule Service</h3>
+                <p class="text-neutral-400 text-sm">Book your appointment at your preferred branch</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a 
+            href="/" 
+            class="px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200 transform hover:scale-105"
+          >
+            Back to Home
+          </a>
+          
+          <a 
+            href="/contact" 
+            class="px-8 py-3 bg-transparent border border-neutral-600 text-white font-semibold rounded-xl hover:bg-neutral-800 hover:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200"
+          >
+            Contact Another Branch
+          </a>
+        </div>
+
+        <!-- Emergency Contact -->
+        <div class="mt-12 p-6 bg-slate-800/30 rounded-xl border border-slate-700/30">
+          <p class="text-neutral-400 text-sm mb-2">Need immediate assistance?</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="tel:+971506265404" class="text-red-400 hover:text-red-300 font-semibold">
+              📞 +971 50 626 5404
+            </a>
+            <a href="https://wa.me/971521931358" class="text-green-400 hover:text-green-300 font-semibold">
+              💬 WhatsApp: +971 52 193 1358
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>

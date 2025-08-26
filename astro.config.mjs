@@ -167,7 +167,7 @@ export default defineConfig({
           },
         },
         treeshake: {
-          moduleSideEffects: false,
+          moduleSideEffects: ['leaflet', 'react', 'react-dom', 'react-leaflet'],
           propertyReadSideEffects: false,
           unknownGlobalSideEffects: false,
         },
@@ -183,11 +183,12 @@ export default defineConfig({
         ].filter(Boolean),
       },
       optimizeDeps: {
-        include: ['react', 'react-dom', 'leaflet', 'react-leaflet'],
+        include: ['react', 'react-dom', 'react/jsx-runtime', 'leaflet', 'react-leaflet'],
         exclude: ['@astrojs/react'],
       },
       ssr: {
-        noExternal: ['react-icons', 'lucide-react'],
+        noExternal: ['react-icons', 'lucide-react', 'react/jsx-runtime'],
+        external: ['leaflet', 'react-leaflet'],
       },
       sourcemap: false,
     },

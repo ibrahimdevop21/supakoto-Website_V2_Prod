@@ -1,75 +1,325 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ContactHero from '../components/contact/ContactHero';
-import ContactBookingSection from '../components/contact/ContactBookingSection';
-import { t } from '../i18n/index';
-import { branches } from '../data/branches';
+import BranchPicker from '../components/contact/BranchPicker';
+import MapToggle from '../components/contact/MapToggle';
+import { BRANCHES } from '../data/branches';
 
-const lang = Astro.currentLocale || 'en';
-const currentLang = lang;
-const rtl = false;
+// Get query parameters for deep linking
+const selectedBranchId = Astro.url.searchParams.get('branch') || 'cairo_5th';
+const selectedBranch = BRANCHES.find(b => b.id === selectedBranchId) || BRANCHES[0];
 
-// Prepare branches data for B2C form
-const branchesForForm = branches.map(branch => ({
-  id: branch.id,
-  name: branch.name,
-  market: branch.country === 'UAE' ? 'UAE' : 'EG'
+// Create English branch data
+const englishBranches = BRANCHES.map(branch => ({
+  ...branch,
+  name: branch.id === 'cairo_5th' ? 'SupaKoto Cairo - New Cairo' :
+        branch.id === 'maadi' ? 'SupaKoto Cairo - Maadi' :
+        branch.id === 'sheikh_zayed' ? 'SupaKoto Cairo - Sheikh Zayed' :
+        branch.id === 'damietta' ? 'SupaKoto Damietta' :
+        branch.id === 'dubai' ? 'SupaKoto Dubai - Headquarters' : branch.name,
+  address: branch.id === 'cairo_5th' ? 'New Cairo, Fifth Settlement, Cairo Governorate' :
+           branch.id === 'maadi' ? 'Maadi, Cairo Governorate' :
+           branch.id === 'sheikh_zayed' ? 'Sheikh Zayed City, Giza Governorate' :
+           branch.id === 'damietta' ? 'Damietta, Damietta Governorate' :
+           branch.id === 'dubai' ? 'Al Quoz 4, Dubai, United Arab Emirates' : branch.address,
+  hours: branch.id === 'dubai' ? ['Saturday–Thursday: 9AM–7PM', 'Friday: Closed'] :
+         ['Saturday–Thursday: 10AM–8PM', 'Friday: Closed']
 }));
 
-// Get query parameters for pre-filling form
-const defaultBranchId = Astro.url.searchParams.get('branch') ?? undefined;
-const defaultService = Astro.url.searchParams.get('service') ?? undefined;
+const selectedEnglishBranch = englishBranches.find(b => b.id === selectedBranchId) || englishBranches[0];
 ---
 
-<Layout title={t('pages.contact.title')} description={t('pages.contact.description')}>
-  <!-- Contact Hero Section - Full viewport height with smooth scroll indicator -->
-  <section class="relative">
-    <ContactHero client:visible currentLocale={currentLang} isRTL={rtl} />
-    
-    <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-      <div class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-        <div class="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
+<Layout title="Contact Us & Find a Branch" description="Contact SupaKoto and choose the nearest branch to get the best automotive protection service">
+  <main class="min-h-screen text-white">
+    <div class="container mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-20">
+      <!-- Page Title -->
+      <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 bg-gradient-to-r from-white via-white to-neutral-300 bg-clip-text text-transparent">
+          Contact Us & Find a Branch
+        </h1>
+        <p class="text-neutral-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+          Choose the nearest branch and get the best automotive protection service
+        </p>
+      </div>
+
+      <!-- B2C Form Section - Moved to Top -->
+      <div class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 mb-20 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative z-10">
+          <h2 class="text-2xl font-bold text-white mb-6">Get a Quote - We'll Contact You Immediately</h2>
+          <!-- Service Selection Validation Script -->
+          <script>
+            function validateServices(form) {
+              const services = form.querySelectorAll('input[name="services"]:checked');
+              if (services.length === 0) {
+                alert('Please select at least one service');
+                return false;
+              }
+              return true;
+            }
+          </script>
+          
+          <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="space-y-6" onsubmit="return validateServices(this)">
+            <!-- Formspree Configuration -->
+            <input type="hidden" name="_subject" value="New Quote Request from SupaKoto Website" />
+            <input type="hidden" name="_language" value="en" />
+            <input type="hidden" name="_redirect" value="https://supakoto.com/thank-you" />
+            <input type="hidden" id="branchId" name="branch_id" value={selectedBranch.id} />
+            <input type="hidden" name="_gotcha" style="display:none" />
+            
+            <div class="grid gap-6 md:grid-cols-2">
+              <div>
+                <label for="name" class="block text-sm font-medium text-white mb-2">Full Name</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  name="name" 
+                  required 
+                  class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              
+              <div>
+                <label for="phone" class="block text-sm font-medium text-white mb-2">Phone Number</label>
+                <input 
+                  type="tel" 
+                  id="phone" 
+                  name="phone" 
+                  required 
+                  class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+            </div>
+
+            <!-- Service Selection -->
+            <div>
+              <label class="block text-sm font-medium text-white mb-3">Select Desired Service(s)</label>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="ppf" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="ml-3 text-white">PPF (Paint Protection Film)</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="ml-3 text-white">Heat Isolation</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="nano_ceramic" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="ml-3 text-white">Nano Ceramic</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="heat_nano_combo" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="ml-3 text-white">Heat Isolation + Nano Ceramic</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <label for="message" class="block text-sm font-medium text-white mb-2">Message</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                rows="4" 
+                required 
+                class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors resize-none"
+                placeholder="Tell us about your vehicle and requirements..."
+              ></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <label class="flex items-center">
+                <input type="checkbox" name="whatsapp_only" value="1" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                <span class="ml-2 text-sm text-neutral-300">Contact me only via WhatsApp</span>
+              </label>
+              
+              <button 
+                type="submit" 
+                class="px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200 transform hover:scale-105"
+              >
+                Send Request
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Main Content Grid - Branch Picker & Map -->
+      <div class="grid gap-8 lg:grid-cols-2 mb-20">
+        <!-- Left Column: Branch Picker -->
+        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
+          <h3 class="text-lg font-semibold text-white mb-4">Select Branch</h3>
+          <div class="relative z-10 max-w-full overflow-x-auto">
+            <BranchPicker 
+              client:idle 
+              branches={englishBranches} 
+              selectedId={selectedBranch.id} 
+            />
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Map -->
+        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
+          <h3 class="text-lg font-semibold text-white mb-4">Branch Location</h3>
+          <div class="w-full h-[300px] sm:h-[350px] md:h-[400px]">
+            <MapToggle 
+              client:visible 
+              initial={selectedBranch} 
+              staticMapUrl=""
+              zoom={14} 
+            />
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- FAQ Section - Full Width -->
+      <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
+        <h2 class="text-2xl font-bold text-white mb-8 text-center">Frequently Asked Questions</h2>
+        <div class="grid gap-6">
+          <details class="group">
+            <summary class="cursor-pointer text-white font-semibold py-3 px-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200 list-none flex items-center justify-between border border-slate-700/30">
+              What is PPF and why do I need it?
+              <span class="text-neutral-400 group-open:rotate-180 transition-transform duration-200">▼</span>
+            </summary>
+            <div class="mt-3 px-4 py-3 text-neutral-300 leading-relaxed text-sm">
+              Paint Protection Film (PPF) is a transparent, thermoplastic urethane film that protects your vehicle's paint from scratches, chips, stains, and environmental damage while maintaining the original appearance.
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer text-white font-semibold py-3 px-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200 list-none flex items-center justify-between border border-slate-700/30">
+              How long does installation take?
+              <span class="text-neutral-400 group-open:rotate-180 transition-transform duration-200">▼</span>
+            </summary>
+            <div class="mt-3 px-4 py-3 text-neutral-300 leading-relaxed text-sm">
+              Installation time varies depending on the coverage area. Partial coverage typically takes 1-2 days, while full vehicle coverage can take 3-5 days for optimal results.
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer text-white font-semibold py-3 px-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200 list-none flex items-center justify-between border border-slate-700/30">
+              What warranty do you provide?
+              <span class="text-neutral-400 group-open:rotate-180 transition-transform duration-200">▼</span>
+            </summary>
+            <div class="mt-3 px-4 py-3 text-neutral-300 leading-relaxed text-sm">
+              We provide comprehensive warranty coverage from 5 up to 15 years depending on the product tier, covering defects, yellowing, cracking, and peeling under normal use conditions.
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer text-white font-semibold py-3 px-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200 list-none flex items-center justify-between border border-slate-700/30">
+              Can PPF be removed safely?
+              <span class="text-neutral-400 group-open:rotate-180 transition-transform duration-200">▼</span>
+            </summary>
+            <div class="mt-3 px-4 py-3 text-neutral-300 leading-relaxed text-sm">
+              Yes, our premium PPF can be safely removed by professionals without damaging the original paint, leaving your vehicle in pristine condition.
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer text-white font-semibold py-3 px-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200 list-none flex items-center justify-between border border-slate-700/30">
+              Do you offer mobile services?
+              <span class="text-neutral-400 group-open:rotate-180 transition-transform duration-200">▼</span>
+            </summary>
+            <div class="mt-3 px-4 py-3 text-neutral-300 leading-relaxed text-sm">
+              Currently, all installations are performed at our certified facilities to ensure optimal environmental conditions and the highest quality results.
+            </div>
+          </details>
+
+          <details class="group">
+            <summary class="cursor-pointer text-white font-semibold py-3 px-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors duration-200 list-none flex items-center justify-between border border-slate-700/30">
+              What makes SupaKoto different?
+              <span class="text-neutral-400 group-open:rotate-180 transition-transform duration-200">▼</span>
+            </summary>
+            <div class="mt-3 px-4 py-3 text-neutral-300 leading-relaxed text-sm">
+              We use premium Takai PPF with superior self-healing properties, backed by extensive warranties and installed by certified professionals with years of experience.
+            </div>
+          </details>
+        </div>
       </div>
     </div>
-  </section>
-
-  <!-- Main Content Container with improved spacing and visual flow -->
-  <main class="relative">
-    
-    <!-- B2C Form & Interactive Map Section -->
-    <section id="b2c-book" class="relative z-10 py-20 md:py-28 lg:py-32">
-      <div class="container mx-auto px-4">
-        <!-- Section introduction -->
-        <div class="text-center mb-16">
-          <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-red-500 to-orange-500 rounded-full mb-6">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-          </div>
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-            {currentLang === 'ar' ? 'احجز موعد واحصل على عرض سعر' : 'Book & Quote'}
-          </h2>
-          <p class="text-gray-300 text-lg max-w-2xl mx-auto">
-            {currentLang === 'ar' 
-              ? 'احجز موعداً واحصل على عرض سعر مخصص لاحتياجات سيارتك'
-              : 'Book an appointment and get a personalized quote for your vehicle needs'
-            }
-          </p>
-        </div>
-        
-        <!-- Unified Contact Booking Section: B2C Form, Map, and Branch Locator -->
-        <ContactBookingSection 
-          client:only="react" 
-          currentLocale={currentLang} 
-          isRTL={rtl}
-          locale={currentLang as "en" | "ar"}
-          branchesForForm={branchesForForm}
-          defaultBranchId={defaultBranchId}
-          defaultService={defaultService}
-        />
-      </div>
-    </section>
-
   </main>
+
+  <!-- Inline Script for Branch Updates -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // English branch data for client-side updates
+      const englishBranches = [
+        {
+          id: 'cairo_5th',
+          address: 'New Cairo, Fifth Settlement, Cairo Governorate',
+          phones: ['+20 12 24464637', '+20 11 08184162'],
+          whatsapp: '201108184162',
+          hours: ['Saturday–Thursday: 10AM–8PM', 'Friday: Closed'],
+          gmaps: 'https://maps.google.com/maps?q=30.018919121730043,31.432121498113556'
+        },
+        {
+          id: 'maadi',
+          address: 'Maadi, Cairo Governorate',
+          phones: ['+20 12 34567890'],
+          whatsapp: '201234567890',
+          hours: ['Saturday–Thursday: 10AM–8PM', 'Friday: Closed'],
+          gmaps: 'https://maps.google.com/maps?q=29.95311,31.27136'
+        },
+        {
+          id: 'sheikh_zayed',
+          address: 'Sheikh Zayed City, Giza Governorate',
+          phones: ['+20 12 98765432'],
+          whatsapp: '201298765432',
+          hours: ['Saturday–Thursday: 10AM–8PM', 'Friday: Closed'],
+          gmaps: 'https://maps.google.com/maps?q=30.07708,30.97372'
+        },
+        {
+          id: 'damietta',
+          address: 'Damietta, Damietta Governorate',
+          phones: ['+20 12 11223344'],
+          whatsapp: '201211223344',
+          hours: ['Saturday–Thursday: 10AM–8PM', 'Friday: Closed'],
+          gmaps: 'https://maps.google.com/maps?q=31.41648,31.81332'
+        },
+        {
+          id: 'dubai',
+          address: 'Al Quoz 4, Dubai, United Arab Emirates',
+          phones: ['+971 50 626 5404', '+971 55 205 4478'],
+          whatsapp: '971506265404',
+          hours: ['Saturday–Thursday: 9AM–7PM', 'Friday: Closed'],
+          gmaps: 'https://maps.google.com/maps?q=25.13424,55.23184'
+        }
+      ];
+
+      // Listen for branch change events
+      window.addEventListener('branch:changed', function(event) {
+        const selectedBranch = (event as CustomEvent).detail;
+        // Find the corresponding English branch data
+        const englishBranch = englishBranches.find(b => b.id === selectedBranch.id);
+        if (englishBranch) {
+          updateBranchInfo(englishBranch);
+        }
+      });
+
+      function updateBranchInfo(branch) {
+        // Update address
+        const addressEl = document.getElementById('branch-address');
+        if (addressEl) addressEl.textContent = branch.address;
+
+        // Update hours
+        const hoursEl = document.getElementById('branch-hours');
+        if (hoursEl) {
+          hoursEl.innerHTML = branch.hours.map(hour => `<p class="text-neutral-300">${hour}</p>`).join('');
+        }
+
+        // Update action buttons
+        const directionsBtn = document.getElementById('directions-btn') as HTMLAnchorElement;
+        if (directionsBtn) directionsBtn.href = branch.gmaps;
+
+        const callBtn = document.getElementById('call-btn') as HTMLAnchorElement;
+        if (callBtn) callBtn.href = `tel:${branch.phones[0]}`;
+
+        const whatsappBtn = document.getElementById('whatsapp-btn') as HTMLAnchorElement;
+        if (whatsappBtn) whatsappBtn.href = `https://wa.me/${branch.whatsapp}`;
+      }
+    });
+  </script>
 </Layout>

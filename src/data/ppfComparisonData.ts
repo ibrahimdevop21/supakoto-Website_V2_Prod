@@ -11,6 +11,12 @@ export const ppfComparisonData = {
   ],
   rows: [
     {
+      feature: { en: "Stretchability (Elongation at break)", ar: "المرونة (الاستطالة عند الكسر)" },
+      supa:    { en: "≈350–400% (Takai internal spec)", ar: "≈٣٥٠–٤٠٠٪ (مواصفات تاكاي الداخلية)" },
+      xpel3m:  { en: "3M Pro Series 200: ~380%; XPEL describes \"exceptional elongation\" (no public % in TDS)", ar: "3M Pro Series 200: ~٣٨٠٪؛ XPEL تصف \"استطالة استثنائية\" (لا توجد نسبة عامة)" },
+      china:   { en: "Wide range: ~170% → 420% depending on grade and maker", ar: "نطاق واسع: ~١٧٠٪ → ٤٢٠٪ حسب الدرجة والمصنع" },
+    },
+    {
       feature: { en: "Origin & Manufacturing", ar: "المنشأ والتصنيع" },
       supa:    { en: "100% Japan, Takai tech, strict QC", ar: "ياباني ١٠٠٪، تقنية تاكاي وجودة صارمة" },
       xpel3m:  { en: "US (XPEL) / Global (3M); strong R&D", ar: "أمريكي (XPEL) / عالمي (3M)؛ أبحاث قوية" },

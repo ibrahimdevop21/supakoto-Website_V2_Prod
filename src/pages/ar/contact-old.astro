@@ -1,0 +1,377 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BranchPicker from '../../components/contact/BranchPicker';
+import MapToggle from '../../components/contact/MapToggle';
+import { BRANCHES } from '../../data/branches';
+
+// Get query parameters for deep linking
+const selectedBranchId = Astro.url.searchParams.get('branch') || 'dubai';
+const selectedBranch = BRANCHES.find(b => b.id === selectedBranchId) || BRANCHES[0];
+
+// Arabic branches data (same as BRANCHES but for display)
+const arabicBranches = BRANCHES;
+---
+
+<Layout title="تواصل معنا وحدد أقرب فرع" description="تواصل مع سوباكوتو واختر أقرب فرع لك للحصول على أفضل خدمة حماية السيارات">
+  <main class="min-h-screen text-white" dir="rtl">
+    <div class="container mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-20">
+      <!-- Page Title -->
+      <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 bg-gradient-to-r from-white via-white to-neutral-300 bg-clip-text text-transparent">
+          تواصل معنا وحدد أقرب فرع
+        </h1>
+        <p class="text-neutral-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+          اختر الفرع الأقرب إليك واحصل على أفضل خدمة حماية للسيارات
+        </p>
+      </div>
+
+      <!-- B2C Form Section - Moved to Top -->
+      <div class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 mb-20 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
+        <div class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-16 -translate-x-16 group-hover:scale-150 transition-transform duration-500"></div>
+        <div class="relative z-10">
+          <h2 class="text-2xl font-bold text-white mb-6 font-arabic">احصل على عرض أسعار - سنتواصل معك فوراً</h2>
+          <form action="/api/lead" method="POST" class="space-y-6">
+            <input type="hidden" id="branchId" name="branchId" value={selectedBranch.id} />
+            
+            <div class="grid gap-6 md:grid-cols-2">
+              <div>
+                <label for="name" class="block text-sm font-medium text-white mb-2 font-arabic">الاسم الكامل</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  name="name" 
+                  required 
+                  class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors font-arabic"
+                  placeholder="أدخل اسمك الكامل"
+                />
+              </div>
+              
+              <div>
+                <label for="phone" class="block text-sm font-medium text-white mb-2 font-arabic">رقم الهاتف</label>
+                <input 
+                  type="tel" 
+                  id="phone" 
+                  name="phone" 
+                  required 
+                  class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors"
+                  placeholder="أدخل رقم هاتفك"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            <!-- Service Selection -->
+            <div>
+              <label class="block text-sm font-medium text-white mb-3 font-arabic">اختر الخدمة المطلوبة</label>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="ppf" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="mr-3 text-white font-arabic">فيلم حماية الطلاء (PPF)</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="mr-3 text-white font-arabic">عزل حراري</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="nano_ceramic" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="mr-3 text-white font-arabic">نانو سيراميك</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="heat_nano_combo" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="mr-3 text-white font-arabic">عزل حراري + نانو سيراميك</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <label for="message" class="block text-sm font-medium text-white mb-2 font-arabic">الرسالة</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                rows="4" 
+                required 
+                class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors resize-none font-arabic"
+                placeholder="أخبرنا عن سيارتك ومتطلباتك..."
+              ></textarea>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <label class="flex items-center">
+                <input type="checkbox" name="whatsapp_only" value="1" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                <span class="mr-2 text-sm text-neutral-300 font-arabic">تواصل معي عبر الواتساب فقط</span>
+              </label>
+              
+              <button 
+                type="submit" 
+                class="px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200 transform hover:scale-105 font-arabic"
+              >
+                إرسال الطلب
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid gap-8 lg:grid-cols-2 mb-20">
+        <!-- Left Column: Branch Selection & Info -->
+        <div class="space-y-8">
+          <!-- Branch Picker -->
+          <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
+            <h3 class="text-lg font-semibold text-white mb-4">اختر الفرع</h3>
+            <div class="relative z-10 max-w-full overflow-x-auto">
+              <BranchPicker 
+                client:idle 
+                branches={arabicBranches} 
+                selectedId={selectedBranch.id} 
+              />
+            </div>
+          </div>
+
+          <!-- Branch Details -->
+          <div id="branch-details" class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
+            <div class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-16 -translate-x-16 group-hover:scale-150 transition-transform duration-500"></div>
+            <div class="relative z-10">
+            <div class="space-y-6">
+              <!-- Address -->
+              <div>
+                <h3 class="text-lg font-semibold text-white mb-2">العنوان</h3>
+                <p id="branch-address" class="text-neutral-300 leading-relaxed">
+                  {selectedBranch.address}
+                </p>
+              </div>
+
+              <!-- Hours -->
+              <div>
+                <h3 class="text-lg font-semibold text-white mb-2">مواعيد العمل</h3>
+                <ul id="branch-hours" class="text-neutral-300 space-y-1">
+                  {selectedBranch.hours.map(hour => (
+                    <li>{hour}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <a 
+                  id="directions-btn"
+                  href={selectedBranch.gmaps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="bg-[#bf1e2e] text-white rounded-xl px-4 py-3 text-center font-semibold hover:bg-[#a01825] transition-colors duration-200 min-h-[44px] flex items-center justify-center"
+                >
+                  الاتجاهات
+                </a>
+                <a 
+                  id="call-btn"
+                  href={`tel:${selectedBranch.phones[0]}`}
+                  class="bg-neutral-900 text-white rounded-xl px-4 py-2 text-center font-semibold hover:bg-neutral-800 border border-neutral-700 transition-colors duration-200 min-h-[44px] flex items-center justify-center"
+                >
+                  اتصل الآن
+                </a>
+                <a 
+                  id="whatsapp-btn"
+                  href={`https://wa.me/${selectedBranch.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="bg-green-600 text-white rounded-xl px-4 py-2 text-center font-semibold hover:bg-green-700 transition-colors duration-200 min-h-[44px] flex items-center justify-center"
+                >
+                  واتساب
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Map -->
+        <div class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
+          <div class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-16 -translate-x-16 group-hover:scale-150 transition-transform duration-500"></div>
+          <div class="relative z-10">
+            <MapToggle 
+              client:visible 
+              initial={selectedBranch} 
+              zoom={14}
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Message Us Form -->
+      <div class="rounded-2xl border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm p-8 mb-20 shadow-xl">
+        <h2 class="text-2xl font-bold text-white mb-6">راسلنا وسيتم التواصل فوراً</h2>
+        <form action="/api/lead" method="POST" class="space-y-6">
+          <input type="hidden" id="branchId" name="branchId" value={selectedBranch.id} />
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-sm font-medium text-neutral-300 mb-2">
+                الاسم *
+              </label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                required 
+                class="bg-neutral-800 rounded-xl p-3 w-full text-white border border-neutral-700 focus:border-[#bf1e2e] focus:outline-none transition-colors duration-200"
+                dir="rtl"
+              />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-neutral-300 mb-2">
+                رقم الهاتف *
+              </label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                required 
+                class="bg-neutral-800 rounded-xl p-3 w-full text-white border border-neutral-700 focus:border-[#bf1e2e] focus:outline-none transition-colors duration-200"
+                dir="rtl"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label for="message" class="block text-sm font-medium text-neutral-300 mb-2">
+              رسالتك (اختياري)
+            </label>
+            <textarea 
+              id="message" 
+              name="message" 
+              rows="4" 
+              class="bg-neutral-800 rounded-xl p-3 w-full text-white border border-neutral-700 focus:border-[#bf1e2e] focus:outline-none transition-colors duration-200 resize-vertical"
+              dir="rtl"
+            ></textarea>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="bg-[#bf1e2e] text-white rounded-xl px-8 py-3 font-semibold hover:bg-[#a01825] transition-colors duration-200 min-h-[44px]"
+          >
+            إرسال الطلب
+          </button>
+        </form>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 sm:p-8 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
+        <h2 class="text-2xl font-bold text-white mb-6">الأسئلة الشائعة</h2>
+        <div class="space-y-4">
+          <details class="group/item bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-neutral-600 transition-colors">
+            <summary class="flex items-center justify-between p-4 cursor-pointer text-white font-medium hover:text-red-400 transition-colors">
+              ما هي مدة الضمان على خدماتكم؟
+              <svg class="w-5 h-5 transform group-open/item:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-neutral-300">
+              نحن نقدم ضمان من 5 إلى 15 سنة على جميع خدماتنا حسب نوع الخدمة والمنتج المستخدم.
+            </div>
+          </details>
+
+          <details class="group/item bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-neutral-600 transition-colors">
+            <summary class="flex items-center justify-between p-4 cursor-pointer text-white font-medium hover:text-red-400 transition-colors">
+              كم يستغرق تركيب فيلم حماية الطلاء؟
+              <svg class="w-5 h-5 transform group-open/item:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-neutral-300">
+              يستغرق تركيب فيلم حماية الطلاء من 3 إلى 5 أيام عمل حسب حجم السيارة ونوع الحماية المطلوبة.
+            </div>
+          </details>
+
+          <details class="group/item bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-neutral-600 transition-colors">
+            <summary class="flex items-center justify-between p-4 cursor-pointer text-white font-medium hover:text-red-400 transition-colors">
+              هل تقدمون خدمة التوصيل والاستلام؟
+              <svg class="w-5 h-5 transform group-open/item:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-neutral-300">
+              نعم، نقدم خدمة التوصيل والاستلام المجانية في نطاق معين من فروعنا. تواصل معنا لمعرفة التفاصيل.
+            </div>
+          </details>
+
+          <details class="group/item bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-neutral-600 transition-colors">
+            <summary class="flex items-center justify-between p-4 cursor-pointer text-white font-medium hover:text-red-400 transition-colors">
+              ما هي أنواع فيلم الحماية المتوفرة؟
+              <svg class="w-5 h-5 transform group-open/item:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-neutral-300">
+              نوفر أفلام حماية من أفضل الماركات العالمية مثل XPEL وSunTek مع خيارات مختلفة للشفافية واللمعان.
+            </div>
+          </details>
+
+          <details class="group/item bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-neutral-600 transition-colors">
+            <summary class="flex items-center justify-between p-4 cursor-pointer text-white font-medium hover:text-red-400 transition-colors">
+              هل يمكن إزالة فيلم الحماية لاحقاً؟
+              <svg class="w-5 h-5 transform group-open/item:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </summary>
+            <div class="px-4 pb-4 text-neutral-300">
+              نعم، يمكن إزالة فيلم الحماية بسهولة دون ترك أي أثر أو ضرر على طلاء السيارة الأصلي.
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Inline Script for Branch Updates -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Handle branch changes
+      window.addEventListener('branch:changed', function(event) {
+        const branch = (event as CustomEvent).detail;
+        
+        // Update hidden form input
+        const branchIdInput = document.getElementById('branchId');
+        if (branchIdInput && branchIdInput instanceof HTMLInputElement) {
+          branchIdInput.value = branch.id;
+        }
+        
+        // Update address
+        const addressEl = document.getElementById('branch-address');
+        if (addressEl) {
+          addressEl.textContent = branch.address;
+        }
+        
+        // Update hours
+        const hoursEl = document.getElementById('branch-hours');
+        if (hoursEl) {
+          hoursEl.innerHTML = branch.hours.map(hour => `<li>${hour}</li>`).join('');
+        }
+        
+        // Update directions button
+        const directionsBtn = document.getElementById('directions-btn');
+        if (directionsBtn && directionsBtn instanceof HTMLAnchorElement) {
+          directionsBtn.href = branch.gmaps;
+        }
+        
+        // Update call button
+        const callBtn = document.getElementById('call-btn');
+        if (callBtn && callBtn instanceof HTMLAnchorElement) {
+          callBtn.href = `tel:${branch.phones[0]}`;
+        }
+        
+        // Update WhatsApp button
+        const whatsappBtn = document.getElementById('whatsapp-btn');
+        if (whatsappBtn && whatsappBtn instanceof HTMLAnchorElement && branch.whatsapp) {
+          whatsappBtn.href = `https://wa.me/${branch.whatsapp}`;
+        }
+        
+        // Update URL without page reload
+        const url = new URL(window.location.href);
+        url.searchParams.set('branch', branch.id);
+        window.history.replaceState({}, '', url.toString());
+      });
+    });
+  </script>
+</Layout>

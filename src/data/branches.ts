@@ -1,71 +1,60 @@
 export interface Branch {
-  id: string;
-  country: 'Egypt' | 'UAE';
-  name: string;
-  address: string;
-  phone: string;
-  rating: number;
-  workingHours: {
-    en: string;
-    ar: string;
-  };
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
+  id: 'cairo_5th' | 'maadi' | 'sheikh_zayed' | 'damietta' | 'dubai';
+  name: string; // Arabic display name
+  address: string; // Arabic
+  phones: string[]; // primary first
+  whatsapp?: string; // international format without + for wa.me
+  lat: number;
+  lng: number;
+  hours: string[]; // Arabic lines
+  gmaps: string; // Google Maps directions/share URL
+  isHQ?: boolean; // Mark headquarters
 }
 
-export const branches: Branch[] = [
+export const BRANCHES: Branch[] = [
   {
     id: 'dubai',
-    country: 'UAE',
-    name: 'Supakoto Dubai',
-    address: 'Warehouse 48 15B St - Al Quoz - Al Quoz Industrial Area 4 - Dubai - United Arab Emirates',
-    phone: '+971 55 205 4478',
-    rating: 4.9,
-    workingHours: {
-      en: 'Sat - Thu, 10:00 AM - 6:00 PM (Friday Off)',
-      ar: 'السبت - الخميس، 10:00 ص - 6:00 م (الجمعة إجازة)',
-    },
-    coordinates: { lat: 25.117377971600526, lng: 55.23615351779093 },
+    name: 'سوباكوتو دبي - المقر الرئيسي',
+    address: 'الكوز 4، دبي، الإمارات العربية المتحدة',
+    phones: ['+971 50 626 5404', '+971 55 205 4478'],
+    whatsapp: '971506265404',
+    lat: 25.13424,
+    lng: 55.23184,
+    hours: ['السبت–الخميس: 9ص–7م', 'الجمعة: مغلق'],
+    gmaps: 'https://maps.google.com/maps?q=25.13424,55.23184',
+    isHQ: true
   },
   {
-    id: 'giza-sheikh-zayed',
-    country: 'Egypt',
-    name: 'Supakoto Giza - Sheikh Zayed',
-    address: '2XCH+73P, First Al Sheikh Zayed, Giza Governorate 3245070',
-    phone: '+20 11 27 23 2340',
-    rating: 4.8,
-    workingHours: {
-      en: 'Sat - Thu, 10:00 AM - 6:00 PM (Friday Off)',
-      ar: 'السبت - الخميس، 10:00 ص - 6:00 م (الجمعة إجازة)',
-    },
-    coordinates: { lat: 30.019907567782525, lng: 30.97782899999999 },
+    id: 'cairo_5th',
+    name: 'سوباكوتو القاهرة - التجمع الخامس',
+    address: 'التجمع الخامس، القاهرة الجديدة، محافظة القاهرة',
+    phones: ['+20 12 24464637', '+20 11 08184162'],
+    whatsapp: '201108184162',
+    lat: 30.018919121730043,
+    lng: 31.432121498113556,
+    hours: ['السبت–الخميس: 10ص–8م', 'الجمعة: مغلق'],
+    gmaps: 'https://maps.google.com/maps?q=30.018919121730043,31.432121498113556'
   },
   {
-    id: 'cairo-maadi',
-    country: 'Egypt',
-    name: 'Supakoto Cairo - Maadi',
-    address: 'Inside Skoda Maadi Center, 199 Wadi Degla Street, Zahraa Al Maadi, Cairo Governorate 11742',
-    phone: '+20 12 24 46 4637',
-    rating: 4.8,
-    workingHours: {
-      en: 'Sat - Thu, 10:00 AM - 6:00 PM (Friday Off)',
-      ar: 'السبت - الخميس، 10:00 ص - 6:00 م (الجمعة إجازة)',
-    },
-    coordinates: { lat: 29.959868385272628, lng: 31.320307057672636 },
+    id: 'maadi',
+    name: 'سوباكوتو القاهرة - المعادي',
+    address: 'داخل مركز سكودا المعادي، 199 شارع وادي دجلة، زهراء المعادي، القاهرة',
+    phones: ['+20 12 24464637'],
+    whatsapp: '201224464637',
+    lat: 29.959868385272628,
+    lng: 31.320307057672636,
+    hours: ['السبت–الخميس: 10ص–8م', 'الجمعة: مغلق'],
+    gmaps: 'https://maps.google.com/maps?q=29.959868385272628,31.320307057672636'
   },
   {
-    id: 'cairo-5th-settlement',
-    country: 'Egypt',
-    name: 'Supakoto Cairo - 5th Settlement',
-    address: '2C9J+GRQ, New Cairo 1, Cairo Governorate 4730124',
-    phone: '+20 12 24 46 4637',
-    rating: 5.0,
-    workingHours: {
-      en: 'Sat - Thu, 10:00 AM - 6:00 PM (Friday Off)',
-      ar: 'السبت - الخميس، 10:00 ص - 6:00 م (الجمعة إجازة)',
-    },
-    coordinates: { lat: 30.018919121730043, lng: 31.432121498113556 },
-  },
+    id: 'sheikh_zayed',
+    name: 'سوباكوتو الجيزة - الشيخ زايد',
+    address: 'الشيخ زايد الأولى، محافظة الجيزة',
+    phones: ['+20 11 27232340'],
+    whatsapp: '201127232340',
+    lat: 30.019907567782525,
+    lng: 30.97782899999999,
+    hours: ['السبت–الخميس: 10ص–8م', 'الجمعة: مغلق'],
+    gmaps: 'https://maps.google.com/maps?q=30.019907567782525,30.97782899999999'
+  }
 ];
