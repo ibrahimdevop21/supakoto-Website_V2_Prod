@@ -33,6 +33,7 @@ const OptimizedImage = ({
   onError,
   ...props 
 }: React.ImgHTMLAttributes<HTMLImageElement> & {
+  className?: string;
   onLoad?: () => void;
   onError?: () => void;
 }) => {
@@ -74,7 +75,7 @@ const OptimizedImage = ({
         className={cn(
           "transition-opacity duration-300",
           imageLoaded ? "opacity-100" : "opacity-0",
-          props.className
+          className
         )}
         {...props}
       />

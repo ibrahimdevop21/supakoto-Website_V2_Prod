@@ -3,7 +3,7 @@ import type { Branch } from '../../data/branches';
 
 interface MapToggleProps {
   initial: { lat: number; lng: number; id: string };
-  staticMapUrl: string;
+  staticMapUrl?: string;
   zoom?: number;
 }
 

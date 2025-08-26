@@ -231,18 +231,18 @@ const arabicBranches = BRANCHES;
       const branchIdInput = document.getElementById('branchId');
       
       // Listen for branch changes
-      window.addEventListener('branch:changed', function(event) {
+      window.addEventListener('branch:changed', function(event: CustomEvent) {
         const branch = event.detail;
-        if (branchIdInput) {
-          branchIdInput.value = branch.id;
+        if (branchIdInput && (branchIdInput as HTMLInputElement)) {
+          (branchIdInput as HTMLInputElement).value = branch.id;
         }
       });
 
       // Handle deep link updates
       const urlParams = new URLSearchParams(window.location.search);
       const branchParam = urlParams.get('branch');
-      if (branchParam && branchIdInput) {
-        branchIdInput.value = branchParam;
+      if (branchParam && branchIdInput && (branchIdInput as HTMLInputElement)) {
+        (branchIdInput as HTMLInputElement).value = branchParam;
       }
     });
   </script>
