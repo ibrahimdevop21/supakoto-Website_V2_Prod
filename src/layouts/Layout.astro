@@ -11,6 +11,8 @@ import RespondIO from '../components/integrations/RespondIO.astro';
 import SEOHead from '../components/seo/SEOHead.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
+import '../styles/global.css';
+import '../styles/critical.css';
 
 export interface Props {
 	title: string;
@@ -283,8 +285,7 @@ const alternateLocales = [
 				src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 			}
 		</style>
-			<link rel="stylesheet" href="/src/styles/critical.css" media="print" onload="this.media='all'">
-		<noscript><link rel="stylesheet" href="/src/styles/critical.css"></noscript>
+
 		<script>
 			// Inline critical performance monitoring
 			if ('PerformanceObserver' in window) {
