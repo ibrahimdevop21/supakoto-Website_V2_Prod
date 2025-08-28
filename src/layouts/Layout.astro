@@ -5,8 +5,7 @@ import '../styles/gallery.css';
 import '../styles/navbar-glass.css';
 import '../styles/leaflet.css';
 import Footer from '../components/layout/Footer.astro';
-import NavBar from '../components/layout/NavBar';
-import { NAV_ITEMS } from '../data/navigation';
+import Nav from '../components/nav/Nav.astro';
 import Preload from '../components/shared/Preload.astro';
 import RespondIO from '../components/integrations/RespondIO.astro';
 import SEOHead from '../components/seo/SEOHead.astro';
@@ -331,12 +330,7 @@ const alternateLocales = [
 		</script>
 	</head>
 	<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-foreground font-sans antialiased" class:list={[rtl && 'font-arabic']}>
-		<NavBar 
-			client:load 
-			locale={currentLang} 
-			navItems={NAV_ITEMS} 
-			currentPath={Astro.url.pathname} 
-		/>
+		<Nav />
 		
 		<!-- Full-width slot for hero sections and other full-width components -->
 		<slot name="hero" />

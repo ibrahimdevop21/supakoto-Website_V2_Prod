@@ -1,0 +1,64 @@
+---
+import NavbarDesktop from './NavbarDesktop';
+import NavbarMobile from './NavbarMobile';
+import ActionPills from './ActionPills';
+
+// Get current path and locale
+const pathname = Astro.url.pathname;
+const isArabic = pathname.startsWith('/ar/') || pathname === '/ar';
+const locale = isArabic ? 'ar' : 'en';
+const rtl = locale === 'ar';
+const activePath = pathname || '/';
+
+// Canonical logo path
+const logoPath = '/logo.svg';
+---
+
+<!-- Glass/Frosted Header -->
+<header 
+  class={`fixed top-0 inset-x-0 z-[9999] h-16 pointer-events-auto backdrop-blur supports-[backdrop-filter]:bg-white/5 bg-white/10 border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-colors duration-300 ${rtl ? 'rtl' : ''}`}
+  role="banner"
+>
+  <div class="mx-auto max-w-7xl px-4 md:px-6 h-full flex items-center justify-between">
+    <!-- Left: Brand -->
+    <a 
+      href={locale === 'ar' ? '/ar' : '/'} 
+      class="flex items-center gap-2"
+      aria-label={locale === 'ar' ? 'سوباكوتو - الصفحة الرئيسية' : 'SupaKoto - Home'}
+    >
+      <img 
+        src={logoPath} 
+        alt="SupaKoto" 
+        class="h-8 w-auto md:h-8 sm:h-7"
+      />
+    </a>
+
+    <!-- Center: Links -->
+    <NavbarDesktop locale={locale} activePath={activePath} />
+
+    <!-- Right: CTAs ALWAYS visible + burger on mobile -->
+    <div class="flex items-center gap-3">
+      <ActionPills client:load locale={locale} />
+      <NavbarMobile client:load locale={locale} />
+    </div>
+  </div>
+</header>
+
+<!-- Spacer to prevent content from hiding behind fixed header -->
+<div style="height:4rem;"></div>
+
+<style>
+  /* Ensure header stays above floating widgets */
+  header {
+    z-index: 9999;
+  }
+  
+  /* Prevent pointer events on overlay when menu is closed */
+  header.pointer-events-none {
+    pointer-events: none;
+  }
+  
+  header.pointer-events-none > * {
+    pointer-events: auto;
+  }
+</style>
