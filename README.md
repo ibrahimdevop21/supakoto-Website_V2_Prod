@@ -310,3 +310,6 @@ vercel --prod
 - **GitHub Pages**: Static deployment via GitHub Actions
 - **AWS S3**: Static website hosting
 - **Cloudflare Pages**: Edge deployment with global CDN
+
+
+<!-- todo: ok we still need to fix the map hydration issue and gallery -->

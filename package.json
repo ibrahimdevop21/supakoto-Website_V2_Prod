@@ -19,7 +19,8 @@
     "lighthouse": "npx lighthouse http://localhost:4321 --output=html --output-path=./lighthouse-report.html",
     "lighthouse:mobile": "lighthouse http://localhost:4321 --preset=mobile --output=html --output-path=./reports/lighthouse-mobile.html",
     "lighthouse:desktop": "lighthouse http://localhost:4321 --preset=desktop --output=html --output-path=./reports/lighthouse-desktop.html",
-    "test:performance": "npm run build:production && npm run preview & sleep 5 && npm run lighthouse:mobile && npm run lighthouse:desktop && kill %1"
+    "test:performance": "npm run build:production && npm run preview & sleep 5 && npm run lighthouse:mobile && npm run lighthouse:desktop && kill %1",
+    "test:nav": "playwright test scripts/nav-smoke.test.ts"
   },
   "dependencies": {
     "@astrojs/react": "^3.0.0",

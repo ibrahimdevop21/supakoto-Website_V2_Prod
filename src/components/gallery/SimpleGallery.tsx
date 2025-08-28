@@ -3,14 +3,27 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-// Intersection Observer hook for lazy loading
+// Intersection Observer hook for lazy loading with production safety
 const useIntersectionObserver = (options?: IntersectionObserverInit) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
+  // Ensure we're on client side
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     const target = targetRef.current;
     if (!target) return;
+
+    // Fallback for environments without IntersectionObserver
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      setIsIntersecting(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(([entry]) => {
       setIsIntersecting(entry.isIntersecting);
@@ -18,9 +31,9 @@ const useIntersectionObserver = (options?: IntersectionObserverInit) => {
 
     observer.observe(target);
     return () => observer.disconnect();
-  }, [options]);
+  }, [options, isClient]);
 
-  return { targetRef, isIntersecting };
+  return { targetRef, isIntersecting: isClient ? isIntersecting : true };
 };
 
 // Optimized image component with lazy loading and error handling
@@ -39,6 +52,12 @@ const OptimizedImage = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure we're on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleLoad = () => {
     setImageLoaded(true);
@@ -50,21 +69,27 @@ const OptimizedImage = ({
     onError?.();
   };
 
+  if (imageError) {
+    return (
+      <div className={cn(
+        "flex items-center justify-center bg-neutral-800 text-neutral-400",
+        className
+      )}>
+        <span className="text-sm">Failed to load</span>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      {!imageLoaded && !imageError && (
-        <div className="absolute inset-0 bg-neutral-800 animate-pulse flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-neutral-600 border-t-white rounded-full animate-spin"></div>
+      {/* Loading state overlay */}
+      {!imageLoaded && isClient && (
+        <div className="absolute inset-0 bg-neutral-800 animate-pulse flex items-center justify-center z-10">
+          <div className="w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full animate-spin" />
         </div>
       )}
-      {imageError && (
-        <div className="absolute inset-0 bg-neutral-800 flex items-center justify-center">
-          <div className="text-neutral-500 text-xs text-center p-2">
-            <div className="mb-1">⚠️</div>
-            <div>Failed to load</div>
-          </div>
-        </div>
-      )}
+      
+      {/* Always render the image so it can load */}
       <img
         src={src}
         alt={alt}
@@ -73,9 +98,8 @@ const OptimizedImage = ({
         onLoad={handleLoad}
         onError={handleError}
         className={cn(
-          "transition-opacity duration-300",
-          imageLoaded ? "opacity-100" : "opacity-0",
-          className
+          "w-full h-full object-cover transition-opacity duration-300",
+          imageLoaded ? "opacity-100" : "opacity-0"
         )}
         {...props}
       />

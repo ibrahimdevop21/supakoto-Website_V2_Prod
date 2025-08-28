@@ -23,6 +23,8 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
 
   // Listen to branch changes
   useEffect(() => {
+    if (!isClient || typeof window === 'undefined') return;
+    
     const handleBranchChange = (event: CustomEvent<Branch>) => {
       const branch = event.detail;
       const newBranch = { lat: branch.lat, lng: branch.lng, id: branch.id };
@@ -39,7 +41,7 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
     return () => {
       window.removeEventListener('branch:changed', handleBranchChange as EventListener);
     };
-  }, [zoom]);
+  }, [zoom, isClient]);
 
   // Add CSS for map marker and controls
   useEffect(() => {
@@ -80,13 +82,22 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
 
   // Load interactive map on component mount
   useEffect(() => {
-    if (!mapRef.current || !isClient) return;
+    if (!mapRef.current || !isClient || typeof window === 'undefined') return;
     
     const loadInteractiveMap = async () => {
       try {
         setMapError(null);
+        
+        // Add timeout for map loading
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Map loading timeout')), 10000)
+        );
+        
         // Dynamic import of Leaflet with better error handling
-        const L = await import('leaflet');
+        const L = await Promise.race([
+          import('leaflet'),
+          timeoutPromise
+        ]) as typeof import('leaflet');
         
         // Ensure Leaflet is properly loaded
         if (!L.map || !L.tileLayer) {
@@ -187,6 +198,17 @@ export default function MapToggle({ initial, zoom = 14 }: MapToggleProps) {
         <div className="w-full h-full flex items-center justify-center text-neutral-400">
           <div className="text-center p-4">
             <p className="text-red-400 mb-2">⚠️ {mapError}</p>
+            <button 
+              onClick={() => {
+                setMapError(null);
+                setIsMapLoaded(false);
+                // Retry loading the map
+                window.location.reload();
+              }}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Retry
+            </button>
             <button 
               onClick={() => window.location.reload()} 
               className="px-4 py-2 bg-supakoto-red text-white rounded-lg hover:bg-red-600 transition-colors"

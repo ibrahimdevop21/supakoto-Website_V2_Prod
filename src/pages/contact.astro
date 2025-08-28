@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import BranchPicker from '../components/contact/BranchPicker';
-import MapToggle from '../components/contact/MapToggle';
+import StaticBranchCards from '../components/contact/StaticBranchCards';
 import { BRANCHES } from '../data/branches';
 
 // Get query parameters for deep linking
@@ -144,32 +143,19 @@ const selectedEnglishBranch = englishBranches.find(b => b.id === selectedBranchI
         </div>
       </div>
 
-      <!-- Main Content Grid - Branch Picker & Map -->
-      <div class="grid gap-8 lg:grid-cols-2 mb-20">
-        <!-- Left Column: Branch Picker -->
-        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
-          <h3 class="text-lg font-semibold text-white mb-4">Select Branch</h3>
-          <div class="relative z-10 max-w-full overflow-x-auto">
-            <BranchPicker 
-              client:load 
-              branches={englishBranches} 
-              selectedId={selectedBranch.id} 
-            />
-          </div>
+      <!-- Branch Locations Section -->
+      <div class="mb-20">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Our Locations</h2>
+          <p class="text-neutral-400 text-lg max-w-2xl mx-auto">
+            Visit any of our branches for professional automotive protection services
+          </p>
         </div>
-
-        <!-- Right Column: Interactive Map -->
-        <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10">
-          <h3 class="text-lg font-semibold text-white mb-4">Branch Location</h3>
-          <div class="w-full h-[300px] sm:h-[350px] md:h-[400px]">
-            <MapToggle 
-              client:load 
-              initial={selectedBranch} 
-              staticMapUrl=""
-              zoom={14} 
-            />
-          </div>
-        </div>
+        
+        <StaticBranchCards 
+          branches={englishBranches} 
+          locale="en"
+        />
       </div>
 
 
