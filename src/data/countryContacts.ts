@@ -7,6 +7,6 @@ export const COUNTRY_DEFAULTS: Record<CountryCode, { tel: string; wa: string }> 
   },
   EG: {
     tel: '+201224464637',  // Cairo Sheikh Zayed (call)
-    wa:  '201108184161',   // Cairo New Cairo (WhatsApp, no '+')
+    wa:  '201108184162',   // Cairo New Cairo (WhatsApp, no '+')
   },
 };
