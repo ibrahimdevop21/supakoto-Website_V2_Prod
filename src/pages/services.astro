@@ -1,19 +1,19 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ServicesHero from '../components/services/ServicesHero';
+import OurServices from '../components/services/OurServices.astro';
 import ServiceTiers from '../components/services/ServiceTiers';
 import FinishOptions from '../components/services/FinishOptions';
 import TechCraftsmanship from '../components/services/TechCraftsmanship';
 import PPFComparison from '../components/shared/PPFComparison';
-import TechnicalHighlights from '../components/services/TechnicalHighlights';
+
 import LifestyleUseCases from '../components/services/LifestyleUseCases';
 import ServicesCTA from '../components/services/ServicesCTA';
 import { getSEOData } from '../utils/seo-content';
 import { generateBreadcrumbSchema, generateServiceSchema } from '../utils/seo-schemas';
 
-// For locale-specific pages, we know the locale from the folder structure
-const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
-// English is LTR, so rtl is false
+const pathname = Astro.url.pathname;
+const locale: 'en' | 'ar' = pathname.startsWith('/ar') ? 'ar' : 'en';
+const currentLang = locale;
 const rtl = currentLang === 'ar';
 
 // Get SEO-optimized content
@@ -40,12 +40,9 @@ const combinedSchema = [breadcrumbSchema, serviceSchema];
 	type="service"
 	schema={combinedSchema}
 >
-	<ServicesHero currentLocale={currentLang} isRTL={rtl} slot="hero" />
 	<main id="content" class="flex flex-col">
-		<!-- Hero Section -->
-		<section class="relative">
-			<ServicesHero client:idle currentLocale={currentLang} isRTL={rtl} />
-		</section>
+		<!-- Our Services Section -->
+		<OurServices locale={locale} />
 
 		<!-- Service Tiers Section -->
 		<section id="tiers" class="py-12 md:py-16">
@@ -68,12 +65,7 @@ const combinedSchema = [breadcrumbSchema, serviceSchema];
 			</div>
 		</section>
 
-		<!-- Technical Highlights Section -->
-		<section class="py-12 md:py-16 bg-muted/30">
-			<div class="container mx-auto px-4">
-				<TechnicalHighlights client:visible currentLocale={currentLang} isRTL={rtl} />
-			</div>
-		</section>
+
 
 		<!-- Lifestyle Use Cases Section -->
 		<section class="py-12 md:py-16">
@@ -87,4 +79,9 @@ const combinedSchema = [breadcrumbSchema, serviceSchema];
 		<!-- Closing CTA Section -->
 		<ServicesCTA client:visible currentLocale={currentLang} isRTL={rtl} />
 	</main>
+
+	<!-- Service Schema for SEO -->
+	<script type="application/ld+json">
+		{JSON.stringify(generateServiceSchema(locale === 'ar' ? 'خدمات حماية السيارات' : 'Automotive Protection Services', locale))}
+	</script>
 </Layout>

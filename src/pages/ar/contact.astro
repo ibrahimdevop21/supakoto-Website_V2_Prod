@@ -25,10 +25,9 @@ const arabicBranches = BRANCHES;
       </div>
 
       <!-- Contact Form Section -->
-      <div class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 mb-20 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
+      <div class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 md:p-8 mb-20 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
         <div class="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-16 -translate-x-16 group-hover:scale-150 transition-transform duration-500"></div>
         <div class="relative z-10">
-          <h2 class="text-2xl font-bold text-white mb-6">احصل على عرض أسعار - سنتواصل معك فوراً</h2>
           
           <!-- Service Selection Validation Script -->
           <script>
@@ -50,7 +49,7 @@ const arabicBranches = BRANCHES;
             <input type="hidden" id="branchId" name="branch_id" value={selectedBranch.id} />
             <input type="hidden" name="_gotcha" style="display:none" />
             
-            <div class="grid gap-6 md:grid-cols-2">
+            <div class="grid gap-6 md:grid-cols-2 lg:gap-8">
               <div>
                 <label for="name" class="block text-sm font-medium text-white mb-2">الاسم الكامل</label>
                 <input 
@@ -58,7 +57,7 @@ const arabicBranches = BRANCHES;
                   id="name" 
                   name="name" 
                   required 
-                  class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors"
+                  class="w-full px-4 py-3 sm:py-4 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors text-base"
                   placeholder="أدخل اسمك الكامل"
                 />
               </div>
@@ -70,7 +69,7 @@ const arabicBranches = BRANCHES;
                   id="phone" 
                   name="phone" 
                   required 
-                  class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors"
+                  class="w-full px-4 py-3 sm:py-4 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors text-base"
                   placeholder="أدخل رقم هاتفك"
                   dir="ltr"
                 />
@@ -78,49 +77,53 @@ const arabicBranches = BRANCHES;
             </div>
 
             <!-- Service Selection -->
-            <div>
-              <label class="block text-sm font-medium text-white mb-3">اختر الخدمة المطلوبة</label>
-              <div class="grid gap-3 md:grid-cols-2">
+            <div class="space-y-4">
+              <label class="block text-sm font-medium text-white mb-4">اختر الخدمة المطلوبة</label>
+              <div class="grid gap-3 sm:gap-4 md:grid-cols-2 lg:gap-6">
                 <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
                   <input type="checkbox" name="services" value="ppf" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="mr-3 text-white">فيلم حماية الطلاء (PPF)</span>
+                  <span class="mr-4 text-white">فيلم حماية الطلاء (PPF)</span>
                 </label>
                 <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
                   <input type="checkbox" name="services" value="heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="mr-3 text-white">عزل حراري</span>
+                  <span class="mr-4 text-white">عزل حراري</span>
                 </label>
                 <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
                   <input type="checkbox" name="services" value="nano_ceramic" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="mr-3 text-white">نانو سيراميك</span>
+                  <span class="mr-4 text-white">نانو سيراميك</span>
                 </label>
                 <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
-                  <input type="checkbox" name="services" value="heat_nano_combo" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="mr-3 text-white">عزل حراري + نانو سيراميك</span>
+                  <input type="checkbox" name="services" value="commercial_heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="mr-4 text-white">عزل حراري للمباني التجارية</span>
+                </label>
+                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
+                  <input type="checkbox" name="services" value="residential_heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                  <span class="mr-4 text-white">عزل حراري للمباني السكنية</span>
                 </label>
               </div>
             </div>
              
             <div>
               <label for="message" class="block text-sm font-medium text-white mb-2">الرسالة</label>
-              <textarea 
-                id="message" 
-                name="message" 
-                rows="4" 
-                required 
-                class="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors resize-none"
-                placeholder="أخبرنا عن سيارتك ومتطلباتك..."
-              ></textarea>
+                <textarea 
+                  id="message" 
+                  name="message" 
+                  rows="4" 
+                  required 
+                  class="w-full px-4 py-3 sm:py-4 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors resize-none text-base"
+                  placeholder="أخبرنا عن سيارتك ومتطلباتك..."
+                ></textarea>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <label class="flex items-center">
-                <input type="checkbox" name="whatsapp_only" value="1" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                <span class="mr-2 text-sm text-neutral-300">تواصل معي عبر الواتساب فقط</span>
+              <label class="flex items-center min-h-[48px] touch-manipulation">
+                <input type="checkbox" name="whatsapp_only" value="1" class="w-5 h-5 sm:w-4 sm:h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
+                <span class="mr-3 text-sm text-neutral-300">تواصل معي عبر الواتساب فقط</span>
               </label>
               
               <button 
                 type="submit" 
-                class="px-8 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200 transform hover:scale-105"
+                class="w-full sm:w-auto px-8 py-4 sm:py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200 transform hover:scale-105 text-base min-h-[48px] touch-manipulation"
               >
                 إرسال الطلب
               </button>

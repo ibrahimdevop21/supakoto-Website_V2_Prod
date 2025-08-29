@@ -1,14 +1,55 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { t } from '../i18n/index';
+import { getSEOData } from '../utils/seo-content';
+import { generateBreadcrumbSchema, generateFAQSchema } from '../utils/seo-schemas';
 
 // For locale-specific pages, we know the locale from the folder structure
-const currentLang = Astro.currentLocale || 'en';
+const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 // English is LTR, so rtl is false
 const rtl = currentLang === 'ar';
+
+// Get SEO-optimized content
+const seoData = getSEOData('faq', currentLang);
+
+// Generate breadcrumb schema
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: currentLang === 'ar' ? 'الرئيسية' : 'Home', url: 'https://supakoto.com' },
+	{ name: currentLang === 'ar' ? 'الأسئلة الشائعة' : 'FAQ', url: `https://supakoto.com${currentLang === 'ar' ? '/ar' : ''}/faq` }
+]);
+
+// Generate FAQ schema with sample FAQs
+const faqData = [
+	{
+		question: currentLang === 'ar' ? 'ما هو فيلم حماية الطلاء PPF؟' : 'What is Paint Protection Film (PPF)?',
+		answer: currentLang === 'ar' 
+			? 'فيلم حماية الطلاء هو طبقة شفافة رقيقة تُطبق على طلاء السيارة لحمايتها من الخدوش والحجارة والعوامل البيئية.'
+			: 'Paint Protection Film is a thin, transparent layer applied to your car\'s paint to protect it from scratches, stone chips, and environmental factors.'
+	},
+	{
+		question: currentLang === 'ar' ? 'كم تدوم حماية PPF؟' : 'How long does PPF last?',
+		answer: currentLang === 'ar'
+			? 'فيلم حماية الطلاء عالي الجودة يدوم من 7-10 سنوات مع الصيانة المناسبة.'
+			: 'High-quality PPF lasts 7-10 years with proper maintenance.'
+	},
+	{
+		question: currentLang === 'ar' ? 'هل يؤثر PPF على مظهر السيارة؟' : 'Does PPF affect the car\'s appearance?',
+		answer: currentLang === 'ar'
+			? 'لا، فيلم PPF شفاف تماماً ولا يغير مظهر السيارة الأصلي.'
+			: 'No, PPF is completely transparent and doesn\'t change your car\'s original appearance.'
+	}
+];
+
+const faqSchema = generateFAQSchema(faqData);
 ---
 
-<Layout title={t('pages.faq.title')}>
+<Layout 
+	title={seoData.title}
+	description={seoData.description}
+	keywords={seoData.keywords}
+	type="website"
+	schema={[breadcrumbSchema, faqSchema]}
+>
   <section class="py-16 md:py-24">
     <div class="container mx-auto px-4">
       <div class="text-center mb-12">

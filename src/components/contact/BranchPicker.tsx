@@ -81,7 +81,7 @@ export default function BranchPicker({ branches, selectedId }: BranchPickerProps
                 {branch.address}
               </p>
               <div className="mt-3 flex items-center justify-end gap-2">
-                <span className="text-xs text-neutral-500">
+                <span className="text-xs text-neutral-500" dir="ltr">
                   {branch.phones[0]}
                 </span>
                 <div className={`

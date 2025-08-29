@@ -19,7 +19,7 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
   };
 
   return (
-    <div className="grid gap-4 md:gap-6">
+    <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-2">
       {branches.map((branch) => (
         <div
           key={branch.id}
@@ -78,6 +78,7 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                         key={idx}
                         href={`tel:${phone}`}
                         className="text-white hover:text-green-400 transition-colors font-medium"
+                        dir="ltr"
                       >
                         {phone}
                       </a>
@@ -101,6 +102,7 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                       target="_blank"
                       rel="noopener noreferrer"
                       className="block text-white hover:text-green-400 transition-colors font-medium"
+                      dir="ltr"
                     >
                       +{branch.whatsapp.replace(/(\d{1,3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}
                     </a>

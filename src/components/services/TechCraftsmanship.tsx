@@ -39,72 +39,66 @@ const TechCraftsmanship: React.FC<TechCraftsmanshipProps> = ({ currentLocale, is
 
   return (
     <div className={`${isRTL ? 'rtl font-arabic' : 'ltr'}`}>
-      <div className="text-center mb-12">
-        <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-white ${isRTL ? 'font-arabic' : ''}`}>
+      <div className="text-center mb-8 sm:mb-10 md:mb-12">
+        <h2 className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white ${isRTL ? 'font-arabic' : ''}`}>
           {t('services.tech.title')}
         </h2>
-        <p className={`text-lg text-gray-300 max-w-2xl mx-auto ${isRTL ? 'font-arabic' : ''}`}>
+        <p className={`text-base sm:text-lg text-gray-300 max-w-xl mx-auto px-4 sm:px-0 ${isRTL ? 'font-arabic' : ''}`}>
           {t('services.tech.subtitle')}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {benefits.map((benefit, index) => {
           const IconComponent = benefit.icon;
           
           return (
             <div
               key={index}
-              className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 hover:transform hover:scale-105"
+              className="group relative bg-gradient-to-br from-slate-800/40 to-slate-900/40 backdrop-blur-sm border border-slate-700/40 rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 hover:border-slate-600/50 transition-all duration-200 hover:shadow-lg hover:shadow-slate-500/5"
             >
-              {/* Background gradient effect */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-300`}></div>
+              {/* Subtle background gradient effect */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-0 group-hover:opacity-5 rounded-xl sm:rounded-2xl transition-opacity duration-200`}></div>
               
               <div className="relative z-10">
-                {/* Icon */}
-                <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${benefit.gradient} rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                  <IconComponent size={32} className="text-white" />
+                {/* Icon - Mobile Optimized */}
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto mb-3 sm:mb-4 bg-gradient-to-br ${benefit.gradient} rounded-full flex items-center justify-center group-hover:scale-105 transition-transform duration-200`}>
+                  <IconComponent size={24} className="text-white sm:w-7 sm:h-7 md:w-8 md:h-8" />
                 </div>
 
-                {/* Content */}
+                {/* Content - Mobile Optimized */}
                 <div className="text-center">
-                  <h3 className={`text-lg font-semibold text-white mb-3 group-hover:text-gray-100 transition-colors ${isRTL ? 'font-arabic' : ''}`}>
+                  <h3 className={`text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3 group-hover:text-gray-100 transition-colors ${isRTL ? 'font-arabic' : ''}`}>
                     {benefit.title}
                   </h3>
-                  <p className={`text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors ${isRTL ? 'font-arabic' : ''}`}>
+                  <p className={`text-gray-300 text-sm sm:text-sm leading-relaxed group-hover:text-gray-200 transition-colors ${isRTL ? 'font-arabic' : ''}`}>
                     {benefit.description}
                   </p>
                 </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-4 right-4 w-2 h-2 bg-gradient-to-br from-white/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute bottom-4 left-4 w-1 h-1 bg-gradient-to-br from-white/30 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{transitionDelay: '100ms'}}></div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Additional trust elements */}
-      <div className="mt-12 text-center">
-        <div className="inline-flex items-center gap-4 px-6 py-3 bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-full">
-          <div className="flex items-center gap-2">
+      {/* Additional trust elements - Mobile Friendly */}
+      <div className="mt-8 sm:mt-10 md:mt-12 text-center">
+        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 px-4">
+          <div className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-full">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className={`text-sm text-gray-300 ${isRTL ? 'font-arabic' : ''}`}>
+            <span className={`text-xs sm:text-sm text-green-200 font-medium ${isRTL ? 'font-arabic' : ''}`}>
               {t('services.tech.certified')}
             </span>
           </div>
-          <div className="w-px h-4 bg-slate-600"></div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-            <span className={`text-sm text-gray-300 ${isRTL ? 'font-arabic' : ''}`}>
+            <span className={`text-xs sm:text-sm text-blue-200 font-medium ${isRTL ? 'font-arabic' : ''}`}>
               {t('services.tech.professional')}
             </span>
           </div>
-          <div className="w-px h-4 bg-slate-600"></div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full">
             <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
-            <span className={`text-sm text-gray-300 ${isRTL ? 'font-arabic' : ''}`}>
+            <span className={`text-xs sm:text-sm text-purple-200 font-medium ${isRTL ? 'font-arabic' : ''}`}>
               {t('services.tech.guaranteed')}
             </span>
           </div>

@@ -13,7 +13,7 @@ export interface Props {
   canonicalURL?: string;
   noindex?: boolean;
   nofollow?: boolean;
-  schema?: Record<string, any>;
+  schema?: Record<string, any> | Array<Record<string, any>>;
 }
 
 const {
@@ -33,9 +33,54 @@ const {
   schema
 } = Astro.props;
 
-const currentURL = new URL(Astro.url.pathname, Astro.site || 'https://supakoto.com');
-const canonical = canonicalURL || currentURL.toString();
-const ogImage = image || new URL('/assets/og-image.png', Astro.site || 'https://supakoto.com').toString();
+const siteUrl = Astro.site || 'https://supakoto.com';
+const currentPath = Astro.url.pathname;
+
+// Generate proper canonical URL based on locale and path
+let canonical: string;
+if (canonicalURL) {
+  canonical = canonicalURL;
+} else {
+  // For English pages: https://supakoto.com/{path} (no /en)
+  // For Arabic pages: https://supakoto.com/ar/{path}
+  if (locale === 'ar') {
+    // Ensure Arabic pages have /ar prefix in canonical
+    const cleanPath = currentPath.startsWith('/ar') ? currentPath : `/ar${currentPath}`;
+    canonical = new URL(cleanPath, siteUrl).toString();
+  } else {
+    // For English, remove any /en prefix and use root
+    const cleanPath = currentPath.startsWith('/en') ? currentPath.replace('/en', '') : currentPath;
+    canonical = new URL(cleanPath === '' ? '/' : cleanPath, siteUrl).toString();
+  }
+}
+
+// Generate hreflang alternate URLs
+const hreflangAlternates: Array<{ locale: string; url: string }> = [];
+
+// Add current page
+hreflangAlternates.push({ locale: locale, url: canonical });
+
+// Generate alternate language version
+if (locale === 'en') {
+  // For English page, add Arabic equivalent
+  const arabicPath = currentPath === '/' ? '/ar' : `/ar${currentPath}`;
+  hreflangAlternates.push({ 
+    locale: 'ar', 
+    url: new URL(arabicPath, siteUrl).toString() 
+  });
+} else if (locale === 'ar') {
+  // For Arabic page, add English equivalent
+  const englishPath = currentPath.replace('/ar', '') || '/';
+  hreflangAlternates.push({ 
+    locale: 'en', 
+    url: new URL(englishPath, siteUrl).toString() 
+  });
+}
+
+// Merge with any additional alternates provided
+const allAlternates = [...hreflangAlternates, ...alternateLocales];
+
+const ogImage = image || new URL('/assets/og-image.png', siteUrl).toString();
 const siteName = 'SupaKoto';
 
 // Generate robots meta content
@@ -61,7 +106,7 @@ const robotsContent = [
 
 <!-- Language and Locale -->
 <meta property="og:locale" content={locale} />
-{alternateLocales.map(({ locale: altLocale, url }) => (
+{allAlternates.map(({ locale: altLocale, url }) => (
   <link rel="alternate" hreflang={altLocale} href={url} />
 ))}
 
@@ -98,5 +143,5 @@ const robotsContent = [
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
 {schema && (
-  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(Array.isArray(schema) ? schema : [schema])} />
 )}

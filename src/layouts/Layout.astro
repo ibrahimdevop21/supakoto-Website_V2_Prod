@@ -47,18 +47,6 @@ const websiteSchema = generateWebsiteSchema(currentLang);
 
 // Combine schemas
 const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [organizationSchema, websiteSchema];
-
-// Generate alternate language URLs
-const currentPath = Astro.url.pathname;
-const baseURL = 'https://supakoto.com';
-const enPath = currentPath.replace(/^\/ar/, '') || '/';
-const arPath = currentPath.startsWith('/ar') ? currentPath : `/ar${currentPath}`;
-
-const alternateLocales = [
-	{ locale: 'en', url: `${baseURL}${enPath}` },
-	{ locale: 'ar', url: `${baseURL}${arPath}` },
-	{ locale: 'x-default', url: `${baseURL}${enPath}` }
-];
 ---
 
 <!doctype html>
@@ -75,7 +63,6 @@ const alternateLocales = [
 			image={image}
 			type={type}
 			locale={currentLang}
-			alternateLocales={alternateLocales}
 			noindex={noindex}
 			nofollow={nofollow}
 			schema={combinedSchema}

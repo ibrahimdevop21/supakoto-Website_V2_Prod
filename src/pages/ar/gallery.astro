@@ -2,16 +2,37 @@
 import Layout from '../../layouts/Layout.astro';
 import SimpleGallery, { type SimpleGalleryImage } from '../../components/gallery/SimpleGallery';
 import { t } from '../../i18n';
+import { getSEOData } from '../../utils/seo-content';
+import { generateBreadcrumbSchema } from '../../utils/seo-schemas';
 
-const currentLang = 'ar';
+const currentLang = 'ar' as 'en' | 'ar';
 const rtl = true;
 
-// Generate gallery images from the 238 webp files in public/gallery
+// Get SEO-optimized content for Arabic gallery page
+const seoData = getSEOData('gallery', currentLang);
+
+// Generate breadcrumb schema
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: 'الرئيسية', url: 'https://supakoto.com/ar' },
+	{ name: 'معرض الأعمال', url: 'https://supakoto.com/ar/gallery' }
+]);
+
+// Generate gallery images from the 238 webp files in public/gallery with descriptive alt text
 const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
   const imageNumber = String(i + 1).padStart(3, '0');
+  // Generate more descriptive alt text for better SEO
+  const altTexts = [
+    `سيارة فاخرة مع تركيب فيلم حماية الطلاء PPF - منظر أمامي ${imageNumber}`,
+    `تركيب احترافي لفيلم حماية الطلاء على سيارة رياضية ${imageNumber}`,
+    `حماية طلاء السيارة بتقنية PPF المتقدمة - مشروع ${imageNumber}`,
+    `سيارة محمية بفيلم PPF شفاف عالي الجودة ${imageNumber}`,
+    `تفاصيل تركيب فيلم حماية الطلاء الاحترافي ${imageNumber}`
+  ];
+  const altText = altTexts[i % altTexts.length];
+  
   return {
     src: `/gallery/supa-${imageNumber}.webp`,
-    alt: `تركيب PPF احترافي من سوباكوتو ${imageNumber}`,
+    alt: altText,
     caption: `تركيب PPF احترافي — مشروع ${imageNumber}`
   };
 });
@@ -19,8 +40,11 @@ const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
 ---
 
 <Layout 
-  title={t('gallery.title')}
-  description={t('gallery.description')}
+  title={seoData.title}
+  description={seoData.description}
+  keywords={seoData.keywords}
+  type="website"
+  schema={breadcrumbSchema}
 >
   <section class="py-16 md:py-20 lg:py-24">
     <!-- Gallery Hero Section with proper spacing -->

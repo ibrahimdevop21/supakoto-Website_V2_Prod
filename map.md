@@ -1,5 +1,7 @@
-working hours for all branches are 10:00 am to 6:00 pm 
-friday is off
+working hours for all branches are 10:00 am to 8:00 pm 
+
+EGYPT BRANCHES: No days off (Saturday-Friday: 10AM-8PM)
+DUBAI BRANCH: Weekend is Sunday (Saturday-Friday: 10AM-8PM, Sunday: Closed)
 
 DUBAI
 Warehouse 48 15B St - Al Quoz - Al Quoz Industrial Area 4 - Dubai - United Arab Emirates

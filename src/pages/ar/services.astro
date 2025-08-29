@@ -1,27 +1,43 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { t } from '../../i18n/index';
-import ServicesHero from '../../components/services/ServicesHero';
+import OurServices from '../../components/services/OurServices.astro';
 import ServiceTiers from '../../components/services/ServiceTiers';
 import TechCraftsmanship from '../../components/services/TechCraftsmanship';
 import FinishOptions from '../../components/services/FinishOptions';
-import TechnicalHighlights from '../../components/services/TechnicalHighlights';
+
 import LifestyleUseCases from '../../components/services/LifestyleUseCases';
-
 import ServicesCTA from '../../components/services/ServicesCTA';
+import { getSEOData } from '../../utils/seo-content';
+import { generateBreadcrumbSchema, generateServiceSchema } from '../../utils/seo-schemas';
 
-// For locale-specific pages, we know the locale from the folder structure
-const currentLang = Astro.currentLocale || 'ar';
-// Arabic is RTL, so rtl is true
+const pathname = Astro.url.pathname;
+const locale: 'en' | 'ar' = pathname.startsWith('/ar') ? 'ar' : 'en';
+const currentLang = locale;
 const rtl = currentLang === 'ar';
+
+// Get SEO-optimized content for Arabic services page
+const seoData = getSEOData('services', currentLang);
+
+// Generate breadcrumb and service schemas
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: 'الرئيسية', url: 'https://supakoto.com/ar' },
+	{ name: 'خدماتنا', url: 'https://supakoto.com/ar/services' }
+]);
+
+const serviceSchema = generateServiceSchema('Paint Protection Film Services', currentLang);
 ---
 
-<Layout title={t('services.meta.title')} description={t('services.meta.description')}>
+<Layout 
+	title={seoData.title}
+	description={seoData.description}
+	keywords={seoData.keywords}
+	type="service"
+	schema={[breadcrumbSchema, serviceSchema]}
+>
 	<main id="content" class="flex flex-col">
-		<!-- Hero Section -->
-		<section class="relative">
-			<ServicesHero client:idle currentLocale={currentLang} isRTL={rtl} />
-		</section>
+		<!-- Our Services Section -->
+		<OurServices locale={locale} />
 
 		<!-- Service Tiers Section -->
 		<section id="tiers" class="py-12 md:py-16">
@@ -44,12 +60,7 @@ const rtl = currentLang === 'ar';
 			</div>
 		</section>
 
-		<!-- Technical Highlights Section -->
-		<section class="py-12 md:py-16 bg-muted/30">
-			<div class="container mx-auto px-4">
-				<TechnicalHighlights client:visible currentLocale={currentLang} isRTL={rtl} />
-			</div>
-		</section>
+
 
 		<!-- Lifestyle Use Cases Section -->
 		<section class="py-12 md:py-16">
@@ -63,5 +74,10 @@ const rtl = currentLang === 'ar';
 		<!-- Closing CTA Section -->
 		<ServicesCTA client:visible currentLocale={currentLang} isRTL={rtl} />
 	</main>
+
+	<!-- Service Schema for SEO -->
+	<script type="application/ld+json">
+		{JSON.stringify(generateServiceSchema(locale === 'ar' ? 'خدمات حماية السيارات' : 'Automotive Protection Services', locale))}
+	</script>
 </Layout>
 

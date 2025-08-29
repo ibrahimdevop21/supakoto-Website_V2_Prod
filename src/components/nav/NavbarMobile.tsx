@@ -12,10 +12,24 @@ export default function NavbarMobile({ locale }: NavbarMobileProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isRTL = locale === 'ar';
 
+  // Hide trigger when menu is open
+  const hideWhenOpen = isOpen ? 'invisible pointer-events-none' : '';
+
   // Ensure we're on client side
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (!isClient) return;
+    const { body } = document;
+    if (isOpen) {
+      const prev = body.style.overflow;
+      body.style.overflow = 'hidden';
+      return () => { body.style.overflow = prev; };
+    }
+  }, [isOpen, isClient]);
 
   // Handle escape key
   useEffect(() => {
@@ -98,55 +112,75 @@ export default function NavbarMobile({ locale }: NavbarMobileProps) {
   }
 
   return (
-    <div className="md:hidden relative" ref={menuRef}>
+    <div className="md:hidden" ref={menuRef} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Trigger */}
       <button
         ref={buttonRef}
         onClick={toggleMenu}
-        className="rounded-xl p-2 bg-white/10 border border-white/20 hover:bg-white/20 transition duration-200"
+        className={`rounded-xl p-2 bg-white/10 border border-white/20 hover:bg-white/20 transition duration-200 ${hideWhenOpen}`}
         aria-label={isOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isOpen}
+        aria-controls="mobile-menu"
       >
         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {isOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          )}
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
 
-      {/* Mobile Menu Panel */}
-      <div
-        className={`
-          absolute right-0 mt-2 w-[88vw] max-w-sm overflow-hidden transition-[max-height,opacity] duration-300
-          ${
-            isOpen
-              ? 'max-h-[60vh] opacity-100'
-              : 'max-h-0 opacity-0'
-          }
-        `}
-      >
-        <div className="rounded-2xl border border-white/10 bg-black/80 backdrop-blur p-4 shadow-[0_12px_40px_rgba(0,0,0,.45)]">
-          {/* Navigation Links */}
-          <nav className="space-y-2">
-            {NAV_LINKS.map((link) => {
-              const href = getLocalizedHref(link.href);
-              const label = locale === 'ar' ? link.label_ar : link.label_en;
+      {/* Fullscreen overlay */}
+      {isOpen && (
+        <div
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[10050] flex overscroll-contain"
+          onClick={(e) => { if (e.target === e.currentTarget) closeMenu(); }}
+        >
+          {/* Backdrop: opaque enough to avoid hero bleed, no odd page tint */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
 
-              return (
-                <a
-                  key={link.href}
-                  href={href}
+          {/* Panel */}
+          <div
+            className="
+              relative mx-4 mt-20 w-full
+              transition-transform duration-200
+              animate-[menuIn_.18s_ease-out]
+            "
+          >
+            <div className="rounded-2xl border border-white/12 bg-neutral-900/95 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,.45)] overflow-hidden">
+              {/* Single close control inside the panel */}
+              <div className="flex items-center justify-end p-3">
+                <button
                   onClick={closeMenu}
-                  className="block px-2 py-2 rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition"
+                  className="h-9 w-9 inline-flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white"
+                  aria-label={locale === 'ar' ? 'إغلاق القائمة' : 'Close menu'}
                 >
-                  {label}
-                </a>
-              );
-            })}
-          </nav>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <nav className="pb-3">
+                {NAV_LINKS.map((link) => {
+                  const href = getLocalizedHref(link.href);
+                  const label = locale === 'ar' ? link.label_ar : link.label_en;
+                  return (
+                    <a
+                      key={link.href}
+                      href={href}
+                      onClick={closeMenu}
+                      className="block px-5 py-3 text-base text-white/95 hover:bg-white/10 focus:bg-white/10 focus:outline-none"
+                    >
+                      {label}
+                    </a>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

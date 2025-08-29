@@ -160,7 +160,7 @@ export default function ActionButtons({
               >
                 <div>
                   <div className="font-medium">{getBranchName(branch)}</div>
-                  <div className="text-xs text-neutral-400">{branch.phone}</div>
+                  <div className="text-xs text-neutral-400" dir="ltr">{branch.phone}</div>
                 </div>
                 {branch.isHQ && (
                   <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full">

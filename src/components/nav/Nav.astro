@@ -15,8 +15,11 @@ const logoPath = '/logo.svg';
 ---
 
 <!-- Glass/Frosted Header -->
-<header 
-  class={`fixed top-0 inset-x-0 z-[9999] h-16 pointer-events-auto backdrop-blur supports-[backdrop-filter]:bg-white/5 bg-white/10 border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.25)] transition-colors duration-300 ${rtl ? 'rtl' : ''}`}
+<header
+  class={`fixed top-0 inset-x-0 z-[9999] h-16 pointer-events-auto
+    backdrop-blur-md supports-[backdrop-filter]:bg-white/8 bg-white/10
+    border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+    transition-colors duration-300 ${rtl ? 'rtl' : ''}`}
   role="banner"
 >
   <div class="mx-auto max-w-7xl px-4 md:px-6 h-full flex items-center justify-between">
@@ -28,7 +31,7 @@ const logoPath = '/logo.svg';
     >
       <img 
         src={logoPath} 
-        alt="SupaKoto" 
+        alt="SupaKoto - Paint Protection Film PPF Services Logo" 
         class="h-8 w-auto md:h-8 sm:h-7"
       />
     </a>
@@ -38,19 +41,39 @@ const logoPath = '/logo.svg';
 
     <!-- Right: CTAs ALWAYS visible + burger on mobile -->
     <div class="flex items-center gap-3">
-      <ActionPills client:load locale={locale} />
+      <ActionPills client:load locale={locale} currentPath={pathname} />
       <NavbarMobile client:load locale={locale} />
     </div>
   </div>
+
+<script>
+  // Strengthen glass slightly on scroll; stay glass by default.
+  const el = document.currentScript?.closest('header');
+  const onScroll = () => {
+    if (!el) return;
+    const scrolled = window.scrollY > 8;
+    el.classList.toggle('navbar-scrolled', scrolled);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
 </header>
 
 <!-- Spacer to prevent content from hiding behind fixed header -->
 <div style="height:4rem;"></div>
 
 <style>
-  /* Ensure header stays above floating widgets */
+  /* Ensure header stays above floating widgets and transparent */
   header {
     z-index: 9999;
+  }
+  
+  /* Strengthen transparency on first paint */
+  header {
+    background-clip: padding-box;
+  }
+  @supports (backdrop-filter: blur(8px)) {
+    header { background-color: rgba(255,255,255,0.08); }
   }
   
   /* Prevent pointer events on overlay when menu is closed */

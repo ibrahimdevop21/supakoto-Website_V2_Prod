@@ -9,14 +9,30 @@ import ServiceTiers from '../../components/services/ServiceTiers';
 
 import LifestyleUseCases from '../../components/services/LifestyleUseCases';
 import { t } from '../../i18n/index';
+import { getSEOData } from '../../utils/seo-content';
+import { generateBreadcrumbSchema } from '../../utils/seo-schemas';
 
 // For locale-specific pages, we know the locale from the folder structure
 const currentLang = (Astro.currentLocale || 'ar') as 'en' | 'ar';
 // Arabic is RTL, so rtl is true
 const rtl = currentLang === 'ar';
+
+// Get SEO-optimized content for Arabic
+const seoData = getSEOData('home', currentLang);
+
+// Generate breadcrumb schema for Arabic home page
+const breadcrumbSchema = generateBreadcrumbSchema([
+	{ name: 'الرئيسية', url: 'https://supakoto.com/ar' }
+]);
 ---
 
-<Layout title={t('pages.home.title')}>
+<Layout 
+	title={seoData.title}
+	description={seoData.description}
+	keywords={seoData.keywords}
+	type="website"
+	schema={breadcrumbSchema}
+>
 	<ModernHeroCarousel slot="hero" />
 	
 	<!-- Main content with responsive container and consistent spacing -->
