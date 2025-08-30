@@ -44,11 +44,15 @@ const OptimizedImage = ({
   loading = "lazy",
   onLoad,
   onError,
+  width,
+  height,
   ...props 
 }: React.ImgHTMLAttributes<HTMLImageElement> & {
   className?: string;
   onLoad?: () => void;
   onError?: () => void;
+  width?: number;
+  height?: number;
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -84,8 +88,8 @@ const OptimizedImage = ({
     <div className={cn("relative overflow-hidden", className)}>
       {/* Loading state overlay */}
       {!imageLoaded && isClient && (
-        <div className="absolute inset-0 bg-neutral-800 animate-pulse flex items-center justify-center z-10">
-          <div className="w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full animate-spin" />
+        <div className="absolute inset-0 bg-neutral-800 animate-pulse motion-reduce:animate-none flex items-center justify-center z-10">
+          <div className="w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full animate-spin motion-reduce:animate-none" />
         </div>
       )}
       
@@ -95,10 +99,13 @@ const OptimizedImage = ({
         alt={alt}
         loading={loading}
         decoding="async"
+        fetchPriority={loading === "eager" ? "high" : undefined}
+        width={width}
+        height={height}
         onLoad={handleLoad}
         onError={handleError}
         className={cn(
-          "w-full h-full object-cover transition-opacity duration-300",
+          "w-full h-full object-cover transition-opacity duration-300 motion-reduce:transition-none",
           imageLoaded ? "opacity-100" : "opacity-0"
         )}
         {...props}
@@ -117,6 +124,18 @@ const ChevronLeft = ({ className }: { className?: string }) => (
 const ChevronRight = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+  </svg>
+);
+
+const ExpandIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+  </svg>
+);
+
+const CloseIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
@@ -154,11 +173,27 @@ export default function SimpleGallery({
   const [index, setIndex] = useState(() => clamp(initialIndex, 0, Math.max(0, images.length - 1)));
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showThumbs, setShowThumbs] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [loadedImages, setLoadedImages] = useState(new Set<number>());
   const [preloadedPages, setPreloadedPages] = useState(new Set([0])); // Preload first page
   const mainRef = useRef<HTMLDivElement | null>(null);
   const stripRef = useRef<HTMLDivElement | null>(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
   const current = images[index];
+  
+  // Mobile detection hook
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const apply = () => setIsMobile(mq.matches);
+    apply();
+    mq.addEventListener?.('change', apply);
+    window.addEventListener('resize', apply);
+    return () => {
+      mq.removeEventListener?.('change', apply);
+      window.removeEventListener('resize', apply);
+    };
+  }, []);
   
   // Intersection observer for thumbnail container
   const { targetRef: thumbnailRef, isIntersecting } = useIntersectionObserver({
@@ -193,6 +228,47 @@ export default function SimpleGallery({
     }),
     [isRTL]
   );
+
+  const prev = useCallback(() => {
+    setIndex((i) => (i > 0 ? i - 1 : i)); // no loop
+  }, []);
+  
+  const next = useCallback(() => {
+    setIndex((i) => (i < images.length - 1 ? i + 1 : i)); // no loop
+  }, [images.length]);
+  
+  const toggleFullscreen = useCallback(() => {
+    if (isMobile) return; // disable on phones
+    setIsFullscreen((v) => !v);
+  }, [isMobile]);
+
+  // Touch handlers for swipe gestures
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    // Allow vertical scrolling by default
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+    
+    // Only handle horizontal swipes that are significant and more horizontal than vertical
+    if (Math.abs(dx) > 48 && Math.abs(dx) > 1.5 * Math.abs(dy)) {
+      e.preventDefault();
+      if (dx > 0) {
+        // Swipe right
+        isRTL ? next() : prev();
+      } else {
+        // Swipe left
+        isRTL ? prev() : next();
+      }
+    }
+  }, [isRTL, next, prev]);
 
   useEffect(() => {
     // Update current page when index changes
@@ -257,17 +333,6 @@ export default function SimpleGallery({
     active?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   }, [index, currentPage]);
 
-  const prev = useCallback(() => {
-    setIndex((i) => (i > 0 ? i - 1 : i)); // no loop
-  }, []);
-  
-  const next = useCallback(() => {
-    setIndex((i) => (i < images.length - 1 ? i + 1 : i)); // no loop
-  }, [images.length]);
-  
-  const toggleFullscreen = useCallback(() => {
-    setIsFullscreen(!isFullscreen);
-  }, [isFullscreen]);
   
   const loadMore = useCallback(() => {
     if (currentPage < totalPages - 1) {
@@ -292,58 +357,88 @@ export default function SimpleGallery({
   return (
     <>
     <section
-      className={cn("py-8 md:py-12", className)}
+      className={cn("py-8 md:py-12 pb-[max(1rem,env(safe-area-inset-bottom))]", className)}
       dir={isRTL ? "rtl" : "ltr"}
+      tabIndex={0}
       onKeyDown={onKeyDown}
       aria-label={isRTL ? "معرض الصور" : "Image gallery"}
     >
       {/* Big image */}
       <div className="rounded-2xl bg-muted/20 border border-white/10 shadow-soft p-2">
-        <div
+<div
           ref={mainRef}
-          className={cn("relative overflow-hidden rounded-2xl bg-neutral-900 border border-white/10", heightClass)}
+          className={cn(
+            "relative overflow-hidden rounded-2xl bg-neutral-900 border border-white/10",
+            heightClass,
+            "touch-pan-y select-none sm:cursor-zoom-in"
+          )}
+          onClick={toggleFullscreen}
+          style={{ touchAction: "pan-y" }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <OptimizedImage
-            src={current.src}
-            alt={current.alt || ""}
-            className="h-full w-full object-cover"
-            loading="eager"
-          />
-          {/* overlay controls */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-between p-2">
-            <div className="pointer-events-auto">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={isRTL ? next : prev}
-                aria-label={t.prev}
-              >
-                <ChevronLeft className={cn("h-4 w-4", isRTL && "rotate-180")} />
+          <div className="absolute inset-0">
+            <OptimizedImage
+              src={current.src}
+              alt={current.alt || ""}
+              className="h-full w-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+            />
+          </div>
+
+          {/* Overlay controls */}
+          <div className="pointer-events-none absolute inset-0">
+            {/* Desktop overlay: centered arrows */}
+            <div className="hidden sm:flex items-center justify-between p-2 pointer-events-auto h-full">
+              <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev}
+                className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+                <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
               </Button>
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="outline" size="sm"
+                  onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
+                  aria-label={t.fullscreen}
+                  className="h-9 px-3 text-xs hidden sm:inline-flex focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+                  {t.fullscreen}
+                </Button>
+                <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next}
+                  className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+                  <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
+                </Button>
+              </div>
             </div>
-            <div className="pointer-events-auto">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={isRTL ? prev : next}
-                aria-label={t.next}
-              >
-                <ChevronRight className={cn("h-4 w-4", isRTL && "rotate-180")} />
-              </Button>
+
+            {/* Mobile overlay: bottom bar with arrows + counter */}
+            <div className="sm:hidden absolute inset-x-0 bottom-0 pointer-events-auto">
+              <div className="bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-10 flex items-center justify-between">
+                <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev}
+                  className="h-11 w-11 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+                  <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
+                </Button>
+                <div className="text-[11px] text-white/90 px-2 py-1 rounded bg-black/30">
+                  {isRTL ? `${t.image} ${index + 1} ${t.of} ${images.length}` : `${t.image} ${index + 1} ${t.of} ${images.length}`}
+                </div>
+                <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next}
+                  className="h-11 w-11 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+                  <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* caption + counter */}
         {(showCaptions || showCounter) && (
-          <div className="flex items-center justify-between gap-3 px-2 py-3">
+          <div className="flex items-center justify-between gap-3 px-2 py-2 sm:py-3">
             {showCaptions ? (
-              <div className="text-sm text-muted-foreground truncate">
+              <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                 {current.caption || current.alt || ""}
               </div>
             ) : <span />}
             {showCounter && (
-              <div className="text-xs text-muted-foreground">
+              <div className="hidden sm:block text-xs text-muted-foreground">
                 {isRTL ? `${t.image} ${index + 1} ${t.of} ${images.length}` : `${t.image} ${index + 1} ${t.of} ${images.length}`}
               </div>
             )}
@@ -351,10 +446,46 @@ export default function SimpleGallery({
         )}
       </div>
 
-      {/* Thumbnails */}
+      {/* Mobile thumb strip */}
+      <div className="sm:hidden mt-2 rounded-2xl bg-white/5 border border-white/10">
+        <div className="flex gap-3 overflow-x-auto px-3 py-3 scrollbar-thin">
+          {images.slice(Math.max(0, index - 6), Math.min(images.length, index + 12)).map((img, i) => {
+            const actualIndex = Math.max(0, index - 6) + i;
+            const active = actualIndex === index;
+            const isLoaded = loadedImages.has(actualIndex);
+            return (
+              <button
+                key={actualIndex}
+                type="button"
+                onClick={() => setIndex(actualIndex)}
+                tabIndex={-1}
+                aria-pressed={active}
+                aria-current={active ? "true" : undefined}
+                aria-label={img.alt || img.caption || `Image ${actualIndex + 1}`}
+                className={cn(
+                  "relative shrink-0 overflow-hidden rounded-lg border transition-all duration-200 h-16 w-24",
+                  active ? "border-white/70 ring-2 ring-white/40 scale-105"
+                         : "border-white/10 hover:border-white/30"
+                )}
+              >
+                <OptimizedImage
+                  src={img.src}
+                  alt=""
+                  width={240}
+                  height={160}
+                  loading="lazy"
+                  className={cn("h-full w-full object-cover", isLoaded ? "opacity-90" : "opacity-70")}
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Desktop Thumbnails */}
       <div 
         ref={thumbnailRef}
-        className="mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10"
+        className="hidden sm:block mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10"
       >
         <div
           ref={stripRef}
@@ -370,6 +501,7 @@ export default function SimpleGallery({
                 key={actualIndex}
                 data-idx={actualIndex}
                 type="button"
+                tabIndex={-1}
                 onClick={() => setIndex(actualIndex)}
                 className={cn(
                   "relative shrink-0 overflow-hidden rounded-lg border transition-all duration-200",
@@ -378,6 +510,7 @@ export default function SimpleGallery({
                     ? "border-white/70 ring-2 ring-white/40 scale-105"
                     : "border-white/10 hover:border-white/30 hover:scale-102"
                 )}
+                aria-pressed={active}
                 aria-current={active ? "true" : undefined}
                 aria-label={img.alt || img.caption || `Image ${actualIndex + 1}`}
               >
@@ -385,15 +518,17 @@ export default function SimpleGallery({
                   src={img.src}
                   alt=""
                   loading={isIntersecting ? "lazy" : "lazy"}
+                  width={240}
+                  height={160}
                   className={cn(
-                    "h-full w-full object-cover transition-all duration-200",
+                    "h-full w-full object-cover transition-all duration-200 motion-reduce:transition-none",
                     isLoaded ? "opacity-90 hover:opacity-100" : "opacity-70"
                   )}
                 />
                 {/* Loading indicator for thumbnails */}
                 {!isLoaded && (
                   <div className="absolute inset-0 bg-neutral-800/50 flex items-center justify-center">
-                    <div className="w-3 h-3 border border-neutral-500 border-t-white rounded-full animate-spin"></div>
+                    <div className="w-3 h-3 border border-neutral-500 border-t-white rounded-full animate-spin motion-reduce:animate-none"></div>
                   </div>
                 )}
               </button>
@@ -450,8 +585,19 @@ export default function SimpleGallery({
       </div>
       
       {/* Fullscreen Modal */}
-      {isFullscreen && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
+      {!isMobile && isFullscreen && (
+        <div 
+          id="sk-fullscreen-root"
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsFullscreen(false);
+            }
+          }}
+        >
           <div className="relative w-full h-full flex items-center justify-center p-4">
             <OptimizedImage
               src={current.src}
@@ -460,17 +606,17 @@ export default function SimpleGallery({
               loading="eager"
             />
             <button
-              onClick={toggleFullscreen}
-              className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10"
+              onClick={() => setIsFullscreen(false)}
+              className="absolute top-4 right-4 h-12 w-12 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10 flex items-center justify-center"
               aria-label={t.close}
             >
-              ×
+              <CloseIcon className="h-6 w-6" />
             </button>
             {/* Fullscreen navigation */}
             <div className="absolute inset-0 flex items-center justify-between p-8 pointer-events-none">
               <button
                 onClick={isRTL ? next : prev}
-                className="pointer-events-auto p-3 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                className="pointer-events-auto h-12 w-12 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors flex items-center justify-center"
                 aria-label={t.prev}
                 disabled={index === 0}
               >
@@ -478,7 +624,7 @@ export default function SimpleGallery({
               </button>
               <button
                 onClick={isRTL ? prev : next}
-                className="pointer-events-auto p-3 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                className="pointer-events-auto h-12 w-12 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors flex items-center justify-center"
                 aria-label={t.next}
                 disabled={index === images.length - 1}
               >
