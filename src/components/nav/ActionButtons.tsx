@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BRANCH_CONTACTS, type BranchContact } from '../../data/branchContacts';
+import { BRANCHES, type Branch } from '../../data/branches';
 
 interface ActionButtonsProps {
   locale: 'en' | 'ar';
@@ -14,7 +14,7 @@ export default function ActionButtons({
   size = 'md', 
   rememberChoice = true 
 }: ActionButtonsProps) {
-  const [selectedBranch, setSelectedBranch] = useState<BranchContact | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -38,7 +38,7 @@ export default function ActionButtons({
     try {
       const savedBranchId = localStorage.getItem(STORAGE_KEY);
       if (savedBranchId) {
-        const branch = BRANCH_CONTACTS.find(b => b.id === savedBranchId);
+        const branch = BRANCHES.find(b => b.id === savedBranchId);
         if (branch) {
           setSelectedBranch(branch);
         }
@@ -64,7 +64,7 @@ export default function ActionButtons({
     }
   }, [showDropdown, isClient]);
 
-  const handleBranchSelect = (branch: BranchContact) => {
+  const handleBranchSelect = (branch: Branch) => {
     setSelectedBranch(branch);
     setShowDropdown(false);
     
@@ -79,7 +79,7 @@ export default function ActionButtons({
 
   const handleCallClick = () => {
     if (selectedBranch) {
-      window.location.href = `tel:${selectedBranch.phone}`;
+      window.location.href = `tel:${selectedBranch.phones[0]}`;
     } else {
       setShowDropdown(true);
     }
@@ -93,8 +93,8 @@ export default function ActionButtons({
     }
   };
 
-  const getBranchName = (branch: BranchContact): string => {
-    return locale === 'ar' ? branch.name_ar : branch.name_en;
+  const getBranchName = (branch: Branch): string => {
+    return branch.name;
   };
 
   const buttonSizeClasses = size === 'sm' 
@@ -152,7 +152,7 @@ export default function ActionButtons({
             <div className="text-xs font-medium text-neutral-400 px-3 py-2 border-b border-white/10">
               {t.selectBranch}
             </div>
-            {BRANCH_CONTACTS.map((branch) => (
+            {BRANCHES.map((branch) => (
               <button
                 key={branch.id}
                 onClick={() => handleBranchSelect(branch)}
@@ -160,7 +160,7 @@ export default function ActionButtons({
               >
                 <div>
                   <div className="font-medium">{getBranchName(branch)}</div>
-                  <div className="text-xs text-neutral-400" dir="ltr">{branch.phone}</div>
+                  <div className="text-xs text-neutral-400" dir="ltr">{branch.phones[0]}</div>
                 </div>
                 {branch.isHQ && (
                   <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full">
