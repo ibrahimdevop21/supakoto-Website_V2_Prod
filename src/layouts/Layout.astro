@@ -7,7 +7,6 @@ import '../styles/leaflet.css';
 import Footer from '../components/layout/Footer.astro';
 import Nav from '../components/nav/Nav.astro';
 import Preload from '../components/shared/Preload.astro';
-import RespondIO from '../components/integrations/RespondIO.astro';
 import SEOHead from '../components/seo/SEOHead.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
@@ -333,8 +332,6 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		
 		<Footer />
 		
-		<!-- respond.io Website Chat (lazy, prod-only) -->
-		<RespondIO />
 		
 		<!-- Vercel Analytics -->
 		<Analytics />

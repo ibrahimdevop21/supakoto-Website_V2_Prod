@@ -35,7 +35,6 @@
 - [x] Set build command to `npm run build:ci`
 
 ### 6. Third-party & Islands Optimization
-- [x] **Respond.io**: Changed to `client:idle`, production-only loading
 - [x] **Leaflet Maps**: Created `LazyBranchLocator.tsx` with click-to-load
 - [x] **React Islands**: Optimized `ServicesHero` from `client:load` to `client:idle`
 - [x] **Hydration Strategy**: Verified most components use `client:visible`
@@ -98,7 +97,6 @@ npm run build:ci
 - [ ] Run Lighthouse audits on deployed site
 - [ ] Verify mobile performance ≥ 90
 - [ ] Test lazy-loading components work correctly
-- [ ] Validate Respond.io widget loads properly in production
 
 ### Optional Enhancements
 - [ ] Consider removing unused Leaflet components if LazyBranchLocator is adopted

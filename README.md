@@ -61,8 +61,6 @@ SupaKoto-website/
 │   │   ├── hero/                    # Hero section components
 │   │   │   └── ModernHeroCarousel.astro
 │   │   ├── integrations/            # Third-party integrations
-│   │   │   ├── RespondIO.tsx        # Chat widget (React)
-│   │   │   └── RespondIO.astro      # Chat widget (Astro wrapper)
 │   │   ├── layout/                  # Layout components
 │   │   │   ├── Navbar.tsx           # Modern sticky navbar
 │   │   │   ├── Footer.astro         # Site footer
@@ -227,7 +225,6 @@ npm run lighthouse:desktop  # Desktop-only Lighthouse audit
 - **Bundle Splitting**: Optimized Vite chunks for faster builds
 
 ### Runtime Performance Features
-- **Lazy Loading**: Respond.io widget loads on `client:idle`
 - **Interactive Maps**: Leaflet maps load on user interaction
 - **React Islands**: Optimized hydration with `client:visible` and `client:idle`
 - **Image Optimization**: WebP/AVIF with proper dimensions
@@ -271,7 +268,6 @@ The website is optimized for maximum performance with:
 ## 🔌 Integrations
 
 ### ✅ **Currently Implemented**
-- **respond.io Chat Widget**: Production-ready chat integration with lazy loading
 - **Leaflet Maps**: Interactive branch location maps
 - **Performance Monitoring**: Lighthouse auditing and optimization
 - **TypeScript**: Full type safety across the codebase
@@ -283,7 +279,6 @@ The website is optimized for maximum performance with:
 - **Google Tag Manager**: Comprehensive tag management system
 - **Sidecar for SSG**: Static site generation enhancements
 - **Asset Pipeline**: Advanced image optimization and CDN integration
-- **Chat Widget Finalization**: Complete respond.io setup with proper cId
 
 ## 🚀 Deployment Options
 

@@ -38,10 +38,6 @@
 
 ## Client-side Features (Safe for SSG)
 
-### ✅ Webchat Integration
-- **File:** `src/components/integrations/RespondIO.tsx`
-- **Status:** Client-side only, loads via external CDN
-- **Note:** Currently has fallback chat button for testing
 
 ### ✅ Analytics Ready
 - No GTM/GA4 found in current codebase
@@ -67,9 +63,6 @@
 rm -rf src/pages/api/
 ```
 
-### 3. Update Webchat (Optional)
-- Replace fallback chat button with real Respond.io widget
-- Or keep fallback and integrate with external chat service
 
 ## Static SSG Deployment Checklist (After Fixes)
 

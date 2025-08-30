@@ -28,17 +28,6 @@ a[href*="whatsapp"],
 
 /* Note: RH-Zak fonts removed due to missing font files - using Inter as primary font */
 
-/* RespondIO Webchat Widget Fixes */
-[id*="respond-io"], 
-[class*="respond-io"], 
-[data-respond-io],
-.respond-io-widget,
-#respond-io-widget {
-  z-index: 9999 !important;
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-}
 
 /* SupaKoto 2025 Base Layout and Typography */
 html {

@@ -1,9 +1,0 @@
----
-import RespondIOWidget from './RespondIO';
-
-// Only load in production builds; flip to true to test locally if you want.
-const enabled = import.meta.env.PROD; // Only in production to avoid blocking dev
-const cId = 'c4efdb49fca2257b1a2cfcff1f9741f'; // TODO: Replace with your actual respond.io cId from dashboard
-const loadStrategy = 'idle'; // Idle load to avoid blocking FCP/LCP
----
-{enabled ? <RespondIOWidget client:idle cId={cId} enabled={enabled} loadStrategy={loadStrategy} /> : null}
