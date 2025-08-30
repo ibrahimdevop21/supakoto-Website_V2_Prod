@@ -14,6 +14,7 @@ import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-
 import '../styles/global.css';
 import '../styles/critical.css';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 
 export interface Props {
@@ -336,5 +337,8 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		
 		<!-- Vercel Analytics -->
 		<Analytics />
+		
+		<!-- Vercel Speed Insights -->
+		<SpeedInsights />
 	</body>
 </html>
