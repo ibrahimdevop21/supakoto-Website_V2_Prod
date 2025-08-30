@@ -32,7 +32,75 @@ const WarningIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const Badge: React.FC<{ children: React.ReactNode; variant?: 'warning' | 'success' | 'info'; tooltip?: string }> = ({ 
+// Column widths so mobile shows Feature + 1 compare column
+const mobileFirstColW = 'w-[44vw] min-w-[44vw]';
+const mobileDataColW  = 'w-[56vw] min-w-[56vw]';
+
+// Solid background for sticky cells to avoid iOS translucent banding
+const cardBgSolid = 'bg-[#0b1220]'; // very dark blue/black
+
+// Spacing rhythm
+const cellX = 'px-4 md:px-6';
+const cellY = 'py-3 md:py-4 lg:py-5';
+
+// Concise copy generator (English + Arabic)
+type ShortenOptions = { locale: 'en' | 'ar'; maxLen?: number };
+
+const replacementsEn: Array<[RegExp, string]> = [
+  [/approximately|approx\.?|about/gi, '≈'],
+  [/up to/gi, 'to'],
+  [/years?/gi, 'yrs'],
+  [/manufacturer|manufacturing/gi, 'mfg'],
+  [/quality control/gi, 'QC'],
+  [/resistance/gi, 'resist.'],
+  [/installation/gi, 'install'],
+  [/crystal[-\s]?clear/gi, 'crystal-clear'],
+  [/desert[-\s]?proof/gi, 'desert-proof'],
+  [/real[-\s]?world/gi, 'real-world'],
+];
+
+const replacementsAr: Array<[RegExp, string]> = [
+  // Arabic: concise, clear, not literal
+  [/تقريبًا|حوالي/gi, '≈'],
+  [/حتى/gi, 'حتى'], // keep
+  [/سنوات?/gi, 'سنة'],
+  [/الصناعة|التصنيع/gi, 'تصنيع'],
+  [/جودة|رقابة الجودة/gi, 'جودة صارمة'],
+  [/المقاومة/gi, 'مقاومة'],
+  [/التركيب/gi, 'تركيب'],
+  [/شفاف(?:ة)? تمامًا/gi, 'شفافية عالية'],
+  [/مقاوم(?:ة)? للصحراء/gi, 'مقاومة للحرارة والغبار'],
+  [/واقعي(?:ة)?/gi, 'فعلي'],
+];
+
+function compactWhitespace(s: string) {
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+function shortenCopy(input: string, { locale, maxLen = 56 }: ShortenOptions): string {
+  if (typeof input !== 'string') return input as any;
+  let s = input;
+
+  const reps = locale === 'ar' ? replacementsAr : replacementsEn;
+  for (const [re, to] of reps) s = s.replace(re, to);
+
+  // Remove trailing punctuation clutter
+  s = s.replace(/[.;,:，،]+$/g, '');
+
+  // If still long, prefer keeping numbers/units/keywords
+  if (s.length > maxLen) {
+    // keep first sentence-ish chunk
+    const first = s.split(/[—–\-•|]/)[0].trim();
+    if (first.length >= maxLen * 0.6) s = first;
+  }
+
+  // Final clamp
+  if (s.length > maxLen) s = s.slice(0, maxLen - 1).trimEnd() + '…';
+
+  return compactWhitespace(s);
+}
+
+const Badge = React.memo<{ children: React.ReactNode; variant?: 'warning' | 'success' | 'info'; tooltip?: string }>(({ 
   children, 
   variant = 'info',
   tooltip 
@@ -51,9 +119,10 @@ const Badge: React.FC<{ children: React.ReactNode; variant?: 'warning' | 'succes
   );
 
   return tooltip ? <Tooltip content={tooltip}>{badge}</Tooltip> : badge;
-};
+});
+Badge.displayName = 'Badge';
 
-const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
+const Tooltip = React.memo<TooltipProps>(({ content, children }) => {
   const [isVisible, setIsVisible] = useState(false);
   const tooltipId = useId();
 
@@ -83,7 +152,8 @@ const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
       )}
     </div>
   );
-};
+});
+Tooltip.displayName = 'Tooltip';
 
 // Card component for mobile view
 const CardBox: React.FC<{ 
@@ -115,6 +185,17 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
   const isRTL = locale === 'ar';
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [hintVisible, setHintVisible] = useState(true);
+
+  // Find SupaKoto column dynamically (fallback = 1)
+  const supaColIndex = React.useMemo(() => {
+    const idx = columns.findIndex((c: any) => {
+      const key = (c?.key || '').toString().toLowerCase();
+      const label = (c?.en || c?.ar || '').toString().toLowerCase();
+      return key.includes('supa') || key.includes('takai') || label.includes('supa') || label.includes('takai');
+    });
+    return idx >= 0 ? idx : 1;
+  }, [columns]);
 
   // Contact constants (localized)
   const contacts = {
@@ -137,69 +218,78 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
     return () => scroller.removeEventListener('scroll', handleScroll);
   }, [hasScrolled]);
 
+  // Auto-hide hint pill
+  useEffect(() => {
+    if (hasScrolled) { setHintVisible(false); return; }
+    const t = setTimeout(() => setHintVisible(false), 3000);
+    return () => clearTimeout(t);
+  }, [hasScrolled]);
+
   // Enhanced content function - returns ReactNode directly
   const enhanceContent = (content: string): React.ReactNode => {
-    if (typeof content !== 'string') return content;
-    
-    if (content.includes('✓')) {
+    const short = shortenCopy(String(content || ''), { locale, maxLen: 58 });
+
+    if (short.includes('✓')) {
       return (
         <div className="flex items-center gap-2">
-          <Badge variant="success" tooltip="Available feature">
+          <Badge variant="success" tooltip={locale === 'en' ? 'Available feature' : 'ميزة متوفرة'}>
             <CheckIcon className="w-3 h-3" />
           </Badge>
-          <span>{content.replace('✓', '').trim()}</span>
+          <span className="whitespace-normal break-words">{short.replace('✓','').trim()}</span>
         </div>
       );
     }
-    
-    if (content.includes('✗') || content.includes('❌')) {
+    if (short.match(/[✗❌]/)) {
       return (
         <div className="flex items-center gap-2">
-          <Badge variant="warning" tooltip="Limited or unavailable">
+          <Badge variant="warning" tooltip={locale === 'en' ? 'Limited or unavailable' : 'محدودة أو غير متوفرة'}>
             <XIcon className="w-3 h-3" />
           </Badge>
-          <span>{content.replace(/[✗❌]/g, '').trim()}</span>
+          <span className="whitespace-normal break-words">{short.replace(/[✗❌]/g,'').trim()}</span>
         </div>
       );
     }
-    
-    if (content.includes('⚠️')) {
+    if (short.includes('⚠️')) {
       return (
         <div className="flex items-center gap-2">
-          <Badge variant="warning" tooltip="Caution advised">
+          <Badge variant="warning" tooltip={locale === 'en' ? 'Caution advised' : 'ننصح بالحذر'}>
             <WarningIcon className="w-3 h-3" />
           </Badge>
-          <span>{content.replace('⚠️', '').trim()}</span>
+          <span className="whitespace-normal break-words">{short.replace('⚠️','').trim()}</span>
         </div>
       );
     }
-    
-    return content;
+    return <span className="whitespace-normal break-words">{short}</span>;
   };
 
-  // Premium class helpers
+  // Cell class helpers (emerald highlight + solid sticky bgs + spacing)
   const headCellClass = (index: number) => clsx(
-    'px-4 md:px-6 py-4 md:py-6 font-bold border-b border-gray-700/50 transition-all duration-300',
-    'sticky top-0 z-20 backdrop-blur-md bg-slate-900/85',
+    cellX, cellY, 'font-semibold border-b border-white/10',
+    'sticky top-0 z-30',
+    cardBgSolid,                                   // SOLID to prevent iOS banding
     index === 0 && clsx(
-      'text-red-300 bg-gradient-to-br from-red-600/20 to-red-800/20',
-      'sticky z-30 shadow-lg',
-      isRTL ? 'right-0' : 'left-0'
+      'sticky sm:static z-40',                     // sticky first col ONLY on mobile
+      isRTL ? 'right-0 sm:right-auto' : 'left-0 sm:left-auto'
     ),
-    index === 1 && 'text-red-200 bg-gradient-to-br from-red-600/10 to-red-800/10',
-    index > 1 && 'text-gray-200',
-    isRTL ? 'text-right' : 'text-left'
+    index === supaColIndex ? 'text-emerald-200' : 'text-gray-200',
+    isRTL ? 'text-right' : 'text-left',
+    index === 0 ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`,
+    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-[-1px] after:h-px after:bg-white/10"
   );
 
   const rowCellClass = (index: number, isFirstCol = false) => clsx(
-    'px-4 md:px-6 py-4 md:py-6 border-b border-gray-700/30 transition-all duration-300',
+    cellX, cellY, 'border-b border-white/5 transition-colors leading-snug md:leading-normal',
+    'motion-safe:hover:bg-white/5',
     isFirstCol && clsx(
-      'font-bold text-white sticky z-20 backdrop-blur-md bg-slate-900/90 shadow-lg',
-      isRTL ? 'right-0' : 'left-0'
+      'sticky sm:static z-20',
+      cardBgSolid,                                 // SOLID sticky bg
+      isRTL ? 'right-0 sm:right-auto' : 'left-0 sm:left-auto',
+      'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]'
     ),
-    index === 1 && 'bg-gradient-to-br from-red-600/5 to-red-800/5 text-white font-medium',
-    index > 1 && 'text-gray-400 font-medium',
-    isRTL ? 'text-right' : 'text-left'
+    index === supaColIndex && !isFirstCol && 'bg-gradient-to-b from-emerald-600/10 to-emerald-500/5 text-emerald-100 ring-1 ring-emerald-500/15',
+    index !== supaColIndex && !isFirstCol && 'text-gray-300',
+    isRTL ? 'text-right' : 'text-left',
+    isFirstCol ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`
   );
 
   const stickyFirstColClass = clsx(
@@ -236,39 +326,28 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Premium Header Block */}
-        <div className="text-center mb-12 md:mb-16">
-          {/* Super-title Badge */}
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 backdrop-blur-sm mb-6">
-            <span className="text-sm font-semibold text-red-200 uppercase tracking-wider">
+        <div className="text-center mb-10 md:mb-14">
+          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-600/20 to-emerald-400/20 border border-emerald-500/30 backdrop-blur-sm mb-4">
+            <span className="text-xs font-semibold text-emerald-200 tracking-wider">
               {locale === 'en' ? 'COMPARISON' : 'مقارنة'}
             </span>
           </div>
-
-          {/* Main Heading */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-white text-center">
-            {locale === 'en' 
-              ? 'Takai PPF vs Other Options'
-              : 'تاكاي PPF مقابل الخيارات الأخرى'
-            }
+          <h1 className="text-2xl md:text-4xl font-bold mb-3 text-white">
+            {locale === 'en' ? 'Takai PPF vs Other Options' : 'تاكاي PPF مقابل الخيارات الأخرى'}
           </h1>
-
-          {/* Helper Line - Only visible on mobile/tablet */}
-          <p className="text-gray-200 text-sm md:text-base mb-8 text-center md:hidden">
-            {locale === 'en' 
-              ? 'Swipe horizontally on mobile/tablet to compare. '
-              : 'اسحب أفقياً على الجوال/التابلت للمقارنة..'
-            }
+          <p className="text-gray-300 text-xs md:text-sm mb-6 md:mb-8">
+            {locale === 'en' ? 'Swipe horizontally on mobile to compare.' : 'اسحب أفقيًا على الجوال للمقارنة.'}
           </p>
-
-          {/* Legend */}
-          <div className={clsx(
-            'flex flex-wrap gap-4 justify-center mb-8',
-            isRTL && 'flex-row-reverse'
-          )}>
+          <div className={clsx('flex flex-wrap gap-3 justify-center', isRTL && 'flex-row-reverse')}>
             {legendItems.map((item) => (
               <div key={item.key} className="flex items-center gap-2">
-                <div className={clsx('w-3 h-3 rounded-full', item.color)} />
-                <span className={clsx('text-sm font-medium', item.textColor)}>
+                <div className={clsx(
+                  'w-2.5 h-2.5 rounded-full',
+                  item.key === 'supa' ? 'bg-emerald-500' : item.color
+                )}/>
+                <span className={clsx('text-xs md:text-sm font-medium',
+                  item.key === 'supa' ? 'text-emerald-200' : item.textColor
+                )}>
                   {item.label}
                 </span>
               </div>
@@ -279,59 +358,57 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
         {/* Premium Table Wrapper */}
         <div className="relative">
           {/* Outer Card with Depth */}
-          <div className="rounded-2xl border border-slate-700/50 shadow-2xl bg-slate-900/80 backdrop-blur-sm overflow-hidden group">
+          <div className="relative rounded-2xl border border-white/10 bg-slate-900/80 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.7)] overflow-hidden">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
             {/* Inner Gradient Layer */}
             <div className="bg-gradient-to-br from-white/5 to-white/0 relative">
-              {/* Inset Ring on Hover */}
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300" />
               
-              {/* Table Scroller with Edge Fades */}
-              <div 
+              {/* Table Scroller with WebKit Mask Edge Fades */}
+              <div
                 ref={scrollerRef}
                 className={clsx(
-                  'overflow-x-auto scrollbar-gutter-stable',
-                  'relative',
-                  // iOS momentum scrolling
-                  '[&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-800/50 [&::-webkit-scrollbar-thumb]:bg-slate-600/50 [&::-webkit-scrollbar-thumb]:rounded-full'
+                  'relative overflow-x-auto transform-gpu will-change-transform',
+                  'scrollbar-thin',
+                  '[&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-800/40 [&::-webkit-scrollbar-thumb]:bg-slate-600/50 [&::-webkit-scrollbar-thumb]:rounded-full'
                 )}
-                style={{ 
+                style={{
                   WebkitOverflowScrolling: 'touch',
-                  touchAction: 'pan-y pan-x',
                   overscrollBehaviorX: 'contain',
-                  overscrollBehaviorY: 'auto'
+                  overscrollBehaviorY: 'auto',
+                  WebkitMaskImage: isRTL
+                    ? 'linear-gradient(to left, transparent, black 28px, black calc(100% - 28px), transparent)'
+                    : 'linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent)',
+                  maskImage: isRTL
+                    ? 'linear-gradient(to left, transparent, black 28px, black calc(100% - 28px), transparent)'
+                    : 'linear-gradient(to right, transparent, black 28px, black calc(100% - 28px), transparent)',
                 }}
               >
-                {/* Edge Fade Masks */}
-                <div className={clsx(
-                  'absolute top-0 bottom-0 w-8 bg-gradient-to-r from-slate-900/80 to-transparent z-10 pointer-events-none',
-                  isRTL ? 'right-0' : 'left-0'
-                )} />
-                <div className={clsx(
-                  'absolute top-0 bottom-0 w-8 bg-gradient-to-l from-slate-900/80 to-transparent z-10 pointer-events-none',
-                  isRTL ? 'left-0' : 'right-0'
-                )} />
-
-                {/* Swipe Hint Overlay - Only visible on mobile/tablet */}
-                {!hasScrolled && (
-                  <div className={clsx(
-                    'absolute top-1/2 z-20 transform -translate-y-1/2 px-3 py-2',
-                    'bg-slate-800/90 backdrop-blur-sm rounded-lg border border-slate-600/50',
-                    'text-xs text-gray-300 font-medium pointer-events-none',
-                    'animate-pulse transition-opacity duration-1000',
-                    'md:hidden', // Hide on desktop
-                    isRTL ? 'left-4' : 'right-4'
-                  )}>
-                  <div className="flex items-center gap-2">
-                    <span>
-                      {locale === 'en' ? 'Swipe to compare' : 'اسحب للمقارنة'}
-                    </span>
-                    <span className={clsx('text-lg', isRTL && 'rotate-180')}>→</span>
+                {/* Mobile "Swipe to compare" pill — TOP-end, non-blocking */}
+                {hintVisible && (
+                  <div
+                    className={clsx(
+                      'sm:hidden absolute z-20 pointer-events-none',
+                      isRTL ? 'top-2 left-2' : 'top-2 right-2' // TOP-end position
+                    )}
+                    aria-hidden="true"
+                  >
+                    <div className="pointer-events-auto px-3 py-1.5 rounded-full text-[11px] font-medium
+                                    text-white bg-black/60 backdrop-blur-md border border-white/15
+                                    shadow-[0_6px_20px_rgba(0,0,0,0.35)]">
+                      {locale === 'en' ? 'Swipe to compare →' : 'اسحب للمقارنة ←'}
+                    </div>
                   </div>
-                </div>
                 )}
+
 
                 {/* Premium Table */}
                 <table className="w-full min-w-[800px] relative">
+                  <colgroup>
+                    <col className={`${mobileFirstColW} sm:w-auto sm:min-w-0`} />
+                    <col className={`${mobileDataColW}  sm:w-auto sm:min-w-0`} />
+                    <col className={`${mobileDataColW}  sm:w-auto sm:min-w-0`} />
+                    <col className={`${mobileDataColW}  sm:w-auto sm:min-w-0`} />
+                  </colgroup>
                   <caption className="sr-only">
                     {locale === 'en' 
                       ? 'Comparison table of Takai PPF vs other options'
@@ -359,10 +436,7 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                     {rows.map((row, rowIndex) => (
                       <tr 
                         key={rowIndex} 
-                        className={clsx(
-                          'group/row transition-all duration-300',
-                          '@media (prefers-reduced-motion: no-preference) { hover:bg-slate-800/20 }'
-                        )}
+                        className="group/row transition-all duration-300 motion-safe:hover:bg-slate-800/20"
                       >
                         {/* Sticky First Column */}
                         <th 
