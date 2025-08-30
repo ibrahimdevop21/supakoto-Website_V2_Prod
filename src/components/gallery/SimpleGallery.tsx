@@ -170,6 +170,7 @@ export default function SimpleGallery({
   itemsPerPage = 24, // Optimized for better grid layout
 }: SimpleGalleryProps) {
   const isRTL = locale === "ar";
+  const isIOS = typeof navigator !== 'undefined' && /iP(hone|ad|od)/.test(navigator.userAgent);
   const [index, setIndex] = useState(() => clamp(initialIndex, 0, Math.max(0, images.length - 1)));
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -270,6 +271,13 @@ export default function SimpleGallery({
     }
   }, [isRTL, next, prev]);
 
+  // Guard React touch handlers for non-iOS devices
+  const touchHandlers = !isIOS ? {
+    onTouchStart: handleTouchStart,
+    onTouchMove: handleTouchMove,
+    onTouchEnd: handleTouchEnd
+  } : {};
+
   useEffect(() => {
     // Update current page when index changes
     const newPage = Math.floor(index / itemsPerPage);
@@ -278,6 +286,55 @@ export default function SimpleGallery({
     }
   }, [index, itemsPerPage, currentPage]);
   
+  // iOS-specific native touch event handlers
+  useEffect(() => {
+    if (!isIOS) return;
+    const el = mainRef.current;
+    if (!el) return;
+
+    let startX = 0, startY = 0, dragging = false;
+
+    const ts = (e: TouchEvent) => {
+      const t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      dragging = true;
+    };
+
+    const tm = (e: TouchEvent) => {
+      if (!dragging) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      // Only block vertical scroll if it's clearly a horizontal swipe
+      if (Math.abs(dx) > 16 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        e.preventDefault(); // requires passive:false
+      }
+    };
+
+    const te = (e: TouchEvent) => {
+      if (!dragging) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - startX;
+      const threshold = 48;
+      if (Math.abs(dx) > threshold) {
+        if (dx > 0) { isRTL ? next() : prev(); }
+        else { isRTL ? prev() : next(); }
+      }
+      dragging = false;
+    };
+
+    el.addEventListener('touchstart', ts, { passive: true });
+    el.addEventListener('touchmove', tm, { passive: false }); // critical on iOS
+    el.addEventListener('touchend', te, { passive: true });
+
+    return () => {
+      el.removeEventListener('touchstart', ts as any);
+      el.removeEventListener('touchmove', tm as any);
+      el.removeEventListener('touchend', te as any);
+    };
+  }, [isIOS, isRTL, next, prev]);
+
   // Preload images for current and adjacent pages
   useEffect(() => {
     if (!isIntersecting) return;
@@ -374,9 +431,7 @@ export default function SimpleGallery({
           )}
           onClick={toggleFullscreen}
           style={{ touchAction: "pan-y" }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          {...touchHandlers}
         >
           <div className="absolute inset-0">
             <OptimizedImage
