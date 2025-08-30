@@ -174,6 +174,8 @@ export default function SimpleGallery({
   const [index, setIndex] = useState(() => clamp(initialIndex, 0, Math.max(0, images.length - 1)));
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
   const [showThumbs, setShowThumbs] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loadedImages, setLoadedImages] = useState(new Set<number>());
@@ -240,8 +242,26 @@ export default function SimpleGallery({
   
   const toggleFullscreen = useCallback(() => {
     if (isMobile) return; // disable on phones
-    setIsFullscreen((v) => !v);
+    setIsFullscreen((v) => {
+      const newValue = !v;
+      // Handle body scroll lock
+      if (newValue) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+      return newValue;
+    });
   }, [isMobile]);
+
+  const closeFullscreen = useCallback(() => {
+    setIsFullscreen(false);
+    document.body.style.overflow = '';
+    // Return focus to fullscreen button
+    setTimeout(() => {
+      fullscreenButtonRef.current?.focus();
+    }, 100);
+  }, []);
 
   // Touch handlers for swipe gestures
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -406,8 +426,23 @@ export default function SimpleGallery({
     if (e.key === "ArrowRight") (isRTL ? prev : next)();
     if (e.key === "Home") setIndex(0);
     if (e.key === "End") setIndex(images.length - 1);
-    if (e.key === "Escape" && isFullscreen) setIsFullscreen(false);
-  }, [isRTL, next, prev, images.length, isFullscreen]);
+    if (e.key === "Escape" && isFullscreen) closeFullscreen();
+  }, [isRTL, next, prev, images.length, isFullscreen, closeFullscreen]);
+
+  const onFullscreenKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeFullscreen();
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      (isRTL ? next : prev)();
+    }
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      (isRTL ? prev : next)();
+    }
+  }, [isRTL, next, prev, closeFullscreen]);
 
   if (!images?.length) return null;
 
@@ -447,35 +482,69 @@ export default function SimpleGallery({
           <div className="pointer-events-none absolute inset-0">
             {/* Desktop overlay: centered arrows */}
             <div className="hidden sm:flex items-center justify-between p-2 pointer-events-auto h-full">
-              <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev}
+              <Button type="button" variant="outline" size="icon" 
+                onClick={(e) => { e.stopPropagation(); isRTL ? next() : prev(); }} 
+                aria-label={t.prev}
                 className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
                 <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
               </Button>
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="outline" size="sm"
+              <Button type="button" variant="outline" size="icon" 
+                onClick={(e) => { e.stopPropagation(); isRTL ? prev() : next(); }} 
+                aria-label={t.next}
+                className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
+                <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
+              </Button>
+            </div>
+
+            {/* Desktop/Tablet Fullscreen Button - Top Right */}
+            <div className="hidden sm:block absolute top-4 right-4 pointer-events-auto">
+              <div className="relative">
+                <Button 
+                  ref={fullscreenButtonRef}
+                  type="button" 
+                  variant="outline" 
+                  size="icon"
                   onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
-                  aria-label={t.fullscreen}
-                  className="h-9 px-3 text-xs hidden sm:inline-flex focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-                  {t.fullscreen}
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                  onFocus={() => setShowTooltip(true)}
+                  onBlur={() => setShowTooltip(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleFullscreen();
+                    }
+                  }}
+                  aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                  className="h-10 w-10 bg-black/30 hover:bg-black/50 border-white/20 hover:border-white/40 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 transition-all duration-200"
+                >
+                  <ExpandIcon className="h-5 w-5" />
                 </Button>
-                <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next}
-                  className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-                  <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
-                </Button>
+                {/* Tooltip */}
+                {showTooltip && (
+                  <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap pointer-events-none z-10">
+                    {isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Mobile overlay: bottom bar with arrows + counter */}
             <div className="sm:hidden absolute inset-x-0 bottom-0 pointer-events-auto">
               <div className="bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-10 flex items-center justify-between">
-                <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev}
+                <Button type="button" variant="outline" size="icon" 
+                  onClick={(e) => { e.stopPropagation(); isRTL ? next() : prev(); }} 
+                  aria-label={t.prev}
                   className="h-11 w-11 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
                   <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
                 </Button>
                 <div className="text-[11px] text-white/90 px-2 py-1 rounded bg-black/30">
                   {isRTL ? `${t.image} ${index + 1} ${t.of} ${images.length}` : `${t.image} ${index + 1} ${t.of} ${images.length}`}
                 </div>
-                <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next}
+                <Button type="button" variant="outline" size="icon" 
+                  onClick={(e) => { e.stopPropagation(); isRTL ? prev() : next(); }} 
+                  aria-label={t.next}
                   className="h-11 w-11 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
                   <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
                 </Button>
@@ -643,13 +712,15 @@ export default function SimpleGallery({
       {!isMobile && isFullscreen && (
         <div 
           id="sk-fullscreen-root"
-          tabIndex={-1}
+          tabIndex={0}
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          aria-label={isRTL ? "عرض بملء الشاشة" : "Fullscreen view"}
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+          onKeyDown={onFullscreenKeyDown}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              setIsFullscreen(false);
+              closeFullscreen();
             }
           }}
         >
@@ -660,18 +731,22 @@ export default function SimpleGallery({
               className="max-w-full max-h-full object-contain"
               loading="eager"
             />
+            
+            {/* Close Button - 44x44px click target */}
             <button
-              onClick={() => setIsFullscreen(false)}
-              className="absolute top-4 right-4 h-12 w-12 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10 flex items-center justify-center"
+              onClick={closeFullscreen}
+              className="absolute top-4 right-4 h-11 w-11 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all duration-200 z-20 flex items-center justify-center border border-white/20 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               aria-label={t.close}
+              autoFocus
             >
               <CloseIcon className="h-6 w-6" />
             </button>
+            
             {/* Fullscreen navigation */}
             <div className="absolute inset-0 flex items-center justify-between p-8 pointer-events-none">
               <button
                 onClick={isRTL ? next : prev}
-                className="pointer-events-auto h-12 w-12 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors flex items-center justify-center"
+                className="pointer-events-auto h-12 w-12 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors flex items-center justify-center border border-white/20 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 aria-label={t.prev}
                 disabled={index === 0}
               >
@@ -679,12 +754,17 @@ export default function SimpleGallery({
               </button>
               <button
                 onClick={isRTL ? prev : next}
-                className="pointer-events-auto h-12 w-12 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors flex items-center justify-center"
+                className="pointer-events-auto h-12 w-12 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors flex items-center justify-center border border-white/20 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 aria-label={t.next}
                 disabled={index === images.length - 1}
               >
                 <ChevronRight className={cn("h-6 w-6", isRTL && "rotate-180")} />
               </button>
+            </div>
+            
+            {/* Image counter in fullscreen */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-3 py-1.5 bg-black/60 text-white text-sm rounded-full border border-white/20">
+              {isRTL ? `${index + 1} ${t.of} ${images.length}` : `${index + 1} ${t.of} ${images.length}`}
             </div>
           </div>
         </div>
