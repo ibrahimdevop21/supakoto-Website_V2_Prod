@@ -2,27 +2,26 @@
 import type { APIRoute } from 'astro';
 import nodemailer from 'nodemailer';
 
-/**
- * ──────────────────────────────────────────────────────────────────────────────
- *  ENV VARS (Vercel → Settings → Environment Variables)
- * ──────────────────────────────────────────────────────────────────────────────
- *  MAIL_HOST=mail.privateemail.com
- *  MAIL_PORT=587                      // 465 for SSL, 587 for STARTTLS
- *  MAIL_USER=leads@supakoto.org       // your authenticated sender
- *  MAIL_PASS=********
- *
- *  SALES_EGYPT_EMAIL=egypt@supakoto.org
- *  SALES_DUBAI_EMAIL=uae@supakoto.org
- *  SALES_FALLBACK_EMAIL=sales@supakoto.org
- *
- *  RESPOND_IO_WEBHOOK_URL=https://…   // optional
- */
-
 export const prerender = false;
 
+/**
+ * ENV (Vercel → Settings → Environment Variables)
+ *
+ * MAIL_HOST=supakoto.org
+ * MAIL_PORT=465                 // 465 = SSL, 587 = STARTTLS
+ * MAIL_USER=contact@supakoto.org
+ * MAIL_PASS=********
+ *
+ * SALES_EGYPT_EMAIL=egypt@supakoto.org
+ * SALES_DUBAI_EMAIL=uae@supakoto.org
+ * SALES_FALLBACK_EMAIL=sales@supakoto.org
+ *
+ * RESPOND_IO_WEBHOOK_URL=https://...   // optional
+ */
+
 // -------------------- ENV --------------------
-const MAIL_HOST = import.meta.env.MAIL_HOST || 'mail.privateemail.com';
-const MAIL_PORT = Number(import.meta.env.MAIL_PORT || 587);
+const MAIL_HOST = import.meta.env.MAIL_HOST || 'supakoto.org';
+const MAIL_PORT = Number(import.meta.env.MAIL_PORT || 465);
 const MAIL_USER = import.meta.env.MAIL_USER;
 const MAIL_PASS = import.meta.env.MAIL_PASS;
 
@@ -40,13 +39,17 @@ function createTransporter() {
   if (!MAIL_USER || !MAIL_PASS) {
     throw new Error('Missing MAIL_USER / MAIL_PASS');
   }
+  const useSSL = MAIL_PORT === 465;
+
   return nodemailer.createTransport({
     host: MAIL_HOST,
     port: MAIL_PORT,
-    secure: MAIL_PORT === 465, // SSL on 465, STARTTLS on 587
+    secure: useSSL, // SSL on 465; false = STARTTLS on 587
     auth: { user: MAIL_USER, pass: MAIL_PASS },
-    // If your provider’s cert chain is valid, keep this true:
-    tls: { rejectUnauthorized: true },
+    tls: {
+      servername: MAIL_HOST,      // helps SNI on some cPanel setups
+      rejectUnauthorized: true,   // keep strict cert verification
+    },
   });
 }
 
@@ -155,7 +158,6 @@ async function sendRespondIO(data: {
       }),
     });
   } catch (e) {
-    // non-blocking
     console.warn('Respond.io webhook error:', e);
   }
 }
@@ -174,9 +176,9 @@ export const POST: APIRoute = async ({ request }) => {
     const country = (form.get('country') || '').toString().trim();   // AE/EG (optional)
     const branch_id = (form.get('branch_id') || '').toString().trim();
 
-    // anti-spam (honeypot should be empty)
-    const hp = (form.get('_hp') || '').toString().trim();
-    const lt = Number((form.get('_lt') || '0').toString());
+    // anti-spam
+    const hp = (form.get('_hp') || '').toString().trim();         // honeypot should be empty
+    const lt = Number((form.get('_lt') || '0').toString());       // load time
 
     if (hp) {
       // silently accept to confuse bots
@@ -225,8 +227,7 @@ export const POST: APIRoute = async ({ request }) => {
     const transporter = createTransporter();
 
     const region = regionFlag(phone);
-    const subject =
-      `New Lead • ${region} • ${name}${branch_id ? ` • ${branch_id}` : ''}`;
+    const subject = `New Lead • ${region} • ${name}${branch_id ? ` • ${branch_id}` : ''}`;
 
     const html = buildHtml({
       name,
@@ -247,12 +248,11 @@ export const POST: APIRoute = async ({ request }) => {
       `Services: ${servicesText || '—'}`,
       message ? `Message:\n${message}` : '',
       `Submitted: ${new Date().toISOString()}`,
-    ]
-      .filter(Boolean)
-      .join('\n');
+    ].filter(Boolean).join('\n');
 
     await transporter.sendMail({
       from: `"SupaKoto Website" <${MAIL_USER}>`,
+      replyTo: email || undefined,
       to,
       cc: SALES_FALLBACK_EMAIL !== to ? SALES_FALLBACK_EMAIL : undefined,
       subject,
@@ -260,16 +260,8 @@ export const POST: APIRoute = async ({ request }) => {
       text,
     });
 
-    // optional: fire-and-forget CRM hook
-    sendRespondIO({
-      name,
-      email,
-      phone,
-      services,
-      message,
-      country,
-      branch_id,
-    }).catch(() => {});
+    // optional CRM hook
+    sendRespondIO({ name, email, phone, services, message, country, branch_id }).catch(() => {});
 
     return new Response(
       JSON.stringify({ success: true, routed_to: to }),
