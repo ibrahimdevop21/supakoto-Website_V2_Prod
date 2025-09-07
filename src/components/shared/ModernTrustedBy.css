@@ -20,11 +20,11 @@
 }
 
 .animate-scroll {
-  animation: scroll-ltr 40s linear infinite;
+  animation: scroll-ltr 80s linear infinite;
 }
 
 [dir="rtl"] .animate-scroll {
-  animation: scroll-rtl 40s linear infinite;
+  animation: scroll-rtl 80s linear infinite;
 }
 
 /* Pause animation on hover */

@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StaticBranchCards from '../components/contact/StaticBranchCards';
+import ContactForm from '../components/ContactForm.astro';
 import { BRANCHES } from '../data/branches';
 import { getSEOData } from '../utils/seo-content';
 import { generateBreadcrumbSchema, generateLocalBusinessSchema } from '../utils/seo-schemas';
@@ -72,110 +73,19 @@ const localBusinessSchema = generateLocalBusinessSchema(
         </p>
       </div>
 
-      <!-- B2C Form Section - Moved to Top -->
-      <div class="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 sm:p-6 md:p-8 mb-20 hover:border-slate-600/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-500/10 overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500"></div>
-        <div class="relative z-10">
-          <!-- Service Selection Validation Script -->
-          <script>
-            function validateServices(form) {
-              const services = form.querySelectorAll('input[name="services"]:checked');
-              if (services.length === 0) {
-                alert('Please select at least one service');
-                return false;
-              }
-              return true;
-            }
-          </script>
-          
-          <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="space-y-6" onsubmit="return validateServices(this)">
-            <!-- Formspree Configuration -->
-            <input type="hidden" name="_subject" value="New Quote Request from SupaKoto Website" />
-            <input type="hidden" name="_language" value="en" />
-            <input type="hidden" name="_redirect" value="https://supakoto.com/thank-you" />
-            <input type="hidden" id="branchId" name="branch_id" value={selectedBranch.id} />
-            <input type="hidden" name="_gotcha" style="display:none" />
-            
-            <div class="grid gap-6 md:grid-cols-2 lg:gap-8">
-              <div>
-                <label for="name" class="block text-sm font-medium text-white mb-2">Full Name</label>
-                <input 
-                  type="text" 
-                  id="name" 
-                  name="name" 
-                  required 
-                  class="w-full px-4 py-3 sm:py-4 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors text-base"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              
-              <div>
-                <label for="phone" class="block text-sm font-medium text-white mb-2">Phone Number</label>
-                <input 
-                  type="tel" 
-                  id="phone" 
-                  name="phone" 
-                  required 
-                  dir="ltr"
-                  class="w-full px-4 py-3 sm:py-4 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors text-base"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-            </div>
+      <!-- Premium Contact Form Section - Full Width -->
+      <div class="mb-20">
+        <div class="w-full p-8 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700">
+          <div class="mb-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-2">
+              {currentLang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
+            </h2>
+            <p class="text-slate-300">
+              {currentLang === 'ar' ? 'احصل على استشارة مجانية لخدمات السيارات المتميزة' : 'Get a free consultation for premium automotive services'}
+            </p>
+          </div>
 
-            <!-- Service Selection -->
-            <div class="space-y-4">
-              <label class="block text-sm font-medium text-white mb-4">Select Desired Service(s)</label>
-              <div class="grid gap-3 sm:gap-4 md:grid-cols-2 lg:gap-6">
-                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
-                  <input type="checkbox" name="services" value="ppf" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="ml-3 text-white">PPF (Paint Protection Film)</span>
-                </label>
-                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
-                  <input type="checkbox" name="services" value="heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="ml-3 text-white">Heat Isolation</span>
-                </label>
-                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
-                  <input type="checkbox" name="services" value="nano_ceramic" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="ml-3 text-white">Nano Ceramic</span>
-                </label>
-                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
-                  <input type="checkbox" name="services" value="commercial_heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="ml-3 text-white">Heat Isolation for Commercial Buildings</span>
-                </label>
-                <label class="flex items-center p-3 bg-neutral-800/50 rounded-xl border border-neutral-700 hover:border-red-500/50 transition-colors cursor-pointer">
-                  <input type="checkbox" name="services" value="residential_heat_isolation" class="w-4 h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                  <span class="ml-3 text-white">Heat Isolation for Residential Buildings</span>
-                </label>
-              </div>
-            </div>
-            
-            <div>
-              <label for="message" class="block text-sm font-medium text-white mb-2">Message</label>
-              <textarea 
-                id="message" 
-                name="message" 
-                rows="4" 
-                required 
-                class="w-full px-4 py-3 sm:py-4 bg-neutral-800 border border-neutral-700 rounded-xl text-white placeholder-neutral-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none transition-colors resize-none text-base"
-                placeholder="Tell us about your vehicle and requirements..."
-              ></textarea>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <label class="flex items-center min-h-[48px] touch-manipulation">
-                <input type="checkbox" name="whatsapp_only" value="1" class="w-5 h-5 sm:w-4 sm:h-4 text-red-500 bg-neutral-800 border-neutral-600 rounded focus:ring-red-500 focus:ring-2" />
-                <span class="ml-3 text-sm text-neutral-300">Contact me only via WhatsApp</span>
-              </label>
-              
-              <button 
-                type="submit" 
-                class="w-full sm:w-auto px-8 py-4 sm:py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-xl hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-neutral-900 transition-all duration-200 transform hover:scale-105 text-base min-h-[48px] touch-manipulation"
-              >
-                Send Request
-              </button>
-            </div>
-          </form>
+          <ContactForm selectedBranch={selectedBranch} currentLang={currentLang} />
         </div>
       </div>
 
@@ -263,6 +173,7 @@ const localBusinessSchema = generateLocalBusinessSchema(
       </div>
     </div>
   </main>
+
 
   <!-- Inline Script for Branch Updates -->
   <script>
