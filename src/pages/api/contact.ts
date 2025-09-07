@@ -1,280 +1,367 @@
-// src/pages/api/contact.ts
 import type { APIRoute } from 'astro';
 import nodemailer from 'nodemailer';
 
-export const prerender = false;
-
-/**
- * ENV (Vercel → Settings → Environment Variables)
- *
- * MAIL_HOST=supakoto.org
- * MAIL_PORT=465                 // 465 = SSL, 587 = STARTTLS
- * MAIL_USER=contact@supakoto.org
- * MAIL_PASS=********
- *
- * SALES_EGYPT_EMAIL=egypt@supakoto.org
- * SALES_DUBAI_EMAIL=uae@supakoto.org
- * SALES_FALLBACK_EMAIL=sales@supakoto.org
- *
- * RESPOND_IO_WEBHOOK_URL=https://...   // optional
- */
-
-// -------------------- ENV --------------------
-const MAIL_HOST = import.meta.env.MAIL_HOST || 'supakoto.org';
-const MAIL_PORT = Number(import.meta.env.MAIL_PORT || 465);
+// Environment variables for email configuration
+const MAIL_HOST = import.meta.env.MAIL_HOST || 'mail.privateemail.com';
+const MAIL_PORT = parseInt(import.meta.env.MAIL_PORT || '587');
 const MAIL_USER = import.meta.env.MAIL_USER;
 const MAIL_PASS = import.meta.env.MAIL_PASS;
 
+// Sales email routing
 const SALES_EGYPT_EMAIL = import.meta.env.SALES_EGYPT_EMAIL || 'egypt@supakoto.org';
 const SALES_DUBAI_EMAIL = import.meta.env.SALES_DUBAI_EMAIL || 'uae@supakoto.org';
 const SALES_FALLBACK_EMAIL = import.meta.env.SALES_FALLBACK_EMAIL || 'sales@supakoto.org';
 
+// Spam protection
+const FORM_HONEYPOT_SECRET = import.meta.env.FORM_HONEYPOT_SECRET || 'supakoto_2025';
+const MIN_LOAD_TIME = 2000; // 2 seconds minimum
+
+// Optional Respond.io webhook
 const RESPOND_IO_WEBHOOK_URL = import.meta.env.RESPOND_IO_WEBHOOK_URL;
 
-// anti-spam
-const MIN_LOAD_TIME_MS = 2000; // must be ≥ this between page load & submit
-
-// -------------------- helpers --------------------
+// Create nodemailer transporter
 function createTransporter() {
   if (!MAIL_USER || !MAIL_PASS) {
-    throw new Error('Missing MAIL_USER / MAIL_PASS');
+    throw new Error('Email credentials not configured. Please set MAIL_USER and MAIL_PASS environment variables.');
   }
-  const useSSL = MAIL_PORT === 465;
 
   return nodemailer.createTransport({
     host: MAIL_HOST,
     port: MAIL_PORT,
-    secure: useSSL, // SSL on 465; false = STARTTLS on 587
-    auth: { user: MAIL_USER, pass: MAIL_PASS },
+    secure: MAIL_PORT === 465, // true for 465, false for other ports
+    auth: {
+      user: MAIL_USER,
+      pass: MAIL_PASS,
+    },
     tls: {
-      servername: MAIL_HOST,      // helps SNI on some cPanel setups
-      rejectUnauthorized: true,   // keep strict cert verification
+      // Do not fail on invalid certs for development
+      rejectUnauthorized: false,
     },
   });
 }
 
-function routeByPhone(phone: string) {
-  if (phone.startsWith('+20')) return SALES_EGYPT_EMAIL;
-  if (phone.startsWith('+971')) return SALES_DUBAI_EMAIL;
+// Determine sales email based on phone country code
+function getSalesEmail(phone: string): string {
+  if (phone.startsWith('+20')) {
+    return SALES_EGYPT_EMAIL;
+  } else if (phone.startsWith('+971')) {
+    return SALES_DUBAI_EMAIL;
+  }
   return SALES_FALLBACK_EMAIL;
 }
 
-function regionFlag(phone: string) {
-  if (phone.startsWith('+20')) return 'Egypt 🇪🇬';
-  if (phone.startsWith('+971')) return 'UAE 🇦🇪';
-  return 'Unknown';
-}
-
-function mapServices(services: FormDataEntryValue[]) {
-  const dict: Record<string, { en: string; ar: string }> = {
+// Format services array for email
+function formatServices(services: FormDataEntryValue[]): string {
+  const serviceMap: Record<string, { en: string; ar: string }> = {
     ppf: { en: 'Paint Protection Film (PPF)', ar: 'فيلم حماية الطلاء' },
     ceramic: { en: 'Ceramic Coating', ar: 'طلاء السيراميك' },
     heat_uv_isolation: { en: 'Heat/UV Isolation', ar: 'عزل الحرارة والأشعة فوق البنفسجية' },
     window_tinting: { en: 'Window Tinting', ar: 'تظليل النوافذ' },
     building_heat_uv_isolation: { en: 'Building Heat/UV Isolation', ar: 'عزل الحرارة والأشعة فوق البنفسجية للمباني' },
   };
-  const list = services.filter((s): s is string => typeof s === 'string');
-  return list.map((k) => (dict[k] ? `${dict[k].en} (${dict[k].ar})` : k)).join(', ');
+
+  const servicesList = services.filter((service): service is string => typeof service === 'string');
+  return servicesList
+    .map(service => {
+      const mapped = serviceMap[service];
+      return mapped ? `${mapped.en} (${mapped.ar})` : service;
+    })
+    .join(', ');
 }
 
-function esc(s?: string) {
-  if (!s) return '';
-  return s
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+// Generate email HTML template
+function generateEmailHTML(data: any): string {
+  const country = data.phone.startsWith('+20') ? 'Egypt 🇪🇬' : 'UAE 🇦🇪';
+  
+  return `
+    <!DOCTYPE html>
+    <html dir="ltr" lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Lead - SupaKoto</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #bf1e2e, #6a343a); color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .field { margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-left: 4px solid #bf1e2e; border-radius: 0 5px 5px 0; }
+        .field-label { font-weight: bold; color: #bf1e2e; margin-bottom: 5px; }
+        .field-value { color: #333; }
+        .services { background: #e8f5e8; border-left-color: #28a745; }
+        .message { background: #fff3cd; border-left-color: #ffc107; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; border-top: 1px solid #dee2e6; }
+        .priority { background: #d4edda; border-left-color: #28a745; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🚗 New Lead from SupaKoto Website</h1>
+          <p>Premium Automotive Services Lead</p>
+        </div>
+        
+        <div class="content">
+          <div class="field priority">
+            <div class="field-label">📍 Lead Region</div>
+            <div class="field-value">${country}</div>
+          </div>
+          
+          <div class="field">
+            <div class="field-label">👤 Full Name</div>
+            <div class="field-value">${data.name}</div>
+          </div>
+          
+          <div class="field">
+            <div class="field-label">📧 Email Address</div>
+            <div class="field-value"><a href="mailto:${data.email}">${data.email}</a></div>
+          </div>
+          
+          <div class="field">
+            <div class="field-label">📱 Phone Number</div>
+            <div class="field-value"><a href="tel:${data.phone}">${data.phone}</a></div>
+          </div>
+          
+          <div class="field services">
+            <div class="field-label">🔧 Services Requested</div>
+            <div class="field-value">${formatServices(data.services)}</div>
+          </div>
+          
+          ${data.message ? `
+          <div class="field message">
+            <div class="field-label">💬 Customer Message</div>
+            <div class="field-value">${data.message.replace(/\n/g, '<br>')}</div>
+          </div>
+          ` : ''}
+          
+          <div class="field">
+            <div class="field-label">⏰ Submitted At</div>
+            <div class="field-value">${new Date().toLocaleString('en-US', { 
+              timeZone: country === 'Egypt 🇪🇬' ? 'Africa/Cairo' : 'Asia/Dubai',
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</div>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p><strong>Next Steps:</strong></p>
+          <p>1. Contact the customer within 2 hours for hot leads</p>
+          <p>2. Update CRM with lead information</p>
+          <p>3. Schedule consultation if services match our offerings</p>
+          <hr style="margin: 20px 0; border: none; border-top: 1px solid #dee2e6;">
+          <p style="font-size: 12px; color: #999;">
+            This lead was generated from the SupaKoto website contact form.<br>
+            Lead routing: ${country} → ${getSalesEmail(data.phone)}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 }
 
-function buildHtml(payload: {
-  name: string;
-  email?: string;
-  phone: string;
-  servicesText: string;
-  message?: string;
-  branchId?: string;
-}) {
-  const country = regionFlag(payload.phone);
-  return `<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>New Lead</title>
-<style>
-  body{font-family:Arial,system-ui,-apple-system,Segoe UI,Roboto;line-height:1.55;background:#f6f7f9;color:#0f172a;margin:0;padding:24px}
-  .card{max-width:640px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 8px 28px rgba(15,23,42,.08);overflow:hidden}
-  .hdr{background:linear-gradient(135deg,#bf1e2e,#6a343a);color:#fff;padding:22px 24px}
-  .cnt{padding:22px 24px}
-  .fld{background:#f8fafc;border-left:4px solid #bf1e2e;border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:12px}
-  .lbl{font-weight:700;color:#bf1e2e;margin-bottom:4px}
-  .ok{border-left-color:#16a34a;background:#ecfdf5}
-  .msg{border-left-color:#f59e0b;background:#fffbeb}
-  .ftr{padding:16px 20px;background:#f8fafc;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;text-align:center}
-  a{color:#bf1e2e;text-decoration:none}
-</style>
-</head>
-<body>
-  <div class="card">
-    <div class="hdr"><strong>🚗 New Lead from SupaKoto Website</strong></div>
-    <div class="cnt">
-      <div class="fld"><div class="lbl">📍 Lead Region</div>${esc(country)}</div>
-      <div class="fld"><div class="lbl">👤 Full Name</div>${esc(payload.name)}</div>
-      ${payload.email ? `<div class="fld"><div class="lbl">✉️ Email</div><a href="mailto:${esc(payload.email)}">${esc(payload.email)}</a></div>` : ''}
-      <div class="fld"><div class="lbl">📱 Phone</div><a href="tel:${esc(payload.phone)}">${esc(payload.phone)}</a></div>
-      ${payload.branchId ? `<div class="fld"><div class="lbl">🏷 Branch</div>${esc(payload.branchId)}</div>` : ''}
-      <div class="fld ok"><div class="lbl">🔧 Services</div>${esc(payload.servicesText || '—')}</div>
-      ${payload.message ? `<div class="fld msg"><div class="lbl">💬 Message</div>${esc(payload.message).replace(/\n/g,'<br>')}</div>` : ''}
-      <div class="fld"><div class="lbl">⏰ Submitted</div>${new Date().toLocaleString('en-US',{hour12:false})}</div>
-    </div>
-    <div class="ftr">Routed to <strong>${esc(routeByPhone(payload.phone))}</strong></div>
-  </div>
-</body></html>`;
-}
-
-async function sendRespondIO(data: {
-  name: string;
-  email?: string;
-  phone: string;
-  services: FormDataEntryValue[] | string[];
-  message?: string;
-  country?: string; // AE/EG
-  branch_id?: string;
-}) {
+// Send to Respond.io webhook (optional)
+async function sendToRespondIO(data: any) {
   if (!RESPOND_IO_WEBHOOK_URL) return;
+
   try {
-    await fetch(RESPOND_IO_WEBHOOK_URL, {
+    const payload = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      services: Array.isArray(data.services) ? data.services : [data.services],
+      message: data.message || '',
+      country: data.phone.startsWith('+20') ? 'EG' : 'AE',
+      source: 'website_contact_form',
+      timestamp: new Date().toISOString(),
+    };
+
+    const response = await fetch(RESPOND_IO_WEBHOOK_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: data.name,
-        email: data.email || '',
-        phone: data.phone,
-        services: Array.isArray(data.services) ? data.services : [data.services],
-        message: data.message || '',
-        country: data.country || (data.phone.startsWith('+20') ? 'EG' : 'AE'),
-        branch_id: data.branch_id || '',
-        source: 'website_contact_form',
-        ts: new Date().toISOString(),
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
-  } catch (e) {
-    console.warn('Respond.io webhook error:', e);
+
+    if (!response.ok) {
+      console.warn('Respond.io webhook failed:', response.status, response.statusText);
+    }
+  } catch (error) {
+    console.warn('Respond.io webhook error:', error);
   }
 }
 
-// -------------------- API --------------------
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const form = await request.formData();
+    // Parse form data
+    const formData = await request.formData();
+    const data = {
+      name: formData.get('name')?.toString().trim(),
+      email: formData.get('email')?.toString().trim(),
+      phone: formData.get('phone')?.toString().trim(),
+      services: formData.getAll('services'),
+      message: formData.get('message')?.toString().trim(),
+      country: formData.get('country')?.toString(),
+      branch_id: formData.get('branch_id')?.toString(), // Branch context
+      _hp: formData.get('_hp')?.toString(), // Honeypot
+      _lt: formData.get('_lt')?.toString(), // Load time
+    };
 
-    // core fields
-    const name = (form.get('name') || '').toString().trim();
-    const email = (form.get('email') || '').toString().trim(); // optional
-    const phone = (form.get('phone') || '').toString().trim(); // E.164 from client
-    const services = form.getAll('services');
-    const message = (form.get('message') || '').toString().trim();
-    const country = (form.get('country') || '').toString().trim();   // AE/EG (optional)
-    const branch_id = (form.get('branch_id') || '').toString().trim();
-
-    // anti-spam
-    const hp = (form.get('_hp') || '').toString().trim();         // honeypot should be empty
-    const lt = Number((form.get('_lt') || '0').toString());       // load time
-
-    if (hp) {
-      // silently accept to confuse bots
-      return new Response(JSON.stringify({ ok: true }), { status: 200 });
+    // Validation
+    if (!data.name || !data.email || !data.phone) {
+      return new Response(
+        JSON.stringify({ error: 'Name, email, and phone are required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    if (!name || !phone) {
-      return new Response(JSON.stringify({ error: 'Name and phone are required' }), {
-        status: 400, headers: { 'Content-Type': 'application/json' },
-      });
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email address' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    // optional email validation
-    if (email) {
-      const rx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!rx.test(email)) {
-        return new Response(JSON.stringify({ error: 'Invalid email address' }), {
-          status: 400, headers: { 'Content-Type': 'application/json' },
-        });
-      }
+    // Phone validation (E.164 format)
+    if (!data.phone.match(/^\+(?:20|971)[0-9]{8,10}$/)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid phone number format' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Egypt/UAE E.164 phone validation
-    if (!/^\+(?:20|971)\d{8,10}$/.test(phone)) {
-      return new Response(JSON.stringify({ error: 'Invalid phone number format' }), {
-        status: 400, headers: { 'Content-Type': 'application/json' },
-      });
+    // Spam protection checks
+    
+    // 1. Honeypot check
+    if (data._hp !== FORM_HONEYPOT_SECRET) {
+      console.warn('Spam attempt detected: Invalid honeypot');
+      return new Response(
+        JSON.stringify({ error: 'Security validation failed' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    // load time check
-    if (!Number.isNaN(lt) && lt < MIN_LOAD_TIME_MS) {
-      return new Response(JSON.stringify({ error: 'Please wait a moment before submitting' }), {
-        status: 400, headers: { 'Content-Type': 'application/json' },
-      });
+    // 2. Load time check
+    const loadTime = parseInt(data._lt || '0');
+    if (loadTime < MIN_LOAD_TIME) {
+      console.warn('Spam attempt detected: Form submitted too quickly', loadTime);
+      return new Response(
+        JSON.stringify({ error: 'Please wait a moment before submitting' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    // reasonable name length
-    if (name.length < 2 || name.length > 100) {
-      return new Response(JSON.stringify({ error: 'Name must be between 2 and 100 characters' }), {
-        status: 400, headers: { 'Content-Type': 'application/json' },
-      });
+    // 3. Basic content validation
+    if (data.name.length < 2 || data.name.length > 100) {
+      return new Response(
+        JSON.stringify({ error: 'Name must be between 2 and 100 characters' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    const servicesText = mapServices(services);
-    const to = routeByPhone(phone);
+    // Determine sales email based on phone country
+    const salesEmail = getSalesEmail(data.phone);
+    
+    // Create email transporter
     const transporter = createTransporter();
 
-    const region = regionFlag(phone);
-    const subject = `New Lead • ${region} • ${name}${branch_id ? ` • ${branch_id}` : ''}`;
-
-    const html = buildHtml({
-      name,
-      email: email || undefined,
-      phone,
-      servicesText,
-      message,
-      branchId: branch_id || undefined,
-    });
-
-    const text = [
-      'New Lead from SupaKoto Website',
-      `Region: ${region}`,
-      `Name: ${name}`,
-      email ? `Email: ${email}` : '',
-      `Phone: ${phone}`,
-      branch_id ? `Branch: ${branch_id}` : '',
-      `Services: ${servicesText || '—'}`,
-      message ? `Message:\n${message}` : '',
-      `Submitted: ${new Date().toISOString()}`,
-    ].filter(Boolean).join('\n');
-
-    await transporter.sendMail({
+    // Email configuration
+    const mailOptions = {
       from: `"SupaKoto Website" <${MAIL_USER}>`,
-      replyTo: email || undefined,
-      to,
-      cc: SALES_FALLBACK_EMAIL !== to ? SALES_FALLBACK_EMAIL : undefined,
-      subject,
-      html,
-      text,
-    });
+      to: salesEmail,
+      cc: SALES_FALLBACK_EMAIL !== salesEmail ? SALES_FALLBACK_EMAIL : undefined,
+      subject: `🚗 New Lead: ${data.name} - ${data.phone.startsWith('+20') ? 'Egypt' : 'UAE'}`,
+      html: generateEmailHTML(data),
+      // Plain text fallback
+      text: `
+New Lead from SupaKoto Website
 
-    // optional CRM hook
-    sendRespondIO({ name, email, phone, services, message, country, branch_id }).catch(() => {});
+Name: ${data.name}
+Email: ${data.email}
+Phone: ${data.phone}
+Services: ${formatServices(data.services)}
+Message: ${data.message || 'No message provided'}
 
+Region: ${data.phone.startsWith('+20') ? 'Egypt' : 'UAE'}
+Submitted: ${new Date().toISOString()}
+      `.trim(),
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    // Send to Respond.io webhook (optional, non-blocking)
+    sendToRespondIO(data).catch(console.warn);
+
+    // Success response
     return new Response(
-      JSON.stringify({ success: true, routed_to: to }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } },
-    );
-  } catch (err: any) {
-    console.error('Contact form error:', err);
-    return new Response(
-      JSON.stringify({
-        error: 'Failed to send message. Please try again or contact us directly.',
-        details: err?.message || 'Unknown error',
+      JSON.stringify({ 
+        success: true, 
+        message: 'Message sent successfully',
+        routed_to: salesEmail 
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } },
+      { 
+        status: 200, 
+        headers: { 'Content-Type': 'application/json' } 
+      }
+    );
+
+  } catch (error) {
+    console.error('Contact form error:', error);
+    
+    // Return user-friendly error
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to send message. Please try again or contact us directly.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      }),
+      { 
+        status: 500, 
+        headers: { 'Content-Type': 'application/json' } 
+      }
     );
   }
 };
+
+/*
+ENVIRONMENT VARIABLES REQUIRED IN VERCEL:
+
+1. Email Configuration (Required):
+   MAIL_HOST=mail.privateemail.com
+   MAIL_PORT=587
+   MAIL_USER=your-email@supakoto.org
+   MAIL_PASS=your-email-password
+
+2. Sales Email Routing (Optional - defaults provided):
+   SALES_EGYPT_EMAIL=egypt@supakoto.org
+   SALES_DUBAI_EMAIL=uae@supakoto.org
+   SALES_FALLBACK_EMAIL=sales@supakoto.org
+
+3. Spam Protection (Optional - defaults provided):
+   FORM_HONEYPOT_SECRET=supakoto_2025
+
+4. Respond.io Integration (Optional):
+   RESPOND_IO_WEBHOOK_URL=https://your-respond-io-webhook-url
+
+To set these in Vercel:
+1. Go to your project dashboard
+2. Navigate to Settings > Environment Variables
+3. Add each variable with its value
+4. Redeploy your application
+
+Example Namecheap Private Email settings:
+- SMTP Server: mail.privateemail.com
+- Port: 587 (TLS) or 465 (SSL)
+- Authentication: Required
+- Username: your full email address
+- Password: your email password
+*/
