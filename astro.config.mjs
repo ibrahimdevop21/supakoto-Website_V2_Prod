@@ -13,7 +13,7 @@ export default defineConfig({
   site: 'https://supakoto.com',
 
   // IMPORTANT: enable SSR so /api/contact runs on Node
-  output: 'server', // or 'hybrid' if you want most pages static but keep APIs dynamic
+  output: 'hybrid', // or 'hybrid' if you want most pages static but keep APIs dynamic
   trailingSlash: 'ignore',
 
   adapter: vercel({ runtime: 'nodejs20' }), // ensure Node runtime (not Edge)
