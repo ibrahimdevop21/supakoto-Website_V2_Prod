@@ -1,18 +1,21 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel/serverless'; // <-- Serverless adapter
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import compress from 'astro-compress';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel'; // ✅ modern import
 
 const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 
 export default defineConfig({
   site: 'https://supakoto.com',
-  output: 'hybrid',                 // <-- needed for API routes
-  adapter: vercel(),                // <-- tell Astro to target Vercel Functions
+
+  // ✅ Needed for API routes (e.g., /api/contact) to run on Vercel Functions
+  output: 'server',
+  adapter: vercel({ mode: 'serverless' }),
+
   trailingSlash: 'ignore',
 
   integrations: [
@@ -62,6 +65,8 @@ export default defineConfig({
   },
 
   vite: {
+    // Nodemailer is a Node package; keep it external for SSR
+    ssr: { external: ['nodemailer'] },
     build: {
       minify: 'terser',
       terserOptions: {
