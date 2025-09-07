@@ -1,22 +1,19 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel/serverless'; // <-- Serverless adapter
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import compress from 'astro-compress';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel/serverless'; // <-- Node serverless (needed for nodemailer)
 
 const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 
 export default defineConfig({
   site: 'https://supakoto.com',
-
-  // IMPORTANT: enable SSR so /api/contact runs on Node
-  output: 'hybrid', // or 'hybrid' if you want most pages static but keep APIs dynamic
+  output: 'hybrid',                 // <-- needed for API routes
+  adapter: vercel(),                // <-- tell Astro to target Vercel Functions
   trailingSlash: 'ignore',
-
-  adapter: vercel({ runtime: 'nodejs20' }), // ensure Node runtime (not Edge)
 
   integrations: [
     sitemap({
