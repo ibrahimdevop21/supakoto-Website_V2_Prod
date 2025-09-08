@@ -5,21 +5,21 @@ import react from '@astrojs/react';
 import compress from 'astro-compress';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel';
 
 const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 
 export default defineConfig({
   site: 'https://supakoto.com',
-  output: 'static',
+  output: 'server',          // needed so /api/* runs on Vercel
+  adapter: vercel(),
   trailingSlash: 'ignore',
 
+  // Make ALL pages static by default (no SSR page cost).
+  prerender: { default: true },
+
   integrations: [
-    sitemap({
-      i18n: {
-        defaultLocale: 'en',
-        locales: { en: 'en', ar: 'ar' }
-      }
-    }),
+    sitemap({ i18n: { defaultLocale: 'en', locales: { en: 'en', ar: 'ar' } } }),
     icon({ include: { mdi: ['*'] } }),
     tailwind({ applyBaseStyles: false }),
     react(),
@@ -56,29 +56,16 @@ export default defineConfig({
   build: {
     inlineStylesheets: 'auto',
     minify: true,
-    format: 'directory'
+    format: 'directory' // keep Astro defaults → CSS/JS under /_astro/*
   },
 
   vite: {
-    build: {
-      minify: 'terser',
-      terserOptions: {
-        compress: { drop_console: true, drop_debugger: true },
-        mangle: { safari10: true },
-      },
-      rollupOptions: {
-        output: {
-          chunkFileNames: 'assets/js/[name]-[hash].js',
-          entryFileNames: 'assets/js/[name]-[hash].js',
-          assetFileNames: ({ name }) => {
-            const n = name ?? '';
-            if (/\.css$/i.test(n)) return 'assets/css/[name]-[hash][extname]';
-            if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico|webp)$/i.test(n))
-              return 'assets/images/[name]-[hash][extname]';
-            return 'assets/[ext]/[name]-[hash][extname]';
-          },
-        },
-      },
-    },
+    resolve: {
+      alias: {
+        '@': '/src'
+      }
+    }
   },
+
+  // IMPORTANT: do NOT add custom vite.build.rollupOptions.output.
 });
