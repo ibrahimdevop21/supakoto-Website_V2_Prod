@@ -244,7 +244,7 @@ const { selectedBranch, currentLang } = Astro.props;
   const countryRadios = document.querySelectorAll('input[name="country"]');
   const getCountry = () => {
     const checked = document.querySelector('input[name="country"]:checked');
-    return checked ? checked.value : 'AE';
+    return checked ? (checked as HTMLInputElement).value : 'AE';
   };
   const phoneInput = document.getElementById('phone-input');
   const phoneError = document.getElementById('phone-error');
@@ -275,8 +275,8 @@ const { selectedBranch, currentLang } = Astro.props;
     }
   };
 
-  function validatePhone(country, phone) {
-    const pattern = phonePatterns[country];
+  function validatePhone(country: string, phone: string) {
+    const pattern = phonePatterns[country as keyof typeof phonePatterns];
     if (!pattern) return { valid: false, error: 'Invalid country' };
 
     // Clean phone number
@@ -308,7 +308,7 @@ const { selectedBranch, currentLang } = Astro.props;
 
   function updatePhonePreview() {
     const country = getCountry();
-    const phone = phoneInput?.value;
+    const phone = (phoneInput as HTMLInputElement)?.value;
     
     if (!phone) {
       if (phonePreview) phonePreview.textContent = '';
@@ -377,7 +377,7 @@ const { selectedBranch, currentLang } = Astro.props;
     if (carYear) carYear.classList.remove('border-red-500');
 
     // Validate car make (if provided, should be at least 2 characters)
-    if (carMake?.value.trim() && carMake.value.trim().length < 2) {
+    if ((carMake as HTMLInputElement)?.value.trim() && (carMake as HTMLInputElement).value.trim().length < 2) {
       if (carMakeError) {
         carMakeError.textContent = 'Car make must be at least 2 characters';
         carMakeError.classList.remove('hidden');
@@ -387,8 +387,8 @@ const { selectedBranch, currentLang } = Astro.props;
     }
 
     // Validate car year (if provided, should be between 1900 and 2025)
-    if (carYear?.value) {
-      const year = parseInt(carYear.value);
+    if ((carYear as HTMLInputElement)?.value) {
+      const year = parseInt((carYear as HTMLInputElement).value);
       if (year < 1900 || year > 2025) {
         if (carYearError) {
           carYearError.textContent = 'Please enter a valid year between 1900 and 2025';
@@ -410,7 +410,7 @@ const { selectedBranch, currentLang } = Astro.props;
       // Calculate load time
       const submitTime = Date.now();
       const timeDiff = submitTime - loadTime;
-      if (loadTimeInput) loadTimeInput.value = timeDiff.toString();
+      if (loadTimeInput) (loadTimeInput as HTMLInputElement).value = timeDiff.toString();
 
       // Validate services (required)
       if (!validateServices()) {
@@ -421,7 +421,7 @@ const { selectedBranch, currentLang } = Astro.props;
 
       // Validate phone
       const country = getCountry();
-      const phone = phoneInput?.value;
+      const phone = (phoneInput as HTMLInputElement)?.value;
       const phoneValidation = validatePhone(country, phone);
       
       if (!phoneValidation.valid) {
@@ -436,7 +436,7 @@ const { selectedBranch, currentLang } = Astro.props;
       }
 
       // Show loading state
-      if (submitBtn) submitBtn.disabled = true;
+      if (submitBtn) (submitBtn as HTMLButtonElement).disabled = true;
       if (submitText) submitText.classList.add('hidden');
       if (submitLoading) submitLoading.classList.remove('hidden');
       if (successMessage) successMessage.classList.add('hidden');
@@ -445,7 +445,7 @@ const { selectedBranch, currentLang } = Astro.props;
       try {
         // Prepare form data
         const formData = new FormData(form as HTMLFormElement);
-        formData.set('phone', phoneValidation.formatted); // Use E.164 format
+        formData.set('phone', phoneValidation.formatted || ''); // Use E.164 format
         
         // Submit to API
         const response = await fetch('/api/contact', {
@@ -457,15 +457,15 @@ const { selectedBranch, currentLang } = Astro.props;
 
         if (response.ok) {
           // Success - trigger tracking events
-          if (typeof fbq !== 'undefined') {
-            fbq('track', 'Lead', {
+          if (typeof (window as any).fbq !== 'undefined') {
+            (window as any).fbq('track', 'Lead', {
               content_name: 'Contact Form',
               content_category: 'Lead Generation'
             });
           }
           
-          if (typeof gtag !== 'undefined') {
-            gtag('event', 'form_submit', {
+          if (typeof (window as any).gtag !== 'undefined') {
+            (window as any).gtag('event', 'form_submit', {
               event_category: 'engagement',
               event_label: 'contact_form',
               value: 1
@@ -484,14 +484,14 @@ const { selectedBranch, currentLang } = Astro.props;
         }
       } catch (error) {
         console.error('Form submission error:', error);
-        if (errorText) errorText.textContent = error.message || 'Please try again';
+        if (errorText) errorText.textContent = (error as Error).message || 'Please try again';
         if (errorMessage) errorMessage.classList.remove('hidden');
         
         // Scroll to error message
         if (errorMessage) errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } finally {
         // Reset button state
-        if (submitBtn) submitBtn.disabled = false;
+        if (submitBtn) (submitBtn as HTMLButtonElement).disabled = false;
         if (submitText) submitText.classList.remove('hidden');
         if (submitLoading) submitLoading.classList.add('hidden');
       }
