@@ -5,13 +5,15 @@ import react from '@astrojs/react';
 import compress from 'astro-compress';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel/serverless'; // ADD
 
 const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 
 export default defineConfig({
   site: 'https://supakoto.com',
-  output: 'static',
+  output: 'server',                 // CHANGE: was 'static'
   trailingSlash: 'ignore',
+  adapter: vercel(),                // ADD
 
   integrations: [
     sitemap({
