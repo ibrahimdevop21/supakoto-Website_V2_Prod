@@ -20,7 +20,7 @@ export default defineConfig({
 
   integrations: [
     sitemap({ i18n: { defaultLocale: 'en', locales: { en: 'en', ar: 'ar' } } }),
-    icon({ include: { mdi: ['*'] } }),
+    icon({ include: { mdi: ['*'], 'simple-icons': ['*'] } }),
     tailwind({ applyBaseStyles: false }),
     react(),
     ...(USE_COMPRESS
@@ -62,7 +62,16 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@': '/src'
+        '@': '/src',
+        '@components': '/src/components',
+        '@layout': '/src/components/layout',
+        '@hero': '/src/components/hero',
+        '@gallery': '/src/components/gallery',
+        '@services': '/src/components/services',
+        '@shared': '/src/components/shared',
+        '@ui': '/src/components/ui',
+        '@data': '/src/data',
+        '@lib': '/src/lib'
       }
     }
   },
