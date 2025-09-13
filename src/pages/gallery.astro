@@ -43,7 +43,9 @@ const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
     : englishAltTexts[i % englishAltTexts.length];
   
   return {
-    src: `/gallery/supa-${imageNumber}.webp`,
+    id: `supa-${imageNumber}.webp`,
+    src: `/gallery/full/supa-${imageNumber}.webp`,
+    thumbSrc: `/gallery/thumbs/supa-${imageNumber}.webp`,
     alt: altText,
     caption: currentLang === 'ar'
       ? `تركيب حماية طلاء احترافي — مشروع ${imageNumber}`
@@ -77,7 +79,7 @@ const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
     <!-- Gallery Section -->
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
       <SimpleGallery 
-        client:load 
+        client:only="react"
         locale={currentLang as "en" | "ar"} 
         images={images}
         heightClass="h-[60svh] md:h-[68vh]"

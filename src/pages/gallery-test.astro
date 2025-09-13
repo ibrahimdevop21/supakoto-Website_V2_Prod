@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GalleryExample from '../components/gallery/GalleryExample';
+---
+
+<Layout title="Gallery Test">
+  <main class="min-h-screen bg-neutral-950 py-8">
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl font-bold text-white mb-8 text-center">
+        Gallery Test Page
+      </h1>
+      
+      <!-- Test with just first 10 images -->
+      <div class="mb-8">
+        <h2 class="text-xl text-white mb-4">First 10 Images Test</h2>
+        <div class="bg-neutral-900 p-4 rounded-xl">
+          <div class="text-sm text-neutral-400 mb-4">
+            Testing paths:
+            <br>Full: /gallery/full/supa-001.webp
+            <br>Thumb: /gallery/thumbs/supa-001.webp
+          </div>
+          
+          <!-- Direct image test -->
+          <div class="mb-4">
+            <p class="text-white text-sm mb-2">Direct image test:</p>
+            <img 
+              src="/gallery/thumbs/supa-001.webp" 
+              alt="Test" 
+              class="w-20 h-20 object-cover rounded border border-white/20"
+              onload="console.log('Direct image loaded successfully')"
+              onerror="console.error('Direct image failed to load')"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Full Gallery Component -->
+      <GalleryExample client:load />
+    </div>
+  </main>
+</Layout>
