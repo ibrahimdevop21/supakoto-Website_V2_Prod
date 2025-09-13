@@ -74,5 +74,10 @@
     "source-map-explorer": "^2.5.3",
     "ts-prune": "^0.10.3",
     "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "astro": "5.12.9",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   }
 }
