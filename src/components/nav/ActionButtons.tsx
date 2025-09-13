@@ -78,6 +78,11 @@ export default function ActionButtons({
   };
 
   const handleCallClick = () => {
+    // TikTok Pixel tracking - ClickButton event
+    if (typeof (window as any).ttq !== 'undefined') {
+      (window as any).ttq('track', 'ClickButton', { button: 'Call', region: 'UAE' });
+    }
+
     if (selectedBranch) {
       window.location.href = `tel:${selectedBranch.phones[0]}`;
     } else {
@@ -86,6 +91,11 @@ export default function ActionButtons({
   };
 
   const handleWhatsAppClick = () => {
+    // TikTok Pixel tracking - ClickButton event
+    if (typeof (window as any).ttq !== 'undefined') {
+      (window as any).ttq('track', 'ClickButton', { button: 'WhatsApp', region: 'UAE' });
+    }
+
     if (selectedBranch) {
       window.open(`https://wa.me/${selectedBranch.whatsapp}`, '_blank');
     } else {

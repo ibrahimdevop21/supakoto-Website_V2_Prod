@@ -79,6 +79,12 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                         href={`tel:${phone}`}
                         className="text-white hover:text-green-400 transition-colors font-medium"
                         dir="ltr"
+                        onClick={() => {
+                          // TikTok Pixel tracking - ClickButton event
+                          if (typeof (window as any).ttq !== 'undefined') {
+                            (window as any).ttq('track', 'ClickButton', { button: 'Call', region: 'UAE' });
+                          }
+                        }}
                       >
                         {phone}
                       </a>
@@ -103,6 +109,12 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                       rel="noopener noreferrer"
                       className="block text-white hover:text-green-400 transition-colors font-medium"
                       dir="ltr"
+                      onClick={() => {
+                        // TikTok Pixel tracking - ClickButton event
+                        if (typeof (window as any).ttq !== 'undefined') {
+                          (window as any).ttq('track', 'ClickButton', { button: 'WhatsApp', region: 'UAE' });
+                        }
+                      }}
                     >
                       +{branch.whatsapp.replace(/(\d{1,3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}
                     </a>

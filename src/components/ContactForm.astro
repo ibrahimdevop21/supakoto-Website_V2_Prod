@@ -472,6 +472,11 @@ const { selectedBranch, currentLang } = Astro.props;
             });
           }
 
+          // TikTok Pixel tracking - SubmitForm event
+          if (typeof (window as any).ttq !== 'undefined') {
+            (window as any).ttq('track', 'SubmitForm', { region: 'UAE' });
+          }
+
           // Show success message and reset form
           if (successMessage) successMessage.classList.remove('hidden');
           (form as HTMLFormElement).reset();
