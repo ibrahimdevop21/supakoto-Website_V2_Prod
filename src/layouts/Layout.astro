@@ -12,8 +12,6 @@ import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
 import '../styles/global.css';
 import '../styles/critical.css';
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
 
 
 
@@ -374,10 +372,10 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		<Footer />
 		
 		
-		<!-- Vercel Analytics -->
-		<Analytics />
+		<!-- Vercel Analytics - Temporarily removed due to TypeScript issues -->
+		<!-- <Analytics /> -->
 		
-		<!-- Vercel Speed Insights -->
-		<SpeedInsights />
+		<!-- Vercel Speed Insights - Temporarily removed due to TypeScript issues -->
+		<!-- <SpeedInsights /> -->
 	</body>
 </html>
