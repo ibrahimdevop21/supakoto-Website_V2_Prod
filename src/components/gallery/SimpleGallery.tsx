@@ -1,15 +1,47 @@
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+// Polyfills for requestIdleCallback/cancelIdleCallback (Safari/Android support)
+const ric =
+  typeof window !== "undefined" && "requestIdleCallback" in window
+    ? window.requestIdleCallback
+    : (cb: IdleRequestCallback) =>
+        window.setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 0 } as any), 1) as any;
 
-// Intersection Observer hook for lazy loading with production safety
-const useIntersectionObserver = (options?: IntersectionObserverInit) => {
-  const [isIntersecting, setIsIntersecting] = useState(false);
+const cic =
+  typeof window !== "undefined" && "cancelIdleCallback" in window
+    ? window.cancelIdleCallback
+    : (id: any) => clearTimeout(id);
+
+// Shuffle utility with crypto-based randomness when available
+function shuffleInPlace<T>(arr: T[]) {
+  // Better randomness using crypto when available
+  const rand = (n: number) => {
+    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      const buf = new Uint32Array(1);
+      crypto.getRandomValues(buf);
+      return buf[0] / 2 ** 32 * n;
+    }
+    return Math.random() * n;
+  };
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rand(i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Fallback static list for SSR
+const FALLBACK_FILENAMES = Array.from({ length: 238 }, (_, i) => 
+  `supa-${String(i + 1).padStart(3, '0')}.webp`
+);
+
+// IntersectionObserver hook for virtualized thumbnails
+const useInView = (options?: IntersectionObserverInit) => {
+  const [isInView, setIsInView] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const targetRef = useRef<HTMLDivElement>(null);
 
-  // Ensure we're on client side
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -19,97 +51,105 @@ const useIntersectionObserver = (options?: IntersectionObserverInit) => {
     const target = targetRef.current;
     if (!target) return;
 
-    // Fallback for environments without IntersectionObserver
     if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
-      setIsIntersecting(true);
+      setIsInView(true);
       return;
     }
 
     const observer = new IntersectionObserver(([entry]) => {
-      setIsIntersecting(entry.isIntersecting);
-    }, options);
+      setIsInView(entry.isIntersecting);
+    }, { rootMargin: '300px', ...options });
 
     observer.observe(target);
     return () => observer.disconnect();
   }, [options, isClient]);
 
-  return { targetRef, isIntersecting: isClient ? isIntersecting : true };
+  return { targetRef, isInView: isClient ? isInView : true };
 };
 
-// Optimized image component with lazy loading and error handling
-const OptimizedImage = ({ 
-  src, 
-  alt, 
-  className, 
-  loading = "lazy",
-  onLoad,
-  onError,
-  width,
-  height,
-  ...props 
-}: React.ImgHTMLAttributes<HTMLImageElement> & {
-  className?: string;
-  onLoad?: () => void;
-  onError?: () => void;
-  width?: number;
-  height?: number;
-}) => {
+// Helper to prefetch images
+const prefetchImage = (href: string) => {
+  if (typeof document === 'undefined') return;
+  
+  const existingLink = document.querySelector(`link[href="${href}"]`);
+  if (existingLink) return;
+  
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.as = 'image';
+  link.href = href;
+  document.head.appendChild(link);
+};
+
+// Build items from manifest
+const buildItems = (fileList: string[]): SimpleGalleryImage[] => {
+  return fileList.map(f => ({
+    id: f,
+    src: `/gallery/full/${f}`,
+    thumbSrc: `/gallery/thumbs/${f}`,
+    alt: f.replace(/\.webp$/, '').toUpperCase(),
+    srcSet: undefined,
+    blurDataURL: undefined
+  }));
+};
+
+const ITEMS = buildItems(FALLBACK_FILENAMES);
+
+// Virtualized thumbnail component
+const VirtualThumb: React.FC<{
+  item: SimpleGalleryImage;
+  isSelected: boolean;
+  onClick: () => void;
+  index: number;
+}> = ({ item, isSelected, onClick, index }) => {
+  const { targetRef, isInView } = useInView();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  // Ensure we're on client side
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const handleLoad = () => {
-    setImageLoaded(true);
-    onLoad?.();
-  };
-
-  const handleError = () => {
-    setImageError(true);
-    onError?.();
-  };
-
-  if (imageError) {
-    return (
-      <div className={cn(
-        "flex items-center justify-center bg-neutral-800 text-neutral-400",
-        className
-      )}>
-        <span className="text-sm">Failed to load</span>
-      </div>
-    );
-  }
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
-      {/* Loading state overlay */}
-      {!imageLoaded && isClient && (
-        <div className="absolute inset-0 bg-neutral-800 animate-pulse motion-reduce:animate-none flex items-center justify-center z-10">
-          <div className="w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full animate-spin motion-reduce:animate-none" />
-        </div>
+    <div ref={targetRef} className="shrink-0">
+      {isInView ? (
+        <button
+          type="button"
+          data-idx={index}
+          onClick={onClick}
+          aria-selected={isSelected}
+          aria-label={`View image ${index + 1}: ${item.alt}`}
+          className={cn(
+            "h-[84px] w-[84px] md:h-[100px] md:w-[100px] shrink-0 rounded-xl border overflow-hidden transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 relative",
+            isSelected
+              ? "border-white ring-2 ring-white/50"
+              : "border-white/10 hover:border-white/30"
+          )}
+        >
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 bg-neutral-800 animate-pulse" />
+          )}
+          {imageError ? (
+            <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs">
+              Error
+            </div>
+          ) : (
+            <img
+              src={item.thumbSrc}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width={100}
+              height={100}
+              sizes="(max-width: 768px) 84px, 100px"
+              className={cn(
+                "w-full h-full object-cover transition-opacity duration-300",
+                imageLoaded ? "opacity-100" : "opacity-0"
+              )}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
+            />
+          )}
+        </button>
+      ) : (
+        <div className="h-[84px] w-[84px] md:h-[100px] md:w-[100px] rounded-xl bg-neutral-800 animate-pulse" />
       )}
-      
-      {/* Always render the image so it can load */}
-      <img
-        src={src}
-        alt={alt}
-        loading={loading}
-        decoding="async"
-        fetchPriority={loading === "eager" ? "high" : undefined}
-        width={width}
-        height={height}
-        onLoad={handleLoad}
-        onError={handleError}
-        className={cn(
-          "w-full h-full object-cover transition-opacity duration-300 motion-reduce:transition-none",
-          imageLoaded ? "opacity-100" : "opacity-0"
-        )}
-        {...props}
-      />
     </div>
   );
 };
@@ -127,28 +167,19 @@ const ChevronRight = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const ExpandIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-  </svg>
-);
-
-const CloseIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-  </svg>
-);
-
 export type SimpleGalleryImage = {
+  id: string;
   src: string;
+  thumbSrc: string;
   alt?: string;
   caption?: string;
   srcSet?: string[];
+  blurDataURL?: string;
 };
 
 export type SimpleGalleryProps = {
   locale?: "en" | "ar";
-  images: SimpleGalleryImage[];
+  images?: SimpleGalleryImage[];
   initialIndex?: number;
   heightClass?: string;
   showCounter?: boolean;
@@ -160,30 +191,56 @@ export type SimpleGalleryProps = {
 
 export default function SimpleGallery({
   locale = "en",
-  images,
+  images = ITEMS, // Use manifest items as fallback
   initialIndex = 0,
-  heightClass = "aspect-video",
+  heightClass = "aspect-[16/9]",
   showCounter = true,
   showCaptions = true,
   className,
-  thumbSizeClass = "h-16 w-24 md:h-20 md:w-28",
-  itemsPerPage = 24, // Optimized for better grid layout
+  thumbSizeClass = "h-20 w-20",
+  itemsPerPage = 24,
 }: SimpleGalleryProps) {
+  // Component state
+  const [dynamicItems, setDynamicItems] = useState<SimpleGalleryImage[]>(images);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [thumbScrollPct, setThumbScrollPct] = useState(0);
+  
+  // Load filenames dynamically on mount
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/gallery/filenames.json')
+      .then(res => res.json())
+      .then((data: string[]) => {
+        if (cancelled) return;
+        // 1) build items
+        const items = buildItems(data);
+        // 2) shuffle once per load
+        shuffleInPlace(items);
+        // 3) set state
+        setDynamicItems(items);
+        setIsLoaded(true);
+      })
+      .catch((error) => {
+        console.error('Failed to load gallery manifest:', error);
+        setIsLoaded(true); // use fallback
+      });
+    return () => { cancelled = true; };
+  }, []);
+  
+  const finalImages = dynamicItems;
+  
   const isRTL = locale === "ar";
   const isIOS = typeof navigator !== 'undefined' && /iP(hone|ad|od)/.test(navigator.userAgent);
-  const [index, setIndex] = useState(() => clamp(initialIndex, 0, Math.max(0, images.length - 1)));
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
-  const [showThumbs, setShowThumbs] = useState(false);
+  const [index, setIndex] = useState(() => clamp(initialIndex, 0, Math.max(0, finalImages.length - 1)));
   const [isMobile, setIsMobile] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   const [loadedImages, setLoadedImages] = useState(new Set<number>());
-  const [preloadedPages, setPreloadedPages] = useState(new Set([0])); // Preload first page
+  const [preloadedPages, setPreloadedPages] = useState(new Set([0]));
   const mainRef = useRef<HTMLDivElement | null>(null);
   const stripRef = useRef<HTMLDivElement | null>(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
-  const current = images[index];
+  const idleCallbackRef = useRef<number | null>(null);
+  const current = finalImages[index];
   
   // Mobile detection hook
   useEffect(() => {
@@ -198,34 +255,17 @@ export default function SimpleGallery({
     };
   }, []);
   
-  // Intersection observer for thumbnail container
-  const { targetRef: thumbnailRef, isIntersecting } = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: '100px'
-  });
-  
   // Calculate pagination with performance optimizations
-  const totalPages = Math.ceil(images.length / itemsPerPage);
-  const startIndex = currentPage * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, images.length);
-  const visibleThumbs = images.slice(startIndex, endIndex);
-  
-  // Preload adjacent pages for smoother navigation
-  const preloadPages = useMemo(() => {
-    const pages = new Set([currentPage]);
-    if (currentPage > 0) pages.add(currentPage - 1);
-    if (currentPage < totalPages - 1) pages.add(currentPage + 1);
-    return pages;
-  }, [currentPage, totalPages]);
+  const totalPages = Math.ceil(finalImages.length / itemsPerPage);
 
   const t = useMemo(
     () => ({
       prev: isRTL ? "السابق" : "Previous",
       next: isRTL ? "التالي" : "Next",
       of: isRTL ? "من" : "of",
-      image: isRTL ? "الصورة" : "Image",
-      showMore: isRTL ? "عرض المزيد" : "Load More",
-      showLess: isRTL ? "عرض أقل" : "Show Less",
+      image: isRTL ? "صورة" : "Image",
+      showMore: isRTL ? "عرض المزيد" : "Show more",
+      showLess: isRTL ? "عرض أقل" : "Show less",
       fullscreen: isRTL ? "ملء الشاشة" : "Fullscreen",
       close: isRTL ? "إغلاق" : "Close",
     }),
@@ -237,31 +277,35 @@ export default function SimpleGallery({
   }, []);
   
   const next = useCallback(() => {
-    setIndex((i) => (i < images.length - 1 ? i + 1 : i)); // no loop
-  }, [images.length]);
+    setIndex((i) => (i < finalImages.length - 1 ? i + 1 : i)); // no loop
+  }, [finalImages.length]);
   
-  const toggleFullscreen = useCallback(() => {
-    if (isMobile) return; // disable on phones
-    setIsFullscreen((v) => {
-      const newValue = !v;
-      // Handle body scroll lock
-      if (newValue) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
+  // Preload neighbor images using requestIdleCallback for better performance
+  const preloadNeighborImages = useCallback((centerIndex: number) => {
+    if (idleCallbackRef.current) {
+      cic(idleCallbackRef.current);
+    }
+    
+    const preloadImage = (idx: number) => {
+      if (idx >= 0 && idx < finalImages.length && !loadedImages.has(idx)) {
+        const img = new Image();
+        img.src = finalImages[idx].src;
+        img.onload = () => {
+          setLoadedImages(prev => new Set([...prev, idx]));
+        };
       }
-      return newValue;
-    });
-  }, [isMobile]);
-
-  const closeFullscreen = useCallback(() => {
-    setIsFullscreen(false);
-    document.body.style.overflow = '';
-    // Return focus to fullscreen button
-    setTimeout(() => {
-      fullscreenButtonRef.current?.focus();
-    }, 100);
-  }, []);
+    };
+    
+    // Use requestIdleCallback for non-critical preloading
+    idleCallbackRef.current = ric(() => {
+      // Preload previous and next 2 images
+      for (let i = -2; i <= 2; i++) {
+        if (i !== 0) { // Skip current image (already loaded)
+          preloadImage(centerIndex + i);
+        }
+      }
+    }, { timeout: 2000 });
+  }, [finalImages, loadedImages]);
 
   // Touch handlers for swipe gestures
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -297,6 +341,26 @@ export default function SimpleGallery({
     onTouchMove: handleTouchMove,
     onTouchEnd: handleTouchEnd
   } : {};
+  
+  // Intersection observer for thumbnail container
+  const [isIntersecting, setIsIntersecting] = useState(true);
+  
+  useEffect(() => {
+    if (!('IntersectionObserver' in window)) {
+      setIsIntersecting(true);
+      return;
+    }
+    
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsIntersecting(entry.isIntersecting);
+    }, { threshold: 0.1, rootMargin: '100px' });
+    
+    if (mainRef.current) {
+      observer.observe(mainRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     // Update current page when index changes
@@ -355,52 +419,29 @@ export default function SimpleGallery({
     };
   }, [isIOS, isRTL, next, prev]);
 
-  // Preload images for current and adjacent pages
-  useEffect(() => {
-    if (!isIntersecting) return;
-    
-    preloadPages.forEach(pageNum => {
-      if (preloadedPages.has(pageNum)) return;
-      
-      const pageStart = pageNum * itemsPerPage;
-      const pageEnd = Math.min(pageStart + itemsPerPage, images.length);
-      
-      // Preload images for this page
-      for (let i = pageStart; i < pageEnd; i++) {
-        const img = new Image();
-        img.src = images[i].src;
-        img.onload = () => {
-          setLoadedImages(prev => new Set([...prev, i]));
-        };
-      }
-      
-      setPreloadedPages(prev => new Set([...prev, pageNum]));
-    });
-  }, [preloadPages, preloadedPages, itemsPerPage, images, isIntersecting]);
+  // Removed redundant page preloading - neighbor preloading is sufficient
   
-  // Preload main image and adjacent images
+  // Preload main image and trigger neighbor preloading
   useEffect(() => {
-    const preloadMainImages = () => {
-      // Preload current image
-      if (!loadedImages.has(index)) {
-        const img = new Image();
-        img.src = current.src;
-        img.onload = () => setLoadedImages(prev => new Set([...prev, index]));
-      }
-      
-      // Preload next and previous images for smoother navigation
-      [index - 1, index + 1].forEach(i => {
-        if (i >= 0 && i < images.length && !loadedImages.has(i)) {
-          const img = new Image();
-          img.src = images[i].src;
-          img.onload = () => setLoadedImages(prev => new Set([...prev, i]));
-        }
-      });
-    };
+    if (!current) return;
     
-    const timer = setTimeout(preloadMainImages, 100);
-    return () => clearTimeout(timer);
-  }, [index, current.src, images, loadedImages]);
+    // Preload current image immediately
+    if (!loadedImages.has(index)) {
+      const img = new Image();
+      img.src = current.src;
+      img.onload = () => setLoadedImages(prev => new Set([...prev, index]));
+    }
+    
+    // Trigger neighbor preloading with requestIdleCallback
+    preloadNeighborImages(index);
+    
+    // Cleanup idle callback on unmount
+    return () => {
+      if (idleCallbackRef.current) {
+        cic(idleCallbackRef.current);
+      }
+    };
+  }, [index, current, loadedImages, preloadNeighborImages]);
   
   useEffect(() => {
     // keep active thumb visible
@@ -411,29 +452,9 @@ export default function SimpleGallery({
   }, [index, currentPage]);
 
   
-  const loadMore = useCallback(() => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage(currentPage + 1);
-    }
-  }, [currentPage, totalPages]);
-  
-  const showLess = useCallback(() => {
-    setCurrentPage(0);
-  }, []);
+  // Removed unused loadMore and showLess functions
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") (isRTL ? next : prev)();
-    if (e.key === "ArrowRight") (isRTL ? prev : next)();
-    if (e.key === "Home") setIndex(0);
-    if (e.key === "End") setIndex(images.length - 1);
-    if (e.key === "Escape" && isFullscreen) closeFullscreen();
-  }, [isRTL, next, prev, images.length, isFullscreen, closeFullscreen]);
-
-  const onFullscreenKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      e.preventDefault();
-      closeFullscreen();
-    }
     if (e.key === "ArrowLeft") {
       e.preventDefault();
       (isRTL ? next : prev)();
@@ -442,335 +463,199 @@ export default function SimpleGallery({
       e.preventDefault();
       (isRTL ? prev : next)();
     }
-  }, [isRTL, next, prev, closeFullscreen]);
+    if (e.key === "Home") {
+      e.preventDefault();
+      setIndex(0);
+    }
+    if (e.key === "End") {
+      e.preventDefault();
+      setIndex(finalImages.length - 1);
+    }
+  }, [isRTL, next, prev, finalImages.length]);
 
-  if (!images?.length) return null;
+  // Additional neighbor prefetching with requestIdleCallback
+  useEffect(() => {
+    if (idleCallbackRef.current) {
+      cic(idleCallbackRef.current);
+    }
+
+    idleCallbackRef.current = ric(() => {
+      // Prefetch previous and next images
+      const prevIndex = index - 1;
+      const nextIndex = index + 1;
+      
+      if (prevIndex >= 0 && finalImages[prevIndex]) {
+        prefetchImage(finalImages[prevIndex].src);
+      }
+      if (nextIndex < finalImages.length && finalImages[nextIndex]) {
+        prefetchImage(finalImages[nextIndex].src);
+      }
+    }, { timeout: 2000 });
+
+    return () => {
+      if (idleCallbackRef.current) {
+        cic(idleCallbackRef.current);
+      }
+    };
+  }, [index, finalImages]);
+
+  // Handler for thumb scroll progress
+  const onThumbScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const pct = el.scrollWidth <= el.clientWidth
+      ? 1
+      : el.scrollLeft / (el.scrollWidth - el.clientWidth);
+    setThumbScrollPct(pct);
+  }, []);
+
+  // Since we're using client:only, this check is no longer needed
+  // but keeping for safety in case directive changes
+  
+  // Show loading state while fetching manifest
+  if (!isLoaded) {
+    return (
+      <section className={cn("py-8 md:py-12 pb-[max(1rem,env(safe-area-inset-bottom))]", className)}>
+        <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] xl:aspect-[21/9] overflow-hidden rounded-2xl bg-neutral-900 shadow-2xl animate-pulse">
+          <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
+            Loading gallery...
+          </div>
+        </div>
+      </section>
+    );
+  }
+  
+  if (!finalImages?.length) return null;
 
   return (
-    <>
     <section
-      className={cn("py-8 md:py-12 pb-[max(1rem,env(safe-area-inset-bottom))]", className)}
+      className={cn(
+        "py-8 md:py-12 pb-[max(1rem,env(safe-area-inset-bottom))]",
+        className
+      )}
       dir={isRTL ? "rtl" : "ltr"}
       tabIndex={0}
       onKeyDown={onKeyDown}
       aria-label={isRTL ? "معرض الصور" : "Image gallery"}
     >
-      {/* Big image */}
-      <div className="rounded-2xl bg-muted/20 border border-white/10 shadow-soft p-2">
-<div
+      {/* Shared container for BOTH stage + thumbs.
+          Use the SAME constraints as your site (match navbar/pages). */}
+      <div className="mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8">
+        {/* === Stage (full image) === */}
+        <div
           ref={mainRef}
           className={cn(
-            "relative overflow-hidden rounded-2xl bg-neutral-900 border border-white/10",
-            heightClass,
-            "touch-pan-y select-none sm:cursor-zoom-in"
+            "relative w-full",
+            // viewport-based height; no fixed aspect so no letterboxing
+            "h-[clamp(240px,60svh,720px)] md:h-[clamp(420px,68svh,820px)]",
+            "overflow-hidden rounded-3xl bg-neutral-900/95",
+            "border border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
           )}
-          onClick={toggleFullscreen}
           style={{ touchAction: "pan-y" }}
           {...touchHandlers}
         >
-          <div className="absolute inset-0">
-            <OptimizedImage
-              src={current.src}
-              alt={current.alt || ""}
-              className="h-full w-full object-cover"
-              loading="eager"
-              fetchPriority="high"
+          {current?.blurDataURL && (
+            <div
+              className="absolute inset-0 bg-cover bg-center blur-sm scale-110"
+              style={{ backgroundImage: `url(${current.blurDataURL})` }}
+              aria-hidden
             />
-          </div>
+          )}
 
-          {/* Overlay controls */}
-          <div className="pointer-events-none absolute inset-0">
-            {/* Desktop overlay: centered arrows */}
-            <div className="hidden sm:flex items-center justify-between p-2 pointer-events-auto h-full">
-              <Button type="button" variant="outline" size="icon" 
-                onClick={(e) => { e.stopPropagation(); isRTL ? next() : prev(); }} 
-                aria-label={t.prev}
-                className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-                <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
-              </Button>
-              <Button type="button" variant="outline" size="icon" 
-                onClick={(e) => { e.stopPropagation(); isRTL ? prev() : next(); }} 
-                aria-label={t.next}
-                className="h-10 w-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-                <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
-              </Button>
-            </div>
+          <img
+            src={current?.src}
+            alt={current?.alt || ""}
+            loading={index === 0 ? "eager" : "lazy"}
+            decoding="async"
+            {...(index === 0 && { fetchpriority: "high" } as any)}
+            sizes="(max-width:768px) 100vw, 1200px"
+            className="absolute inset-0 w-full h-full object-cover"
+            draggable={false}
+          />
 
-            {/* Desktop/Tablet Fullscreen Button - Top Right */}
-            <div className="hidden sm:block absolute top-4 right-4 pointer-events-auto">
-              <div className="relative">
-                <Button 
-                  ref={fullscreenButtonRef}
-                  type="button" 
-                  variant="outline" 
-                  size="icon"
-                  onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                  onFocus={() => setShowTooltip(true)}
-                  onBlur={() => setShowTooltip(false)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleFullscreen();
-                    }
-                  }}
-                  aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-                  className="h-10 w-10 bg-black/30 hover:bg-black/50 border-white/20 hover:border-white/40 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 transition-all duration-200"
-                >
-                  <ExpandIcon className="h-5 w-5" />
-                </Button>
-                {/* Tooltip */}
-                {showTooltip && (
-                  <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-black/80 text-white text-xs rounded whitespace-nowrap pointer-events-none z-10">
-                    {isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* Arrows – inset from edges, no extra container padding */}
+          <button
+            type="button"
+            onClick={isRTL ? next : prev}
+            disabled={index === 0}
+            aria-label="Previous image"
+            className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2
+                       grid place-items-center size-9 md:size-10 rounded-full
+                       bg-black/55 backdrop-blur-sm text-white/95 border border-white/10
+                       hover:bg-black/70 active:scale-[0.98] transition
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-30"
+          >
+            <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
+          </button>
 
-            {/* Mobile overlay: bottom bar with arrows + counter */}
-            <div className="sm:hidden absolute inset-x-0 bottom-0 pointer-events-auto">
-              <div className="bg-gradient-to-t from-black/70 to-transparent px-3 pb-3 pt-10 flex items-center justify-between">
-                <Button type="button" variant="outline" size="icon" 
-                  onClick={(e) => { e.stopPropagation(); isRTL ? next() : prev(); }} 
-                  aria-label={t.prev}
-                  className="h-11 w-11 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-                  <ChevronLeft className={cn("h-5 w-5", isRTL && "rotate-180")} />
-                </Button>
-                <div className="text-[11px] text-white/90 px-2 py-1 rounded bg-black/30">
-                  {isRTL ? `${t.image} ${index + 1} ${t.of} ${images.length}` : `${t.image} ${index + 1} ${t.of} ${images.length}`}
-                </div>
-                <Button type="button" variant="outline" size="icon" 
-                  onClick={(e) => { e.stopPropagation(); isRTL ? prev() : next(); }} 
-                  aria-label={t.next}
-                  className="h-11 w-11 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
-                  <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
-                </Button>
-              </div>
+          <button
+            type="button"
+            onClick={isRTL ? prev : next}
+            disabled={index === finalImages.length - 1}
+            aria-label="Next image"
+            className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2
+                       grid place-items-center size-9 md:size-10 rounded-full
+                       bg-black/55 backdrop-blur-sm text-white/95 border border-white/10
+                       hover:bg-black/70 active:scale-[0.98] transition
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-30"
+          >
+            <ChevronRight className={cn("h-5 w-5", isRTL && "rotate-180")} />
+          </button>
+
+          {showCounter && (
+            <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4
+                            px-2.5 py-1 rounded-lg text-xs md:text-sm
+                            bg-black/60 text-white/95 border border-white/10">
+              {index + 1} / {finalImages.length}
             </div>
-          </div>
+          )}
         </div>
 
-        {/* caption + counter */}
-        {(showCaptions || showCounter) && (
-          <div className="flex items-center justify-between gap-3 px-2 py-2 sm:py-3">
-            {showCaptions ? (
-              <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                {current.caption || current.alt || ""}
-              </div>
-            ) : <span />}
-            {showCounter && (
-              <div className="hidden sm:block text-xs text-muted-foreground">
-                {isRTL ? `${t.image} ${index + 1} ${t.of} ${images.length}` : `${t.image} ${index + 1} ${t.of} ${images.length}`}
-              </div>
+        {/* Caption */}
+        {showCaptions && current?.caption && (
+          <div className="mt-4 text-sm text-muted-foreground">
+            {current.caption}
+          </div>
+        )}
+
+        {/* === Thumbs rail (shares the SAME container) === */}
+        <div className="mt-5 md:mt-6">
+          <div
+            ref={stripRef}
+            className={cn(
+              "relative flex gap-3 md:gap-3.5 overflow-x-auto pb-3 md:pb-3.5",
+              "gallery-scroll thumb-fade",
+              "scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-700/50"
             )}
+            role="listbox"
+            aria-label={isRTL ? "مصغرات المعرض" : "Gallery thumbnails"}
+          >
+            {finalImages
+              .slice(Math.max(0, index - 20), Math.min(finalImages.length, index + 21))
+              .map((item, i) => {
+                const actualIndex = Math.max(0, index - 20) + i;
+                return (
+                  <VirtualThumb
+                    key={item.id}
+                    item={item}
+                    isSelected={actualIndex === index}
+                    onClick={() => setIndex(actualIndex)}
+                    index={actualIndex}
+                  />
+                );
+              })}
           </div>
-        )}
-      </div>
 
-      {/* Mobile thumb strip */}
-      <div className="sm:hidden mt-2 rounded-2xl bg-white/5 border border-white/10">
-        <div className="flex gap-3 overflow-x-auto px-3 py-3 scrollbar-thin">
-          {images.slice(Math.max(0, index - 6), Math.min(images.length, index + 12)).map((img, i) => {
-            const actualIndex = Math.max(0, index - 6) + i;
-            const active = actualIndex === index;
-            const isLoaded = loadedImages.has(actualIndex);
-            return (
-              <button
-                key={actualIndex}
-                type="button"
-                onClick={() => setIndex(actualIndex)}
-                tabIndex={-1}
-                aria-pressed={active}
-                aria-current={active ? "true" : undefined}
-                aria-label={img.alt || img.caption || `Image ${actualIndex + 1}`}
-                className={cn(
-                  "relative shrink-0 overflow-hidden rounded-lg border transition-all duration-200 h-16 w-24",
-                  active ? "border-white/70 ring-2 ring-white/40 scale-105"
-                         : "border-white/10 hover:border-white/30"
-                )}
-              >
-                <OptimizedImage
-                  src={img.src}
-                  alt=""
-                  width={240}
-                  height={160}
-                  loading="lazy"
-                  className={cn("h-full w-full object-cover", isLoaded ? "opacity-90" : "opacity-70")}
-                />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Desktop Thumbnails */}
-      <div 
-        ref={thumbnailRef}
-        className="hidden sm:block mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10"
-      >
-        <div
-          ref={stripRef}
-          className="flex gap-3 overflow-x-auto px-3 py-3 scrollbar-thin"
-        >
-          {visibleThumbs.map((img, i) => {
-            const actualIndex = startIndex + i;
-            const active = actualIndex === index;
-            const isLoaded = loadedImages.has(actualIndex);
-            
-            return (
-              <button
-                key={actualIndex}
-                data-idx={actualIndex}
-                type="button"
-                tabIndex={-1}
-                onClick={() => setIndex(actualIndex)}
-                className={cn(
-                  "relative shrink-0 overflow-hidden rounded-lg border transition-all duration-200",
-                  thumbSizeClass,
-                  active
-                    ? "border-white/70 ring-2 ring-white/40 scale-105"
-                    : "border-white/10 hover:border-white/30 hover:scale-102"
-                )}
-                aria-pressed={active}
-                aria-current={active ? "true" : undefined}
-                aria-label={img.alt || img.caption || `Image ${actualIndex + 1}`}
-              >
-                <OptimizedImage
-                  src={img.src}
-                  alt=""
-                  loading={isIntersecting ? "lazy" : "lazy"}
-                  width={240}
-                  height={160}
-                  className={cn(
-                    "h-full w-full object-cover transition-all duration-200 motion-reduce:transition-none",
-                    isLoaded ? "opacity-90 hover:opacity-100" : "opacity-70"
-                  )}
-                />
-                {/* Loading indicator for thumbnails */}
-                {!isLoaded && (
-                  <div className="absolute inset-0 bg-neutral-800/50 flex items-center justify-center">
-                    <div className="w-3 h-3 border border-neutral-500 border-t-white rounded-full animate-spin motion-reduce:animate-none"></div>
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-        
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-4 p-4">
-            <div className="text-xs text-muted-foreground">
-              {isRTL 
-                ? `${t.image} ${startIndex + 1}-${endIndex} ${t.of} ${images.length}`
-                : `${t.image} ${startIndex + 1}-${endIndex} ${t.of} ${images.length}`
-              }
-            </div>
-            <div className="flex items-center gap-2">
-              {/* Previous page button */}
-              {currentPage > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={showLess}
-                  className="text-xs"
-                >
-                  ← {t.showLess}
-                </Button>
-              )}
-              
-              {/* Page indicator */}
-              <div className="text-xs text-muted-foreground px-2">
-                Page {currentPage + 1} of {totalPages}
-              </div>
-              
-              {/* Next page button */}
-              {currentPage < totalPages - 1 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={loadMore}
-                  className="text-xs"
-                >
-                  {t.showMore} →
-                </Button>
-              )}
-            </div>
-            
-            {/* Performance indicator */}
-            <div className="text-xs text-muted-foreground opacity-70">
-              {loadedImages.size}/{images.length} loaded
-            </div>
-          </div>
-        )}
-      </div>
-      
-      {/* Fullscreen Modal */}
-      {!isMobile && isFullscreen && (
-        <div 
-          id="sk-fullscreen-root"
-          tabIndex={0}
-          role="dialog"
-          aria-modal="true"
-          aria-label={isRTL ? "عرض بملء الشاشة" : "Fullscreen view"}
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
-          onKeyDown={onFullscreenKeyDown}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              closeFullscreen();
-            }
-          }}
-        >
-          <div className="relative w-full h-full flex items-center justify-center p-4">
-            <OptimizedImage
-              src={current.src}
-              alt={current.alt || ""}
-              className="max-w-full max-h-full object-contain"
-              loading="eager"
+          {/* optional slim progress line that aligns with the same container */}
+          <div className="mt-1.5 h-[3px] rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-white/30 transition-[width]"
+              style={{ width: `${Math.min(100, ((index + 1) / finalImages.length) * 100)}%` }}
+              aria-hidden
             />
-            
-            {/* Close Button - 44x44px click target */}
-            <button
-              onClick={closeFullscreen}
-              className="absolute top-4 right-4 h-11 w-11 bg-black/60 hover:bg-black/80 text-white rounded-full transition-all duration-200 z-20 flex items-center justify-center border border-white/20 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-              aria-label={t.close}
-              autoFocus
-            >
-              <CloseIcon className="h-6 w-6" />
-            </button>
-            
-            {/* Fullscreen navigation */}
-            <div className="absolute inset-0 flex items-center justify-between p-8 pointer-events-none">
-              <button
-                onClick={isRTL ? next : prev}
-                className="pointer-events-auto h-12 w-12 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors flex items-center justify-center border border-white/20 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                aria-label={t.prev}
-                disabled={index === 0}
-              >
-                <ChevronLeft className={cn("h-6 w-6", isRTL && "rotate-180")} />
-              </button>
-              <button
-                onClick={isRTL ? prev : next}
-                className="pointer-events-auto h-12 w-12 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors flex items-center justify-center border border-white/20 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                aria-label={t.next}
-                disabled={index === images.length - 1}
-              >
-                <ChevronRight className={cn("h-6 w-6", isRTL && "rotate-180")} />
-              </button>
-            </div>
-            
-            {/* Image counter in fullscreen */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-3 py-1.5 bg-black/60 text-white text-sm rounded-full border border-white/20">
-              {isRTL ? `${index + 1} ${t.of} ${images.length}` : `${index + 1} ${t.of} ${images.length}`}
-            </div>
           </div>
         </div>
-      )}
+      </div>
     </section>
-    </>
   );
 }
 

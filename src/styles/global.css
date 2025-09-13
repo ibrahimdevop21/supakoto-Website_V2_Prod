@@ -300,4 +300,35 @@ h6 {
   .highlight-accent {
     @apply bg-supakoto-blue/10 text-supakoto-blue px-2 py-1 rounded font-brand font-medium;
   }
+
+  /* Gallery scroll behavior and thumb fade effects */
+  .gallery-scroll { 
+    overscroll-behavior-x: contain; 
+    -webkit-overflow-scrolling: touch; 
+  }
+  
+  .thumb-fade { 
+    position: relative; 
+  }
+  
+  .thumb-fade::before,
+  .thumb-fade::after {
+    content:""; 
+    position:absolute; 
+    top:0; 
+    bottom:0; 
+    width:28px; 
+    pointer-events:none; 
+    z-index:10;
+  }
+  
+  .thumb-fade::before { 
+    left:0;  
+    background:linear-gradient(to right, rgba(6,6,6,.9), rgba(6,6,6,0)); 
+  }
+  
+  .thumb-fade::after  { 
+    right:0; 
+    background:linear-gradient(to left,  rgba(6,6,6,.9), rgba(6,6,6,0)); 
+  }
 }
