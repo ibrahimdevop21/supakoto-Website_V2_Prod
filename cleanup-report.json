@@ -1,0 +1,75 @@
+{
+  "branch": "chore/restructure-20250913",
+  "build_passed": false,
+  "build_issues": [
+    "Import path resolution issues with aliases",
+    "TypeScript extension errors in Astro files"
+  ],
+  "parked_files": [
+    "src/deprecated/GalleryExample.deprecated.tsx",
+    "src/deprecated/CallToAction.deprecated.tsx", 
+    "src/deprecated/EmblaCarouselArrowsDotsButtons.deprecated.tsx",
+    "src/deprecated/CarouselSlide.deprecated.tsx",
+    "src/deprecated/gallery-test.deprecated.astro",
+    "src/deprecated/contact-old.deprecated.astro"
+  ],
+  "kept_canonicals": [
+    "src/components/layout/Nav.astro",
+    "src/components/layout/NavbarDesktop.tsx",
+    "src/components/layout/NavbarMobile.tsx", 
+    "src/components/layout/Footer.astro",
+    "src/components/layout/SEOHead.astro",
+    "src/components/layout/ActionButtons.tsx",
+    "src/components/layout/ActionPills.tsx",
+    "src/components/gallery/Gallery.tsx",
+    "src/components/gallery/SimpleGallery.tsx",
+    "src/components/shared/EmblaCarousel.tsx",
+    "src/components/shared/OptimizedImage.tsx",
+    "src/components/shared/StandardizedHeading.tsx",
+    "src/components/shared/VisibleWrapper.tsx",
+    "src/components/shared/CTA.tsx",
+    "src/components/ui/button.tsx",
+    "src/components/ui/dropdown-menu.tsx", 
+    "src/components/ui/switch.tsx",
+    "src/components/ui/Icon.tsx",
+    "src/components/services/*"
+  ],
+  "language_switcher_kept": "LanguageSwitcher.astro",
+  "imports_migrated_to_aliases": "partial",
+  "routes_ok": "pending_verification",
+  "locales_ok": "pending_verification", 
+  "navbar_mobile_ok": "pending_verification",
+  "gallery_behavior_ok": "pending_verification",
+  "restructure_actions": {
+    "directories_created": [
+      "src/deprecated/",
+      "src/components/layout/",
+      "src/components/hero/", 
+      "src/components/gallery/",
+      "src/components/services/",
+      "src/components/shared/",
+      "src/components/ui/"
+    ],
+    "components_consolidated": {
+      "nav_components": "moved to src/components/layout/",
+      "seo_components": "moved to src/components/layout/",
+      "duplicate_galleries": "parked SimpleGallery kept",
+      "duplicate_ctas": "parked CallToAction, kept CTA"
+    },
+    "path_aliases_added": {
+      "tsconfig": "✓",
+      "astro_config": "✓"
+    },
+    "unused_detection": {
+      "scanned_components": 43,
+      "used_components": 42,
+      "auto_parked": 0
+    }
+  },
+  "next_steps": [
+    "Fix remaining import path issues",
+    "Complete build verification",
+    "Test key routes and behaviors",
+    "Merge restructure branch"
+  ]
+}
