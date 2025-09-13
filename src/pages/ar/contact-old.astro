@@ -168,6 +168,7 @@ const arabicBranches = BRANCHES;
                   id="call-btn"
                   href={`tel:${selectedBranch.phones[0]}`}
                   class="bg-neutral-900 text-white rounded-xl px-4 py-2 text-center font-semibold hover:bg-neutral-800 border border-neutral-700 transition-colors duration-200 min-h-[44px] flex items-center justify-center"
+                  onclick="if (typeof ttq !== 'undefined') ttq('track', 'ClickButton', { button: 'Call', region: 'UAE' });"
                 >
                   اتصل الآن
                 </a>
@@ -177,6 +178,7 @@ const arabicBranches = BRANCHES;
                   target="_blank"
                   rel="noopener noreferrer"
                   class="bg-green-600 text-white rounded-xl px-4 py-2 text-center font-semibold hover:bg-green-700 transition-colors duration-200 min-h-[44px] flex items-center justify-center"
+                  onclick="if (typeof ttq !== 'undefined') ttq('track', 'ClickButton', { button: 'WhatsApp', region: 'UAE' });"
                 >
                   واتساب
                 </a>
@@ -346,7 +348,7 @@ const arabicBranches = BRANCHES;
         // Update hours
         const hoursEl = document.getElementById('branch-hours');
         if (hoursEl) {
-          hoursEl.innerHTML = branch.hours.map(hour => `<li>${hour}</li>`).join('');
+          hoursEl.innerHTML = branch.hours.map((hour: string) => `<li>${hour}</li>`).join('');
         }
         
         // Update directions button
