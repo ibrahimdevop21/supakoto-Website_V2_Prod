@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Globe } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { COUNTRY_DEFAULTS, type CountryCode } from "../../data/countryContacts";
 import { countryFromTimezone } from "../../utils/tzToCountry";
 
