@@ -7,13 +7,23 @@
     "lib": ["ES2022", "DOM"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["astro/client", "vite/client"],
     "noEmit": true,
     "skipLibCheck": true,
+    "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@layout/*": ["src/components/layout/*"],
+      "@hero/*": ["src/components/hero/*"],
+      "@gallery/*": ["src/components/gallery/*"],
+      "@services/*": ["src/components/services/*"],
+      "@shared/*": ["src/components/shared/*"],
+      "@ui/*": ["src/components/ui/*"],
+      "@data/*": ["src/data/*"],
+      "@lib/*": ["src/lib/*"]
     }
   },
-  "include": ["src", "astro.config.*", "env.d.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "astro.config.*", "env.d.ts"],
+  "exclude": ["src/**/*.astro", "node_modules", "dist", ".astro"]
 }

@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, Globe } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { COUNTRY_DEFAULTS, type CountryCode } from "../../data/countryContacts";
 import { countryFromTimezone } from "../../utils/tzToCountry";
+
+// No-op function for TikTok tracking while disabled
+function trackTikTok(_event: string, _props: Record<string, unknown> = {}) {
+  // Intentionally a no-op while TikTok is disabled.
+  // TODO: Re-enable later with guarded calls (if (window.ttq?.track) window.ttq.track(...))
+}
 
 function swapLocalePath(path: string, target: "en" | "ar") {
   const isAr = path === "/ar" || path.startsWith("/ar/");
@@ -54,10 +60,8 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
         aria-label="Call" 
         className={glassIcon}
         onClick={() => {
-          // TikTok Pixel tracking - ClickButton event
-          if (typeof (window as any).ttq !== 'undefined') {
-            (window as any).ttq('track', 'ClickButton', { button: 'Call', region: 'UAE' });
-          }
+          // Fire tracking as NO-OP for now (kept for future parity)
+          trackTikTok('ClickButton', { button: 'Call', region: 'UAE' });
         }}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -73,10 +77,8 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
         aria-label="WhatsApp" 
         className={glassIcon}
         onClick={() => {
-          // TikTok Pixel tracking - ClickButton event
-          if (typeof (window as any).ttq !== 'undefined') {
-            (window as any).ttq('track', 'ClickButton', { button: 'WhatsApp', region: 'UAE' });
-          }
+          // Fire tracking as NO-OP for now (kept for future parity)
+          trackTikTok('ClickButton', { button: 'WhatsApp', region: 'UAE' });
         }}
       >
         <svg className="h-5 w-5 text-[#25D366]" viewBox="0 0 16 16" fill="currentColor">

@@ -31,7 +31,9 @@ const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
   const altText = altTexts[i % altTexts.length];
   
   return {
+    id: `supa-${imageNumber}`,
     src: `/gallery/supa-${imageNumber}.webp`,
+    thumbSrc: `/gallery/thumbs/supa-${imageNumber}.webp`,
     alt: altText,
     caption: `تركيب PPF احترافي — مشروع ${imageNumber}`
   };

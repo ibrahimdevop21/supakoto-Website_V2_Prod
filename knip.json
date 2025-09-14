@@ -1,0 +1,11 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": ["src/pages/**/*.astro", "src/**/*.tsx", "src/**/*.ts"],
+  "project": ["src/**/*.{ts,tsx,astro}"],
+  "ignore": [
+    "src/i18n/**",
+    "scripts/**",
+    "docs/**",
+    "deploy/**"
+  ]
+}

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { CONTACT_NUMBERS, type RegionKey } from "../data/contactNumbers";
+import { COUNTRY_DEFAULTS, type CountryCode } from "../data/countryContacts";
+
+type RegionKey = CountryCode;
 
 type Options = { locale?: string };
 
@@ -21,7 +23,8 @@ export function useGeoRegion({ locale = "en" }: Options) {
     const sp = new URLSearchParams(window.location.search);
     const override = sp.get("region")?.toUpperCase();
     if (override === "EG" || override === "UAE") {
-      setRegion(override as RegionKey);
+      const regionKey = override === "UAE" ? "AE" : override as RegionKey;
+      setRegion(regionKey);
       try {
         sessionStorage.setItem(GEO_CACHE_KEY, override);
       } catch (e) {
@@ -37,7 +40,8 @@ export function useGeoRegion({ locale = "en" }: Options) {
     try {
       const cached = sessionStorage.getItem(GEO_CACHE_KEY);
       if (cached === "EG" || cached === "UAE") {
-        setRegion(cached as RegionKey);
+        const regionKey = cached === "UAE" ? "AE" : cached as RegionKey;
+        setRegion(regionKey);
       }
     } catch (e) {
       // Ignore storage errors in production
@@ -63,7 +67,7 @@ export function useGeoRegion({ locale = "en" }: Options) {
         
         const data = await res.json();
         const code = (data?.country_code as string | undefined)?.toUpperCase();
-        const inferred: RegionKey = code === "EG" ? "EG" : "UAE";
+        const inferred: RegionKey = code === "EG" ? "EG" : "AE";
         if (!cancelled) {
           setRegion(inferred);
           try {
@@ -73,7 +77,7 @@ export function useGeoRegion({ locale = "en" }: Options) {
           }
         }
       } catch {
-        const fallback: RegionKey = locale === "ar" ? "EG" : "UAE";
+        const fallback: RegionKey = locale === "ar" ? "EG" : "AE";
         if (!cancelled) {
           setRegion(fallback);
           try {
@@ -89,9 +93,9 @@ export function useGeoRegion({ locale = "en" }: Options) {
   }, [region, locale]);
 
   const numbers = useMemo(() => {
-    const key: RegionKey = region ?? (locale === "ar" ? "EG" : "UAE");
-    return CONTACT_NUMBERS[key];
+    const key: RegionKey = region ?? (locale === "ar" ? "EG" : "AE");
+    return COUNTRY_DEFAULTS[key];
   }, [region, locale]);
 
-  return { region: region ?? (locale === "ar" ? "EG" : "UAE"), numbers };
+  return { region: region ?? (locale === "ar" ? "EG" : "AE"), numbers };
 }
