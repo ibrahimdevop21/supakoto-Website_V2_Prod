@@ -96,17 +96,30 @@ export const POST: APIRoute = async ({ request }) => {
       </div>
     `;
 
-    // send via Resend
-    const resend = new Resend(import.meta.env.RESEND_API_KEY);
+    // send via Resend (only if API key is configured)
+    const resendApiKey = import.meta.env.RESEND_API_KEY;
     const from = import.meta.env.EMAIL_FROM || 'leads@supakoto.org';
 
-    await resend.emails.send({
-      from,
-      to,
-      cc,
-      subject,
-      html,
-    });
+    if (!resendApiKey) {
+      // Development mode - log the email instead of sending
+      console.log('=== EMAIL WOULD BE SENT (no RESEND_API_KEY) ===');
+      console.log('From:', from);
+      console.log('To:', to);
+      console.log('CC:', cc);
+      console.log('Subject:', subject);
+      console.log('HTML:', html);
+      console.log('=== END EMAIL ===');
+    } else {
+      // Production mode - actually send email
+      const resend = new Resend(resendApiKey);
+      await resend.emails.send({
+        from,
+        to,
+        cc,
+        subject,
+        html,
+      });
+    }
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200, headers: { 'content-type': 'application/json' }

@@ -2,6 +2,12 @@ import * as React from "react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
+// No-op function for TikTok tracking while disabled
+function trackTikTok(_event: string, _props: Record<string, unknown> = {}) {
+  // Intentionally a no-op while TikTok is disabled.
+  // TODO: Re-enable later with guarded calls (if (window.ttq?.track) window.ttq.track(...))
+}
+
 // Types
 export interface GalleryItem {
   id: string;
@@ -160,30 +166,24 @@ export default function Gallery({
   const goToPrev = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
-      // Track analytics
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('ClickButton', { button: 'Gallery Previous' });
-      }
+      // Fire tracking as NO-OP for now (kept for future parity)
+      trackTikTok('ClickButton', { button: 'Gallery Previous' });
     }
   }, [currentIndex]);
 
   const goToNext = useCallback(() => {
     if (currentIndex < items.length - 1) {
       setCurrentIndex(currentIndex + 1);
-      // Track analytics
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('ClickButton', { button: 'Gallery Next' });
-      }
+      // Fire tracking as NO-OP for now (kept for future parity)
+      trackTikTok('ClickButton', { button: 'Gallery Next' });
     }
   }, [currentIndex, items.length]);
 
   const goToIndex = useCallback((index: number) => {
     if (index >= 0 && index < items.length) {
       setCurrentIndex(index);
-      // Track analytics
-      if (typeof window !== 'undefined' && (window as any).ttq) {
-        (window as any).ttq.track('ClickButton', { button: 'Gallery Thumbnail' });
-      }
+      // Fire tracking as NO-OP for now (kept for future parity)
+      trackTikTok('ClickButton', { button: 'Gallery Thumbnail' });
     }
   }, [items.length]);
 
