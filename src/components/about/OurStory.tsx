@@ -1,86 +1,140 @@
-import React from 'react';
+import React from "react";
+import { useTranslations } from "@/i18n/react";
 
 interface OurStoryProps {
-  currentLocale: string;
+  currentLocale: "en" | "ar";
   isRTL: boolean;
 }
 
 const OurStory: React.FC<OurStoryProps> = ({ currentLocale, isRTL }) => {
-  const isArabic = currentLocale === 'ar';
+  const isArabic = currentLocale === "ar";
+  const t = useTranslations(currentLocale);
 
-  const sectionTitle = {
-    en: 'About SupaKoto',
-    ar: 'حول سوباكوتو',
-  };
-
-  const introText = {
-    en: 'SupaKoto is a leading provider of protective films for cars, buildings, and other surfaces. We offer paint protection film (PPF), window tint films, safety glass films, and thermal insulation films. SupaKoto is the exclusive distributor of TAKAI PPF in Egypt, and we also offer our own brand of PPF.',
-    ar: 'سوباكوتو هي مزود رائد لأفلام الحماية للسيارات والمباني والأسطح الأخرى. نحن نقدم فيلم حماية الطلاء (PPF) وأفلام تظليل النوافذ وأفلام الزجاج الآمن وأفلام العزل الحراري. سوباكوتو هي الموزع الحصري لـ TAKAI PPF في مصر، كما نقدم علامتنا التجارية الخاصة من PPF.',
-  };
-
-  const storyContent = {
-    en: [
-      'Our films protect against scratches, chips, UV rays, and other damage. They\'re used by car owners, building owners, and manufacturers.',
-      'We\'re committed to high-quality products and services. Installers are trained to the highest standards using the best materials and equipment. All products include a warranty.',
-    ],
-    ar: [
-      'تحمي أفلامنا من الخدوش والشقوق والأشعة فوق البنفسجية وأضرار أخرى. يستخدمها أصحاب السيارات وأصحاب المباني والمصنعون.',
-      'نحن ملتزمون بالمنتجات والخدمات عالية الجودة. يتم تدريب المثبتين وفقًا لأعلى المعايير باستخدام أفضل المواد والمعدات. جميع المنتجات تشمل ضمان.',
-    ],
-  };
+  const heroTitle = t("about.hero.title");
+  const heroDescription = t("about.hero.description");
+  const contentIntro = t("about.content.intro");
+  const contentStory = t("about.content.story");
+  const contentMission = t("about.content.mission");
+  const contentCommitment = t("about.content.commitment");
+  const badgeJapan = t("about.content.badges.japan");
+  const badgeRegions = t("about.content.badges.regions");
 
   return (
-    <section className={`py-16 md:py-24 bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm text-white ${isArabic ? 'rtl font-arabic' : 'ltr'} relative overflow-hidden`}>
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-red-500/8 to-orange-500/8 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-gradient-to-r from-orange-500/6 to-red-500/6 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+    <section
+      dir={isArabic ? "rtl" : "ltr"}
+      // Pull section slightly under the navbar, keep tight top padding, minimal bottom
+      className="relative overflow-hidden mt-[-8px] pt-10 md:pt-12 pb-2 md:pb-4"
+      aria-labelledby="about-hero"
+    >
+      {/* SVG rays — masked to avoid any dark 'trace' at very top/bottom */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          opacity: 0.035,
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0, black 24px, black calc(100% - 24px), transparent 100%)",
+        }}
+      >
+        <svg className="w-full h-full" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <g transform="translate(600,400)">
+            {Array.from({ length: 20 }, (_, i) => {
+              const angle = i * 18 - 90;
+              const x2 = Math.cos((angle * Math.PI) / 180) * 620;
+              const y2 = Math.sin((angle * Math.PI) / 180) * 420;
+              return (
+                <line
+                  key={i}
+                  x1="0"
+                  y1="0"
+                  x2={x2}
+                  y2={y2}
+                  stroke="url(#sunRay)"
+                  strokeWidth="2"
+                  opacity={0.7 - (i % 3) * 0.25}
+                />
+              );
+            })}
+          </g>
+          <defs>
+            <linearGradient id="sunRay" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#bf1e2e" />
+              <stop offset="50%" stopColor="#f97316" />
+              <stop offset="100%" stopColor="#bf1e2e" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-slideInLeft group">
-            <div className="relative overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/70 shadow-2xl backdrop-blur supports-[backdrop-filter]:backdrop-blur-xl">
-              <img 
-                src="/images/about-story.webp" 
-                alt="SupaKoto workshop crafting process" 
-                className="rounded-2xl object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-              />
-              {/* Image overlay effect */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-red-500/10 via-transparent to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-2xl"></div>
-              {/* Glowing border */}
-              <div className="absolute inset-0 rounded-2xl border border-red-500/20 group-hover:border-red-500/40 transition-all duration-700"></div>
-            </div>
+
+      {/* Soft radial glow (kept subtle) */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[360px] rounded-full blur-3xl pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(191,30,46,0.06) 0%, rgba(249,115,22,0.04) 45%, transparent 70%)",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+        <header className="text-center">
+          <h1
+            id="about-hero"
+            className={[
+              "font-bold tracking-tight",
+              isArabic ? "font-arabic" : "",
+              "text-[clamp(1.75rem,4vw+0.5rem,3.25rem)] md:text-[clamp(2.5rem,2.8vw+1rem,3.75rem)]",
+              "leading-[1.15] supports-[text-wrap:balance]:text-balance",
+              "bg-gradient-to-r from-[#bf1e2e] via-orange-400 to-[#bf1e2e] bg-clip-text text-transparent",
+              // pull the title a touch upward to tighten visual gap
+              "mt-2",
+            ].join(" ")}
+          >
+            {heroTitle}
+          </h1>
+
+          <div className="flex items-center justify-center gap-6 my-5 md:my-6" aria-hidden="true">
+            <div className="h-px w-24 sm:w-32 md:w-40 bg-gradient-to-r from-transparent via-[#bf1e2e]/50 to-transparent" />
+            <div className="w-3 h-3 rounded-full bg-[#bf1e2e]" />
+            <div className="h-px w-24 sm:w-32 md:w-40 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
           </div>
-          <div className="animate-slideInRight">
-            <div className="relative">
-              <h2 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-8 tracking-tight bg-gradient-to-r from-[#bf1e2e] via-orange-400 to-[#bf1e2e] bg-clip-text text-transparent ${isArabic ? 'font-arabic' : ''}`}>
-                {sectionTitle[isArabic ? 'ar' : 'en']}
-              </h2>
-              <div className="absolute -top-2 left-0 w-24 h-24 bg-gradient-to-r from-red-500/15 to-orange-500/15 rounded-full blur-3xl animate-pulse"></div>
-            </div>
-            
-            {/* Decorative accent */}
-            <div className="flex items-center mb-6">
-              <div className="h-1 w-16 bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full"></div>
-              <div className="h-px w-8 bg-gradient-to-r from-orange-500/50 to-transparent ml-2"></div>
-            </div>
-            
-            {/* Intro paragraph */}
-            <div className="mb-8">
-              <p className={`text-lg text-gray-200 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
-                {introText[isArabic ? 'ar' : 'en']}
-              </p>
-            </div>
-            
-            <div className="space-y-6 text-gray-300 leading-relaxed">
-              {storyContent[isArabic ? 'ar' : 'en'].map((paragraph, index) => (
-                <p key={index} className={`transition-colors duration-500 hover:text-gray-200 ${isArabic ? 'font-arabic' : ''}`}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+
+          <p
+            className={[
+              "mx-auto max-w-3xl text-[1.05rem] sm:text-lg md:text-xl",
+              "text-gray-300/95 leading-relaxed font-light",
+              isArabic ? "font-arabic" : "",
+            ].join(" ")}
+          >
+            {heroDescription}
+          </p>
+        </header>
+
+        <div className="mt-7 md:mt-8 flex flex-wrap justify-center gap-4 sm:gap-5">
+          <div className="inline-flex items-center px-5 py-2.5 rounded-full border bg-[#bf1e2e]/15 border-[#bf1e2e]/30 text-[#ffb3bd] backdrop-blur-sm">
+            <span className={["text-lg", isRTL ? "ml-3" : "mr-3"].join(" ")}>🇯🇵</span>
+            <span className="text-[#ffdde1]">{badgeJapan}</span>
           </div>
+          <div className="inline-flex items-center px-5 py-2.5 rounded-full border bg-orange-500/10 border-orange-500/25 text-orange-300 backdrop-blur-sm">
+            <span className={["text-lg", isRTL ? "ml-3" : "mr-3"].join(" ")}>🇪🇬🇦🇪</span>
+            <span className="text-orange-200">{badgeRegions}</span>
+          </div>
+        </div>
+
+        <div className="mt-8 md:mt-10 grid gap-4 md:gap-5 text-center">
+          <p className={["text-lg md:text-xl text-gray-300 leading-relaxed", isArabic ? "font-arabic" : ""].join(" ")}>
+            {contentIntro}
+          </p>
+          <p className={["text-base md:text-lg text-gray-400 leading-relaxed mx-auto max-w-3xl", isArabic ? "font-arabic" : ""].join(" ")}>
+            {contentStory}
+          </p>
+          <p className={["text-base md:text-lg text-gray-400 leading-relaxed mx-auto max-w-3xl", isArabic ? "font-arabic" : ""].join(" ")}>
+            {contentMission}
+          </p>
+          <p className={["text-base md:text-lg text-gray-200 leading-relaxed font-medium mx-auto max-w-3xl", isArabic ? "font-arabic" : ""].join(" ")}>
+            {contentCommitment}
+          </p>
         </div>
       </div>
     </section>
