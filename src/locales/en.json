@@ -133,9 +133,23 @@
     }
   },
   "about": {
-    "heading": "About Supakoto",
-    "subheading": "Learn more about our company, mission, and values",
-    "description": "Supakoto is a leading company dedicated to providing exceptional services and solutions. We pride ourselves on our commitment to excellence and customer satisfaction.",
+    "heading": "The School ",
+    "subheading": "of (PPF) in the Middle East",
+    "hero": {
+      "title": "SupaKoto – The School of Japanese Paint Protection Film",
+      "description": "Setting the benchmark for authentic Japanese PPF across Egypt, the UAE, and the Middle East."
+    },
+    "content": {
+      "intro": "SupaKoto is where Japanese excellence in Paint Protection Film (PPF) is taught, practiced, and perfected in the Middle East.",
+      "story": "As the exclusive distributor of TAKAI PPF (Made in Japan) in the region, we deliver authentic Japanese standards to Egypt and the UAE, with expansion underway across the Gulf. SupaKoto workshops are not just service centers — they are classrooms of craftsmanship, where every vehicle receives protection with precision and care.",
+      "mission": "In a market flooded with counterfeits, SupaKoto is one of the few industry leaders actively fighting forgery and setting new standards. We educate our customers to always verify the serial number and certificate of origin of their films — because true Japanese PPF is traceable, certified, and backed by warranty.",
+      "commitment": "With certified products, warranty-backed protection, and a commitment to raising awareness against counterfeits, SupaKoto is setting the benchmark for PPF authenticity and excellence across the Middle East.",
+      "badges": {
+        "japan": "Made in Japan",
+        "regions": "Egypt & UAE"
+      }
+    },
+    "description": "SupaKoto is where Japanese excellence in Paint Protection Film (PPF) is taught, practiced, and perfected in the Middle East.",
     "our_story": "Our Story",
     "story_content": "Supakoto was founded with a simple mission: to provide exceptional services and solutions to our clients. Since our establishment, we have grown to become a trusted name in the industry.",
     "mission": "Our Mission",
@@ -143,7 +157,57 @@
     "values": "Our Values",
     "values_content": "We believe in integrity, excellence, and putting our customers first in everything we do.",
     "leadership_team": "Leadership Team",
-    "leadership_description": "Meet the dedicated professionals who lead Supakoto with vision and expertise."
+    "leadership_description": "Meet the dedicated professionals who lead Supakoto with vision and expertise.",
+    "journey": {
+      "title": "Our Journey",
+      "events": [
+        {
+          "year": "2018",
+          "title": "SupaKoto Established",
+          "desc": "Founded in Egypt to elevate protective films for automotive and architectural applications."
+        },
+        {
+          "year": "2020",
+          "title": "Škoda Partnership & Maadi Branch",
+          "desc": "Partnered with Škoda and opened our Maadi branch inside the Škoda Maadi Center."
+        },
+        {
+          "year": "2021",
+          "title": "AstraZeneca Commercial Contract",
+          "desc": "Delivered our largest heat & UV protection project for a commercial building in Egypt."
+        },
+        {
+          "year": "2022",
+          "title": "Alliance with Kasrawy Group",
+          "desc": "Formed a strategic alliance that expanded our reach and capabilities."
+        },
+        {
+          "year": "2023",
+          "title": "Dubai Branch Opened",
+          "desc": "Launched operations in Al Quoz, marking our step into the GCC market."
+        },
+        {
+          "year": "2024",
+          "title": "Sheikh Zayed Branch",
+          "desc": "Brought premium service to West Cairo with our Sheikh Zayed branch."
+        },
+        {
+          "year": "2024",
+          "title": "Takai Steel Plus",
+          "desc": "Secured our first Takai Steel Plus from Takai, raising our material standards."
+        },
+        {
+          "year": "2025",
+          "title": "New Cairo (5th Settlement)",
+          "desc": "Opened our flagship in New Cairo's 5th Settlement to serve growing demand."
+        },
+        {
+          "year": "2025",
+          "title": "Partnership with Mansour Group",
+          "desc": "Signed a major partnership to accelerate growth and market presence."
+        }
+      ]
+    }
   },
   "faq": {
     "heading": "Frequently Asked Questions",
