@@ -361,10 +361,14 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		<Footer />
 		
 		
-		<!-- Vercel Analytics - Temporarily removed due to TypeScript issues -->
-		<!-- <Analytics /> -->
+		<!-- Vercel Analytics -->
+		<script>
+			import('@vercel/analytics').then(({ inject }) => inject());
+		</script>
 		
-		<!-- Vercel Speed Insights - Temporarily removed due to TypeScript issues -->
-		<!-- <SpeedInsights /> -->
+		<!-- Vercel Speed Insights -->
+		<script>
+			import('@vercel/speed-insights').then(({ injectSpeedInsights }) => injectSpeedInsights());
+		</script>
 	</body>
 </html>
