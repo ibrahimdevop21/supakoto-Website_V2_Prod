@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StaticBranchCards from '../components/contact/StaticBranchCards';
-import ContactForm from '../components/ContactForm.astro';
+import ContactWizard from '../components/contact/ContactWizard.tsx';
 import { BRANCHES } from '../data/branches';
 import { getSEOData } from '../utils/seo-content';
 import { generateBreadcrumbSchema, generateLocalBusinessSchema } from '../utils/seo-schemas';
@@ -85,7 +85,11 @@ const localBusinessSchema = generateLocalBusinessSchema(
             </p>
           </div>
 
-          <ContactForm selectedBranch={selectedBranch} currentLang={currentLang} />
+          <ContactWizard 
+            client:load 
+            branchId={selectedBranch.id} 
+            currentLang={currentLang} 
+          />
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { t, getLocalizedUrl, isRTL, type Locale } from "../../i18n/index.ts";
+import FooterPaymentStrip from "../footer/FooterPaymentStrip.tsx";
 
 const currentLocale = (Astro.currentLocale || 'en') as Locale;
 const rtl = isRTL(Astro);
@@ -219,6 +220,9 @@ const contactInfo = [
       </div>
     </div>
   </div>
+
+  <!-- Payment Methods Strip -->
+  <FooterPaymentStrip client:load lang={currentLocale} />
 
   <!-- Bottom Bar -->
   <div class="border-t border-foreground/10 bg-background/50">

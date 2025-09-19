@@ -1,0 +1,133 @@
+/* src/styles/sk.css */
+
+/* --- Base reset (keep Tailwind preflight ON) --- */
+:root {
+  --sk-accent: #bf1e2e;
+  --sk-bg: #0f172a;        /* slate-900 */
+  --sk-bg-2: #111827;      /* near-slate */
+  --sk-border: #334155;    /* slate-700 */
+  --sk-text: #e5e7eb;      /* gray-200 */
+  --sk-muted: #94a3b8;     /* slate-400 */
+}
+
+/* Remove default appearance across inputs/buttons/selects */
+input, textarea, select, button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  border-radius: 0;
+}
+
+/* Chrome autofill kill the yellow */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--sk-text);
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px rgba(15,23,42,0.6) inset; /* slate-900/60 */
+}
+
+/* Number input spinners off */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* Checkbox: consistent accent */
+input[type=checkbox] { 
+  accent-color: var(--sk-accent);
+  width: 16px;
+  height: 16px;
+}
+
+/* Buttons */
+button { cursor: pointer; }
+
+/* --- SupaKoto UI tokens --- */
+.sk-input {
+  @apply w-full rounded-xl bg-slate-900/60 border border-slate-700/80 px-4 py-3 text-sm text-white
+         placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#bf1e2e]/60
+         hover:border-slate-600 transition;
+}
+
+.sk-textarea { 
+  @apply sk-input;
+  resize: none;
+}
+
+.sk-btn {
+  @apply rounded-xl bg-[#bf1e2e] px-5 py-3 text-white font-medium shadow
+         hover:brightness-110 focus:ring-2 focus:ring-[#bf1e2e] disabled:opacity-60 transition;
+}
+
+.sk-label { @apply block text-sm text-slate-300 mb-1; }
+.sk-help  { @apply text-xs text-slate-400 mt-1; }
+.sk-error { @apply text-xs text-red-400 mt-1; }
+
+/* Stepper pills */
+.sk-step {
+  @apply px-3 py-1 rounded-full border border-slate-700 text-xs text-slate-400;
+}
+.sk-step.active {
+  @apply border-[#bf1e2e] text-white;
+}
+
+/* Country pill buttons */
+.sk-pill {
+  @apply h-10 px-3 rounded-xl border text-sm
+         bg-slate-900/60 text-slate-200 border-slate-700/80 hover:border-[#bf1e2e]/60 transition
+         flex items-center gap-2 cursor-pointer select-none;
+}
+.sk-pill.active { @apply bg-[#bf1e2e] text-white border-[#bf1e2e]; }
+
+/* Peer-checked state for radio buttons */
+input[type="radio"]:checked + .sk-pill {
+  @apply bg-[#bf1e2e] text-white border-[#bf1e2e];
+}
+
+/* Logo tile holder (payments) */
+.sk-logo-tile {
+  @apply h-8 w-auto px-3 py-1 rounded-lg bg-slate-800/40 border border-slate-700/60
+         flex items-center justify-center;
+  min-width: 72px;
+}
+
+/* Payment logo image with original colors */
+.sk-logo-img {
+  @apply max-h-6 max-w-[96px];
+  transition: transform 0.2s ease;
+}
+.sk-logo-img:hover {
+  transform: scale(1.05);
+}
+
+/* Footer payment strip */
+.sk-footer-payments {
+  @apply w-full border-t border-slate-800/60 mt-8 pt-5;
+}
+
+/* Horizontal scroll container */
+.sk-scroll-x {
+  @apply overflow-x-auto;
+  scrollbar-width: thin;
+}
+.sk-scroll-x::-webkit-scrollbar {
+  height: 6px;
+}
+.sk-scroll-x::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 9999px;
+}
+
+/* Card wrapper */
+.sk-card {
+  @apply w-full p-6 bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700;
+}
+
+/* Fine-tune placeholder contrast */
+::placeholder { color: rgb(148 163 184 / 0.9); }
+
+/* RTL helpers */
+[dir="rtl"] .sk-stepper { direction: rtl; }
