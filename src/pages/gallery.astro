@@ -1,53 +1,41 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SimpleGallery, { type SimpleGalleryImage } from '../components/gallery/SimpleGallery';
+import SimpleGalleryPro, { type GalleryImage } from '../components/gallery/SimpleGalleryPro';
 import { t } from '../i18n';
 import { getSEOData } from '../utils/seo-content';
 import { generateBreadcrumbSchema } from '../utils/seo-schemas';
 
 const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
-const rtl = currentLang === 'ar';
-
-// Get SEO-optimized content
 const seoData = getSEOData('gallery', currentLang);
-
-// Generate breadcrumb schema for gallery page
 const breadcrumbSchema = generateBreadcrumbSchema([
-	{ name: currentLang === 'ar' ? 'الرئيسية' : 'Home', url: 'https://supakoto.com' },
-	{ name: currentLang === 'ar' ? 'معرض الأعمال' : 'Gallery', url: `https://supakoto.com${currentLang === 'ar' ? '/ar' : ''}/gallery` }
+  { name: currentLang === 'ar' ? 'الرئيسية' : 'Home', url: 'https://supakoto.com' },
+  { name: currentLang === 'ar' ? 'معرض الأعمال' : 'Gallery', url: `https://supakoto.com${currentLang === 'ar' ? '/ar' : ''}/gallery` }
 ]);
 
-// Generate gallery images from the 238 webp files in public/gallery with descriptive alt text
-const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
-  const imageNumber = String(i + 1).padStart(3, '0');
-  
-  // Generate more descriptive alt text for better SEO
-  const englishAltTexts = [
-    `Luxury car with Paint Protection Film PPF installed - front view ${imageNumber}`,
-    `Professional PPF installation on sports car - project ${imageNumber}`,
-    `Vehicle paint protection using advanced PPF technology ${imageNumber}`,
-    `Car protected with high-quality transparent PPF film ${imageNumber}`,
-    `Detailed view of professional paint protection film installation ${imageNumber}`
+const images: GalleryImage[] = Array.from({ length: 238 }, (_, i) => {
+  const id = String(i + 1).padStart(3, '0');
+  const en = [
+    `Luxury car with Paint Protection Film PPF installed - front view ${id}`,
+    `Professional PPF installation on sports car - project ${id}`,
+    `Vehicle paint protection using advanced PPF technology ${id}`,
+    `Car protected with high-quality transparent PPF film ${id}`,
+    `Detailed view of professional paint protection film installation ${id}`
   ];
-  
-  const arabicAltTexts = [
-    `سيارة فاخرة مع تركيب فيلم حماية الطلاء PPF - منظر أمامي ${imageNumber}`,
-    `تركيب احترافي لفيلم حماية الطلاء على سيارة رياضية ${imageNumber}`,
-    `حماية طلاء السيارة بتقنية PPF المتقدمة - مشروع ${imageNumber}`,
-    `سيارة محمية بفيلم PPF شفاف عالي الجودة ${imageNumber}`,
-    `تفاصيل تركيب فيلم حماية الطلاء الاحترافي ${imageNumber}`
+  const ar = [
+    `سيارة فاخرة مع تركيب فيلم حماية الطلاء PPF - منظر أمامي ${id}`,
+    `تركيب احترافي لفيلم حماية الطلاء على سيارة رياضية ${id}`,
+    `حماية طلاء السيارة بتقنية PPF المتقدمة - مشروع ${id}`,
+    `سيارة محمية بفيلم PPF شفاف عالي الجودة ${id}`,
+    `تفاصيل تركيب فيلم حماية الطلاء الاحترافي ${id}`
   ];
-  
-  const altText = currentLang === 'ar' 
-    ? arabicAltTexts[i % arabicAltTexts.length]
-    : englishAltTexts[i % englishAltTexts.length];
-  
+  const alt = currentLang === 'ar' ? ar[i % ar.length] : en[i % en.length];
+
   return {
-    src: `/gallery/supa-${imageNumber}.webp`,
-    alt: altText,
-    caption: currentLang === 'ar'
-      ? `تركيب حماية طلاء احترافي — مشروع ${imageNumber}`
-      : `Professional PPF Installation — Project ${imageNumber}`
+    id,
+    thumb: `/gallery/thumbs/supa-${id}.webp`,
+    full:  `/gallery/full/supa-${id}.webp`,
+    alt,
+    caption: currentLang === 'ar' ? `تركيب حماية طلاء احترافي — مشروع ${id}` : `Professional PPF Installation — Project ${id}`,
   };
 });
 ---
@@ -59,28 +47,37 @@ const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
 	type="website"
 	schema={breadcrumbSchema}
 >
-  <!-- Main content with consistent spacing - matching home/services page structure -->
   <section class="py-16 md:py-20 lg:py-24">
-    <!-- Gallery Hero Section with proper spacing -->
-    <div class="mb-24 md:mb-32">
-      <div class="text-center">
-        <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 tracking-tight">
-          {t('gallery.hero.title', {}, Astro)}
-        </h1>
-        <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-          {t('gallery.hero.subtitle', {}, Astro)}
-        </p>
-        <div class="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full"></div>
-      </div>
+    <div class="mb-24 md:mb-32 text-center">
+      <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 tracking-tight">
+        {t('gallery.hero.title', {}, Astro)}
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+        {t('gallery.hero.subtitle', {}, Astro)}
+      </p>
+      <div class="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full"></div>
     </div>
-    
-    <!-- Gallery Section -->
+
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <SimpleGallery 
-        client:load 
-        locale={currentLang as "en" | "ar"} 
+      <!-- lightweight fallback -->
+      <div id="gallery-fallback" class="rounded-2xl bg-muted/20 border border-white/10 shadow-soft p-2">
+        <div class="relative overflow-hidden rounded-2xl bg-neutral-900 border border-white/10 h-[60svh] md:h-[68vh]">
+          <img src="/gallery/thumbs/supa-001.webp" alt="Loading" class="w-full h-full object-cover" loading="eager" fetchpriority="high" decoding="async" />
+          <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+            <div class="bg-black/60 text-white px-4 py-2 rounded-lg text-sm">{currentLang === 'ar' ? 'جاري تحميل المعرض...' : 'Loading gallery...'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMPORTANT: avoid SSR to prevent duplicates -->
+      <SimpleGalleryPro
+        client:only="react"
+        locale={currentLang as "en" | "ar"}
         images={images}
         heightClass="h-[60svh] md:h-[68vh]"
+        randomize={true}
+        randomSeed="supakoto-v1"
+        wrapAround={true}
         showCounter={true}
         showCaptions={true}
       />

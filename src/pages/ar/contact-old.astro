@@ -346,7 +346,7 @@ const arabicBranches = BRANCHES;
         // Update hours
         const hoursEl = document.getElementById('branch-hours');
         if (hoursEl) {
-          hoursEl.innerHTML = branch.hours.map(hour => `<li>${hour}</li>`).join('');
+          hoursEl.innerHTML = branch.hours.map((hour: string) => `<li>${hour}</li>`).join('');
         }
         
         // Update directions button
