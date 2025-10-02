@@ -26,9 +26,6 @@ const LOGOS_BY_COUNTRY: Record<Country, Logo[]> = {
     { src: '/payment/eg/bmp-logo.png', alt: 'Banque Misr', selectable: true },
     { src: '/payment/eg/NBE-logo.svg', alt: 'NBE', selectable: true },
     { src: '/payment/eg/anniversary-50-logo.png', alt: 'CIB', selectable: true },
-    { src: '/payment/eg/vodafone.jpg', alt: 'Vodafone Cash', selectable: true },
-    { src: '/payment/eg/we.png', alt: 'WE Pay', selectable: true },
-    { src: '/payment/eg/e.webp', alt: 'e& Cash', selectable: true },
   ],
 };
 

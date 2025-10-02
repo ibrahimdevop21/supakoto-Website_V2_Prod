@@ -197,26 +197,6 @@ const contactInfo = [
           ))}
         </div>
         
-        <!-- Business Hours -->
-        <div class="mt-6 p-3 bg-gradient-to-br from-muted/15 to-muted/5 rounded-lg border border-muted/20">
-          <h3 class={`text-sm font-medium text-foreground mb-2 ${rtl ? 'text-right' : 'text-left'}`}>
-            {currentLocale === 'ar' ? 'ساعات العمل' : 'Business Hours'}
-          </h3>
-          <div class="space-y-1 text-xs text-muted-foreground">
-            <div class={`flex justify-between ${rtl ? 'flex-row-reverse' : ''}`}>
-              <span class={rtl ? 'text-right' : 'text-left'}>{currentLocale === 'ar' ? 'الاثنين - الخميس' : 'Mon - Thu'}</span>
-              <span class={rtl ? 'text-left' : 'text-right'}>{currentLocale === 'ar' ? '9:00 ص - 6:00 م' : '9:00 AM - 6:00 PM'}</span>
-            </div>
-            <div class={`flex justify-between ${rtl ? 'flex-row-reverse' : ''}`}>
-              <span class={rtl ? 'text-right' : 'text-left'}>{currentLocale === 'ar' ? 'الجمعة' : 'Friday'}</span>
-              <span class={rtl ? 'text-left' : 'text-right'}>{currentLocale === 'ar' ? 'مغلق' : 'Closed'}</span>
-            </div>
-            <div class={`flex justify-between ${rtl ? 'flex-row-reverse' : ''}`}>
-              <span class={rtl ? 'text-right' : 'text-left'}>{currentLocale === 'ar' ? 'السبت - الأحد' : 'Sat - Sun'}</span>
-              <span class={rtl ? 'text-left' : 'text-right'}>{currentLocale === 'ar' ? '9:00 ص - 6:00 م' : '9:00 AM - 6:00 PM'}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

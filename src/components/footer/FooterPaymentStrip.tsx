@@ -22,9 +22,6 @@ const LOGOS_BY_COUNTRY: Record<Country, Logo[]> = {
     { src: "/payment/eg/bmp-logo.png",       alt: "Banque Misr" },
     { src: "/payment/eg/NBE-logo.svg",       alt: "National Bank of Egypt (NBE)" },
     { src: "/payment/eg/anniversary-50-logo.png", alt: "CIB" },
-    { src: "/payment/eg/vodafone.jpg",       alt: "Vodafone Cash" },
-    { src: "/payment/eg/we.png",             alt: "WE Pay" },
-    { src: "/payment/eg/e.webp",             alt: "e& Cash" },
   ],
 };
 
@@ -43,10 +40,20 @@ function getCountryCookie(): Country {
 
 function Row({ logos }: { logos: Logo[] }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
       {logos.map((l) => (
-        <div key={l.src} className="sk-logo-tile">
-          <img src={l.src} alt={l.alt} loading="lazy" decoding="async" className="sk-logo-img" />
+        <div
+          key={l.src}
+          className="h-10 w-28 md:h-12 md:w-32 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:border-[#bf1e2e]/40 transition-colors"
+          title={l.alt}
+        >
+          <img
+            src={l.src}
+            alt={l.alt}
+            loading="lazy"
+            decoding="async"
+            className="max-h-8 md:max-h-9 w-auto object-contain opacity-90"
+          />
         </div>
       ))}
     </div>
@@ -65,15 +72,9 @@ export default function FooterPaymentStrip({ lang = "en" as Lang }: { lang?: Lan
 
   return (
     <div className="sk-footer-payments">
-      <div className="mb-6 text-center text-sm text-slate-400">
-        {t.title}
-      </div>
-
-      {/* scrollable on mobile, centered on desktop */}
-      <div className="sk-scroll-x">
-        <div className="mx-auto flex w-max max-w-full items-center justify-center gap-4 px-4 pb-4">
-          <Row logos={allLogos} />
-        </div>
+      <div className="mb-4 text-center text-sm text-slate-400">{t.title}</div>
+      <div className="px-4 pb-6">
+        <Row logos={allLogos} />
       </div>
     </div>
   );

@@ -51,8 +51,9 @@ function seededShuffle<T>(arr: T[], seedStr?: string) {
 
 function ProgressiveImage({
   img, eager = false, fit = "cover", className, ratio,
+  fillParent = true,
 }: {
-  img: GalleryImage; eager?: boolean; fit?: "cover" | "contain"; className?: string; ratio?: number;
+  img: GalleryImage; eager?: boolean; fit?: "cover" | "contain"; className?: string; ratio?: number; fillParent?: boolean;
 }) {
   const [ready, setReady] = useState(eager);
 
@@ -64,25 +65,32 @@ function ProgressiveImage({
       i.src = img.full;
       i.onload = () => {
         if (cancelled) return;
-        (i as HTMLImageElement).decode?.().finally(() => setReady(true));
+        // decode if supported; fall back gracefully
+        (i as HTMLImageElement).decode?.().finally(() => setReady(true)) ?? setReady(true);
       };
       i.onerror = () => setReady(true);
     };
     if (eager) load();
     else {
-      const idle = (cb: () => void) =>
-        (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb, { timeout: 1000 }) : setTimeout(cb, 150);
+      const idle = typeof window !== "undefined" && "requestIdleCallback" in window
+        ? (cb: () => void) => (window as any).requestIdleCallback(cb, { timeout: 1000 })
+        : (cb: () => void) => setTimeout(cb, 150);
       idle(load);
     }
     return () => { cancelled = true; };
   }, [img.full, eager]);
 
   const ar = img.width && img.height ? img.width / img.height : ratio || 16/9;
+  const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 960px";
 
   return (
     <div
-      className={cn("relative overflow-hidden", className)}
-      style={{ aspectRatio: `${ar}`, containIntrinsicSize: img.width && img.height ? undefined : "960px 540px" }}
+      className={cn(
+        fillParent ? "absolute inset-0 h-full w-full" : "relative",
+        "overflow-hidden",
+        className
+      )}
+      style={fillParent ? undefined : { aspectRatio: `${ar}`, containIntrinsicSize: img.width && img.height ? undefined : "960px 540px" }}
     >
       <img
         src={img.thumb}
@@ -90,6 +98,7 @@ function ProgressiveImage({
         loading={eager ? "eager" : "lazy"}
         decoding="async"
         fetchPriority={eager ? "high" : "auto"}
+        draggable={false}
         className={cn("absolute inset-0 h-full w-full object-cover blur-[2px] transition-opacity", ready ? "opacity-0" : "opacity-100")}
         style={{ objectFit: fit }}
       />
@@ -103,7 +112,9 @@ function ProgressiveImage({
           alt={img.alt || ""}
           loading={eager ? "eager" : "lazy"}
           decoding="async"
+          sizes={sizes}
           fetchPriority={eager ? "high" : "auto"}
+          draggable={false}
           className={cn("absolute inset-0 h-full w-full object-cover transition-opacity duration-200", ready ? "opacity-100" : "opacity-0")}
           style={{ objectFit: fit }}
         />
@@ -120,18 +131,52 @@ const ChevronRight = ({ className }: { className?: string }) => (
 );
 
 export default function SimpleGalleryPro({
-  locale = "en", images: originalImages, initialIndex = 0, fallbackRatio, className, heightClass,
+  locale = "en", images: originalImages, initialIndex = 0, fallbackRatio, className,
+  heightClass = "h-[58vw] max-h-[72vh] md:h-[520px]",
   showCounter = true, showCaptions = true, thumbSizeClass = "h-16 w-24 md:h-20 md:w-28",
-  randomize = true, randomSeed = "supakoto-gallery", wrapAround = true,
+  randomize = false, randomSeed,
+  wrapAround = true,
 }: GalleryProps) {
   const isRTL = locale === "ar";
-  const [index, setIndex] = useState(initialIndex);
+  const [index, setIndex] = useState(
+    Math.min(Math.max(0, initialIndex), Math.max(0, (Array.isArray(originalImages) ? originalImages.length : 0) - 1))
+  );
   const stripRef = useRef<HTMLDivElement>(null);
+  const startX = useRef<number | null>(null);
+  const deltaX = useRef(0);
+  const loadedRef = useRef<Set<string>>(new Set());
 
-  useEffect(() => { document.getElementById("gallery-fallback")?.setAttribute("style", "display:none"); }, []);
+  // Track mobile breakpoint to only apply aspect ratio on mobile without SSR mismatch
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia === "undefined") return;
+    const mq = window.matchMedia("(max-width: 639.98px)");
+    const apply = () => setIsMobile(!!mq.matches);
+    apply();
+    if (typeof mq.addEventListener === "function") mq.addEventListener("change", apply);
+    else if (typeof mq.addListener === "function") mq.addListener(apply);
+    return () => {
+      if (typeof mq.removeEventListener === "function") mq.removeEventListener("change", apply);
+      else if (typeof mq.removeListener === "function") mq.removeListener(apply);
+    };
+  }, []);
+
+  // Apply sm: prefix to each height token so fixed height only kicks in at sm+
+  const smHeightClass = useMemo(() => {
+    const cls = (heightClass || "").trim();
+    if (!cls) return "";
+    return cls
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((c) => /^(sm:|md:|lg:|xl:|2xl:)/.test(c) ? c : `sm:${c}`)
+      .join(" ");
+  }, [heightClass]);
 
   const images = useMemo(
-    () => (randomize ? seededShuffle(originalImages, randomSeed) : originalImages),
+    () => {
+      const base = randomize ? seededShuffle(originalImages, randomSeed) : originalImages;
+      return [...base];
+    },
     [originalImages, randomize, randomSeed]
   );
   useEffect(() => { setIndex((i) => Math.max(0, Math.min(i, images.length - 1))); }, [images.length]);
@@ -150,14 +195,27 @@ export default function SimpleGalleryPro({
   }, [index]);
 
   useEffect(() => {
-    const ids = [index - 1, index + 1].map(i => (wrapAround ? (i + images.length) % images.length : i)).filter(i => i >= 0 && i < images.length);
-    const idle = (cb: () => void) => (window as any).requestIdleCallback ? (window as any).requestIdleCallback(cb, { timeout: 800 }) : setTimeout(cb, 120);
-    ids.forEach(i => idle(() => { const im = new Image(); im.decoding = "async"; im.src = images[i].full; }));
+    const ids = [index - 1, index + 1]
+      .map(i => (wrapAround ? (i + images.length) % images.length : i))
+      .filter(i => i >= 0 && i < images.length);
+
+    const idle = typeof window !== "undefined" && "requestIdleCallback" in window
+      ? (cb: () => void) => (window as any).requestIdleCallback(cb, { timeout: 800 })
+      : (cb: () => void) => setTimeout(cb, 120);
+
+    ids.forEach(i => idle(() => {
+      const src = images[i].full;
+      if (loadedRef.current.has(src)) return;
+      loadedRef.current.add(src);
+      const im = new Image();
+      im.decoding = "async";
+      im.src = src;
+    }));
   }, [index, images, wrapAround]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") (isRTL ? next : prev)();
-    if (e.key === "ArrowRight") (isRTL ? prev : next)();
+    if (e.key === "ArrowLeft" || e.key === "PageUp") (isRTL ? next : prev)();
+    if (e.key === "ArrowRight" || e.key === "PageDown") (isRTL ? prev : next)();
     if (e.key === "Home") setIndex(0);
     if (e.key === "End") setIndex(images.length - 1);
   }, [isRTL, next, prev, images.length]);
@@ -166,43 +224,101 @@ export default function SimpleGalleryPro({
   const current = images[index];
 
   return (
-    <section className={cn("py-8 md:py-12 pb-[max(1rem,env(safe-area-inset-bottom))]", className)} dir={isRTL ? "rtl" : "ltr"} tabIndex={0} onKeyDown={onKeyDown} aria-label={isRTL ? "معرض الصور" : "Image gallery"}>
-      <div className="rounded-2xl bg-muted/20 border border-white/10 shadow-soft p-2">
-        <div className={cn("relative overflow-hidden rounded-2xl bg-neutral-900 border border-white/10 select-none", heightClass)} style={{ touchAction: "pan-y" }}>
-          <ProgressiveImage img={current} eager ratio={current.width && current.height ? current.width / current.height : fallbackRatio} />
+    <section
+      className={cn("py-6 md:py-10", className)}
+      dir={isRTL ? "rtl" : "ltr"}
+      tabIndex={0}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={isRTL ? "معرض الصور" : "Image gallery"}
+      aria-live="polite"
+      onKeyDown={(e) => {
+        // prevent page scroll for nav keys
+        const navKeys = ["ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
+        if (navKeys.includes(e.key)) e.preventDefault();
+        onKeyDown(e);
+      }}
+    >
+      <div className="rounded-2xl bg-neutral-900/60 border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.25)] p-2">
+        <div
+          className={cn(
+            "relative overflow-hidden rounded-2xl bg-black/60 border border-white/10 select-none",
+            // Only apply fixed heights at sm+ breakpoints
+            smHeightClass,
+            // Ensure mobile height is auto so aspectRatio controls size
+            "h-auto"
+          )}
+          style={{
+            touchAction: "pan-y",
+            // Only apply aspectRatio on mobile; sm+ heights come from classes
+            aspectRatio: isMobile
+              ? ((current.width && current.height)
+                  ? `${current.width}/${current.height}`
+                  : (typeof fallbackRatio === "number" ? String(fallbackRatio) : "4/3"))
+              : undefined
+          }}
+          onPointerDown={(e) => { startX.current = e.clientX; deltaX.current = 0; (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }}
+          onPointerMove={(e) => { if (startX.current != null) deltaX.current = e.clientX - startX.current; }}
+          onPointerUp={() => {
+            // a slightly higher threshold avoids accidental swipes
+            const THRESHOLD = 48;
+            if (Math.abs(deltaX.current) > THRESHOLD) {
+              (deltaX.current > 0) ? (isRTL ? next() : prev()) : (isRTL ? prev() : next());
+            }
+            startX.current = null; deltaX.current = 0;
+          }}
+        >
+          <ProgressiveImage img={current} eager ratio={current.width && current.height ? current.width / current.height : fallbackRatio} fillParent />
           <div className="absolute inset-0 flex items-center justify-between p-2 md:p-4">
-            <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev} className="h-10 w-10 md:h-12 md:w-12 bg-black/30 hover:bg-black/50 border-white/20 hover:border-white/40 text-white">
+            <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev} className="h-10 w-10 md:h-12 md:w-12 bg-black/35 hover:bg-black/55 border-white/25 hover:border-white/40 text-white">
               <ChevronLeft className={cn("h-5 w-5 md:h-6 md:w-6", isRTL && "rotate-180")} />
             </Button>
-            <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next} className="h-10 w-10 md:h-12 md:w-12 bg-black/30 hover:bg-black/50 border-white/20 hover:border-white/40 text-white">
+            <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next} className="h-10 w-10 md:h-12 md:w-12 bg-black/35 hover:bg-black/55 border-white/25 hover:border-white/40 text-white">
               <ChevronRight className={cn("h-5 w-5 md:h-6 md:w-6", isRTL && "rotate-180")} />
             </Button>
           </div>
-          <div className="sm:hidden absolute bottom-4 left-1/2 -translate-x-1/2">
-            <div className="text-xs text-white/90 px-3 py-1.5 rounded-full bg-black/60 border border-white/20">{isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}</div>
+          <div className="sm:hidden absolute bottom-3 left-1/2 -translate-x-1/2">
+            <div className="text-[11px] text-white/95 px-3 py-1.5 rounded-full bg-black/65 border border-white/20">{isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}</div>
           </div>
         </div>
         {(showCaptions || showCounter) && (
           <div className="flex items-center justify-between gap-3 px-2 py-2 sm:py-3">
-            {showCaptions ? <div className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{current.caption || current.alt || ""}</div> : <span />}
-            {showCounter && <div className="hidden sm:block text-xs text-muted-foreground">{isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}</div>}
+            {showCaptions ? <div className="text-xs sm:text-sm text-neutral-300/90 line-clamp-2">{current.caption || current.alt || ""}</div> : <span />}
+            {showCounter && <div className="hidden sm:block text-xs text-neutral-400">{isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}</div>}
           </div>
         )}
       </div>
       <div className="mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10">
-        <div ref={stripRef} className="flex gap-3 overflow-x-auto px-3 py-3 scrollbar-thin">
+        <div ref={stripRef} className={cn(
+          "flex gap-3 overflow-x-auto px-3 py-3 scrollbar-thin",
+          "[-webkit-overflow-scrolling:touch]"
+        )}>
           {images.map((img, i) => {
             const active = i === index;
             return (
-              <button key={img.id ?? i} data-idx={i} type="button" onClick={() => setIndex(i)}
-                className={cn("relative shrink-0 overflow-hidden rounded-lg border transition-all duration-200", "h-16 w-24 md:h-20 md:w-28",
-                  active ? "border-white/70 ring-2 ring-white/40 scale-105" : "border-white/10 hover:border-white/30 hover:scale-102")}
-                aria-pressed={active} aria-current={active ? "true" : undefined} aria-label={img.alt || img.caption || `Image ${i + 1}`}>
-                <img src={img.thumb} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+              <button
+                key={img.id ?? i}
+                data-idx={i}
+                type="button"
+                onClick={() => setIndex(i)}
+                className={cn(
+                  "relative shrink-0 overflow-hidden rounded-xl border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-white/50",
+                  thumbSizeClass,
+                  active ? "border-white/70 ring-2 ring-white/30 scale-105" : "border-white/10 hover:border-white/30 hover:scale-102"
+                )}
+                aria-pressed={active}
+                aria-current={active ? "true" : undefined}
+                aria-label={img.alt || img.caption || `Image ${i + 1}`}
+              >
+                <img src={img.thumb} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" draggable={false} />
+                {active && <span className="pointer-events-none absolute inset-0 ring-2 ring-white/30 rounded-xl" />}
               </button>
             );
           })}
         </div>
+      </div>
+      <div className="sr-only" aria-live="polite">
+        {isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}
       </div>
     </section>
   );

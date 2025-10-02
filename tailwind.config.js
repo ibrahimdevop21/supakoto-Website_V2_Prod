@@ -165,6 +165,11 @@ export default {
         'brand-shimmer': {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' }
+        },
+        // Continuous horizontal marquee used by the Testimonials track
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' }
         }
       },
       
@@ -175,7 +180,10 @@ export default {
         'slide-in-right': 'slide-in-right 0.6s ease-out forwards',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'spin': 'spin 1s linear infinite',
-        'brand-shimmer': 'brand-shimmer 2s ease-in-out infinite'
+        'brand-shimmer': 'brand-shimmer 2s ease-in-out infinite',
+        // Utility consumed by src/components/carousels/Testimonials.tsx
+        // Duration controls speed; duplicate content enables seamless loop
+        'scroll': 'scroll 75s linear infinite'
       },
       
       // SupaKoto 2025 Typography System

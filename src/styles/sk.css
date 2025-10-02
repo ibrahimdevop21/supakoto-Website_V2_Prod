@@ -10,8 +10,8 @@
   --sk-muted: #94a3b8;     /* slate-400 */
 }
 
-/* Remove default appearance across inputs/buttons/selects */
-input, textarea, select, button {
+/* Remove default appearance across inputs/buttons/selects (but preserve checkboxes) */
+input:not([type=checkbox]), textarea, select, button {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;

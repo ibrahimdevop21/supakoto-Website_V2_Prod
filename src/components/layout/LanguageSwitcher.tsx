@@ -1,12 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Globe, ChevronDown } from "../icons/LightweightIcons";
+import React, { useEffect, useMemo } from "react";
 import { useSwitchLocalePath } from "../../i18n/react";
 import { type Locale } from "../../i18n";
 
@@ -26,7 +18,6 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   currentPath = "",
   className = "",
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const switchLocalePath = useSwitchLocalePath();
 
   // Redirect based on saved preference on initial client-side load
@@ -41,56 +32,30 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
     }
   }, [currentLocale, currentPath, switchLocalePath]);
 
-  const handleSelectLanguage = (langCode: Locale) => {
-    localStorage.setItem("preferred_locale", langCode);
-    const newPath = switchLocalePath(currentPath, langCode);
-    window.location.href = newPath;
+  const handleSelectLanguage = (langCode: Locale, href: string) => {
+    try { localStorage.setItem("preferred_locale", langCode); } catch {}
+    window.location.href = href;
   };
 
   const currentLanguage = useMemo(() => {
     return SUPPORTED_LANGUAGES.find((lang) => lang.code === currentLocale) || SUPPORTED_LANGUAGES[0];
   }, [currentLocale]);
 
+  const switchingTo: Locale = (currentLocale === "ar" ? "en" : "ar") as Locale;
+  const href = switchLocalePath(currentPath, switchingTo);
+  const btnLabel = switchingTo === "en" ? "EN" : "AR";
+  const aria = switchingTo === "en" ? "Switch to English" : "Switch to Arabic";
+
   return (
     <div className={className}>
-      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex items-center gap-2 px-2 py-1.5 text-sm font-medium text-gray-300 hover:bg-white/10 hover:text-white transition-colors rounded-lg"
-            aria-label={`Change language, current language is ${currentLanguage.name}`}
-          >
-            <Globe className="h-5 w-5" />
-            <span className="hidden sm:inline">{currentLanguage.name}</span>
-            <ChevronDown
-              className={`h-4 w-4 transition-transform duration-200 ${
-                isOpen ? "rotate-180" : ""
-              }`}
-            />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="min-w-[120px] bg-gray-900/80 backdrop-blur-md border-gray-700 text-gray-200"
-        >
-          {SUPPORTED_LANGUAGES.map((lang) => (
-            <DropdownMenuItem
-              key={lang.code}
-              onClick={() => handleSelectLanguage(lang.code)}
-              className="flex items-center gap-2 cursor-pointer hover:!bg-white/10 focus:!bg-white/20"
-              aria-current={currentLocale === lang.code ? "page" : undefined}
-            >
-              <span
-                className={`font-semibold ${
-                  currentLocale === lang.code ? "text-primary" : ""
-                }`}
-              >
-                {lang.name}
-              </span>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <a
+        href={href}
+        onClick={(e) => { e.preventDefault(); handleSelectLanguage(switchingTo, href); }}
+        aria-label={aria}
+        className="inline-flex items-center justify-center h-9 px-3 rounded-xl border border-white/20 bg-white/10 text-white font-bold uppercase text-xs tracking-wide hover:border-[#bf1e2e] hover:bg-[#bf1e2e]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#bf1e2e]"
+      >
+        {btnLabel}
+      </a>
     </div>
   );
 };

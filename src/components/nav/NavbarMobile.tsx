@@ -3,9 +3,10 @@ import { NAV_LINKS } from '../../data/navLinks';
 
 interface NavbarMobileProps {
   locale: 'en' | 'ar';
+  activePath?: string;
 }
 
-export default function NavbarMobile({ locale }: NavbarMobileProps) {
+export default function NavbarMobile({ locale, activePath }: NavbarMobileProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -97,6 +98,13 @@ export default function NavbarMobile({ locale }: NavbarMobileProps) {
     return href;
   };
 
+  const computeSwitchHref = () => {
+    const path = activePath || (typeof window !== 'undefined' ? window.location.pathname : '/');
+    return locale === 'ar'
+      ? (path === '/ar' ? '/' : path.replace(/^\/ar(\/|$)/, '/'))
+      : (path === '/' ? '/ar' : `/ar${path}`);
+  };
+
   if (!isClient) {
     return (
       <button
@@ -126,6 +134,8 @@ export default function NavbarMobile({ locale }: NavbarMobileProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
+
+      {/* Inline language toggle removed; language switch is available inside the expanded menu and in ActionPills */}
 
       {/* Fullscreen overlay */}
       {isOpen && (
@@ -162,6 +172,23 @@ export default function NavbarMobile({ locale }: NavbarMobileProps) {
               </div>
 
               <nav className="pb-3">
+                {/* Full-width language toggle inside menu */}
+                {(() => {
+                  const switchingTo = locale === 'ar' ? 'en' : 'ar';
+                  const btnLabel = switchingTo === 'en' ? 'EN' : 'AR';
+                  const aria = switchingTo === 'en' ? 'Switch to English' : 'Switch to Arabic';
+                  const href = computeSwitchHref();
+                  return (
+                    <a
+                      href={href}
+                      onClick={closeMenu}
+                      aria-label={aria}
+                      className="block mx-3 mb-2 px-5 py-3 text-base text-white/95 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 focus:bg-white/10 focus:outline-none font-bold uppercase tracking-wide text-center"
+                    >
+                      {btnLabel}
+                    </a>
+                  );
+                })()}
                 {NAV_LINKS.map((link) => {
                   const href = getLocalizedHref(link.href);
                   const label = locale === 'ar' ? link.label_ar : link.label_en;
