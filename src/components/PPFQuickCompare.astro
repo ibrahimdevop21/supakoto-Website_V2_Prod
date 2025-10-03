@@ -1,0 +1,151 @@
+---
+const ACCENT = '#bf1e2e';
+
+const t = {
+  en: {
+    heading: 'Why SupaKoto PPF is the Smart Choice',
+    sub: 'Quick scan. Clear differences. Decide in seconds.',
+    brands: ['SupaKoto • Takai', 'Top Western (XPEL/3M)', 'Low-Cost (Mass Market)'],
+    criteria: [
+      { k: 'Durability', tip: 'Real-world lifespan before noticeable wear' },
+      { k: 'Yellowing', tip: 'Color stability under heat/UV' },
+      { k: 'Clarity', tip: 'Gloss/satin purity and edge visibility' },
+      { k: 'Self-Healing', tip: 'Heat recovery of micro-scratches' },
+      { k: 'Install Quality', tip: 'Fit, edges, and craft' },
+      { k: 'Warranty', tip: 'Years and backing' },
+    ],
+    legend: { best: 'Best', good: 'Good', weak: 'Weak' },
+    chipsTitle: 'What you actually get',
+    chips: [
+      'Up to 15-year backed warranty',
+      'Ultra-stable resin = desert-proof color',
+      'Crystal-clear finish, invisible edges',
+      'Advanced nano heat recovery',
+      'Certified install, precision cut',
+      'Full traceability & certificate',
+    ],
+    detailsTitle: 'Details (for the curious)',
+    details: [
+      { q: 'Stretchability', a: '≈350–400% (Takai internal spec) for clean curves without stress whitening.' },
+      { q: 'Origin', a: '100% Japan materials and process control, strict QC.' },
+      { q: 'Care', a: 'Wash as normal. Avoid harsh abrasives. Occasional top-up sealant keeps the gloss crisp.' },
+      { q: 'Edges & Panels', a: 'Pre-cut patterns reduce trimming on paint; hidden edges where safe.' },
+    ],
+    note: 'Specs vary by series; ask our team for the right match to your car and climate.',
+  },
+};
+const lang = 'en';
+
+// ✓/△/✗ map (semantic + color)
+type Score = 'best' | 'good' | 'weak';
+type ScoreInfo = { label: string; dot: string; aria: string };
+const RATINGS: Record<Score, ScoreInfo> = {
+  best: { label: t[lang].legend.best, dot: 'bg-emerald-500', aria: 'Best' },
+  good: { label: t[lang].legend.good, dot: 'bg-amber-400', aria: 'Good' },
+  weak: { label: t[lang].legend.weak, dot: 'bg-rose-500', aria: 'Weak' },
+};
+
+// matrix rows = criteria; cols = 3 brands
+const matrix: Score[][] = [
+  ['best','good','weak'], // Durability
+  ['best','good','weak'], // Yellowing
+  ['best','good','weak'], // Clarity
+  ['best','good','weak'], // Self-Healing
+  ['best','good','weak'], // Install
+  ['best','good','weak'], // Warranty
+];
+---
+
+<section class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 sm:p-6 md:p-8 shadow-[0_0_60px_-30px_rgba(0,0,0,.8)]">
+  <header class="mb-5 md:mb-6">
+    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight">
+      <span class="text-white/90">{t[lang].heading}</span>
+    </h2>
+    <p class="text-slate-400 text-sm md:text-base mt-1">{t[lang].sub}</p>
+  </header>
+
+  {/* Scorecard: mobile cards, desktop grid */}
+  <div class="hidden md:grid grid-cols-[220px_repeat(3,1fr)] gap-2 rounded-2xl overflow-hidden ring-1 ring-slate-700/50">
+    <div class="bg-slate-900/60 p-3 text-slate-300 text-sm">Feature</div>
+    {t[lang].brands.map((b) => (
+      <div class="bg-slate-900/60 p-3 text-slate-300 text-sm font-medium">{b}</div>
+    ))}
+
+    {t[lang].criteria.map((c, rowIdx) => (
+      <>
+        <div class={`p-3 bg-slate-900/30 text-slate-200 text-sm ${rowIdx % 2 ? 'bg-slate-900/20' : ''}`}>
+          <div class="font-medium">{c.k}</div>
+          <div class="text-xs text-slate-400">{c.tip}</div>
+        </div>
+        {matrix[rowIdx].map((key) => (
+          <div class={`p-3 ${rowIdx % 2 ? 'bg-slate-900/10' : 'bg-slate-900/5'}`}>
+            <span class="inline-flex items-center gap-2 text-sm text-slate-200">
+              <span class={`h-2.5 w-2.5 rounded-full ${RATINGS[key].dot}`} aria-label={RATINGS[key].aria}></span>
+              <span>{RATINGS[key].label}</span>
+            </span>
+          </div>
+        ))}
+      </>
+    ))}
+  </div>
+
+  {/* Mobile: stacked comparison cards */}
+  <div class="md:hidden space-y-3">
+    {t[lang].criteria.map((c, rowIdx) => (
+      <div class="rounded-xl border border-slate-700/50 bg-slate-900/30 p-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="text-slate-200 text-sm font-medium">{c.k}</div>
+            <div class="text-xs text-slate-400">{c.tip}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mt-2">
+          {t[lang].brands.map((b, colIdx) => {
+            const key = matrix[rowIdx][colIdx];
+            return (
+              <div class="rounded-lg bg-slate-900/40 px-2 py-2 text-center">
+                <div class="text-[11px] text-slate-400 truncate">{b}</div>
+                <div class="mt-1 inline-flex items-center justify-center gap-1.5">
+                  <span class={`h-2 w-2 rounded-full ${RATINGS[key].dot}`} aria-hidden="true"></span>
+                  <span class="text-xs text-slate-200">{RATINGS[key].label}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* Chips: tangible benefits */}
+  <div class="mt-6">
+    <div class="text-slate-300 text-sm mb-2">{t[lang].chipsTitle}</div>
+    <div class="flex flex-wrap gap-2">
+      {t[lang].chips.map((c) => (
+        <span class="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-800/40 px-3 py-1.5 text-xs text-slate-100">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill={ACCENT}><path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-6.5 6.5a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.42l2.293 2.293 5.793-5.793a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          {c}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  {/* Progressive details */}
+  <div class="mt-6">
+    <details class="group rounded-xl border border-slate-700/60 bg-slate-900/30">
+      <summary class="cursor-pointer list-none p-3 flex items-center justify-between">
+        <span class="text-slate-200 text-sm font-medium">{t[lang].detailsTitle}</span>
+        <svg class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </summary>
+      <div class="divide-y divide-slate-800/60">
+        {t[lang].details.map((it) => (
+          <div class="p-3">
+            <div class="text-slate-300 text-sm font-medium">{it.q}</div>
+            <div class="text-slate-400 text-sm mt-1">{it.a}</div>
+          </div>
+        ))}
+      </div>
+    </details>
+    <p class="text-xs text-slate-500 mt-2">{t[lang].note}</p>
+  </div>
+</section>

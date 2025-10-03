@@ -27,7 +27,7 @@ export function isRTL(Astro: AstroGlobal): boolean {
 }
 
 // Type-safe nested property access
-function getNestedValue(obj: any, path: string): string | undefined {
+function getNestedValue(obj: any, path: string): any {
   const keys = path.split('.');
   let value = obj;
   
@@ -39,7 +39,7 @@ function getNestedValue(obj: any, path: string): string | undefined {
     }
   }
   
-  return typeof value === 'string' ? value : undefined;
+  return value;
 }
 
 // Template string replacement (for parameters)
@@ -52,7 +52,7 @@ function interpolate(text: string, params?: Record<string, string | number>): st
 }
 
 // Translation function using Astro's i18n with fallback
-export function t(key: string, params?: Record<string, string | number>, Astro?: any): string {
+export function t(key: string, params?: Record<string, string | number>, Astro?: any): any {
   // If Astro context is available, use its locale
   let locale = 'en';
   
@@ -73,8 +73,12 @@ export function t(key: string, params?: Record<string, string | number>, Astro?:
   // Use the translation, fallback, or key itself
   const result = translation || fallbackTranslation || key;
   
-  // Handle parameter interpolation
-  return interpolate(result, params);
+  // Handle parameter interpolation for strings only
+  if (typeof result === 'string') {
+    return interpolate(result, params);
+  }
+  
+  return result;
 }
 
 // React hook compatible translation function
@@ -87,7 +91,13 @@ export function createTranslator(locale: Locale) {
       : undefined;
     
     const result = translation || fallbackTranslation || key;
-    return interpolate(result, params);
+    
+    // Handle parameter interpolation for strings only
+    if (typeof result === 'string') {
+      return interpolate(result, params);
+    }
+    
+    return result;
   };
 }
 

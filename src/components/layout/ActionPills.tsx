@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Globe } from 'lucide-react';
+import { Phone, Globe } from 'lucide-react';
 import { COUNTRY_DEFAULTS, type CountryCode } from "../../data/countryContacts";
 import { countryFromTimezone } from "../../utils/tzToCountry";
 
@@ -49,8 +49,9 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
   // Show the target language (what it will switch TO), not current language
   const langTag = locale === "ar" ? "EN" : "ع";
 
-  // Glass icon style - clean circular icons
+  // Glass icon style - clean circular icons (used for call/WhatsApp)
   const glassIcon = "inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 hover:bg-white/20 text-white transition";
+  // Language toggle uses same circular glass style as call/WhatsApp
 
   return (
     <div className="flex items-center gap-2">
@@ -86,14 +87,22 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
         </svg>
       </a>
 
-      {/* Language */}
+      {/* Language: text-based toggle shows target language */}
       {onToggleLang ? (
-        <button onClick={onToggleLang} aria-label="Switch language" className={glassIcon}>
-          <Globe className="h-5 w-5" />
+        <button
+          onClick={onToggleLang}
+          aria-label={locale === 'ar' ? 'Switch to English' : 'Switch to Arabic'}
+          className={glassIcon}
+        >
+          <span className="text-[11px] font-bold leading-none">{locale === 'ar' ? 'EN' : 'AR'}</span>
         </button>
       ) : (
-        <a href={nextHref} aria-label="Switch language" className={glassIcon}>
-          <Globe className="h-5 w-5" />
+        <a
+          href={nextHref}
+          aria-label={locale === 'ar' ? 'Switch to English' : 'Switch to Arabic'}
+          className={glassIcon}
+        >
+          <span className="text-[11px] font-bold leading-none">{locale === 'ar' ? 'EN' : 'AR'}</span>
         </a>
       )}
     </div>

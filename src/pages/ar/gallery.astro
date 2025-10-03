@@ -1,44 +1,39 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import SimpleGallery, { type SimpleGalleryImage } from '../../components/gallery/SimpleGallery';
+import SimpleGalleryPro, { type GalleryImage } from '../../components/gallery/SimpleGalleryPro';
 import { t } from '../../i18n';
 import { getSEOData } from '../../utils/seo-content';
 import { generateBreadcrumbSchema } from '../../utils/seo-schemas';
 
 const currentLang = 'ar' as 'en' | 'ar';
-const rtl = true;
-
-// Get SEO-optimized content for Arabic gallery page
 const seoData = getSEOData('gallery', currentLang);
-
-// Generate breadcrumb schema
 const breadcrumbSchema = generateBreadcrumbSchema([
-	{ name: 'الرئيسية', url: 'https://supakoto.com/ar' },
-	{ name: 'معرض الأعمال', url: 'https://supakoto.com/ar/gallery' }
+  { name: 'الرئيسية', url: 'https://supakoto.com/ar' },
+  { name: 'معرض الأعمال', url: 'https://supakoto.com/ar/gallery' }
 ]);
 
-// Generate gallery images from the 238 webp files in public/gallery with descriptive alt text
-const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
-  const imageNumber = String(i + 1).padStart(3, '0');
-  // Generate more descriptive alt text for better SEO
+const images: GalleryImage[] = Array.from({ length: 238 }, (_, i) => {
+  const id = String(i + 1).padStart(3, '0');
   const altTexts = [
-    `سيارة فاخرة مع تركيب فيلم حماية الطلاء PPF - منظر أمامي ${imageNumber}`,
-    `تركيب احترافي لفيلم حماية الطلاء على سيارة رياضية ${imageNumber}`,
-    `حماية طلاء السيارة بتقنية PPF المتقدمة - مشروع ${imageNumber}`,
-    `سيارة محمية بفيلم PPF شفاف عالي الجودة ${imageNumber}`,
-    `تفاصيل تركيب فيلم حماية الطلاء الاحترافي ${imageNumber}`
+    `سيارة فاخرة مع تركيب فيلم حماية الطلاء PPF - منظر أمامي ${id}`,
+    `تركيب احترافي لفيلم حماية الطلاء على سيارة رياضية ${id}`,
+    `حماية طلاء السيارة بتقنية PPF المتقدمة - مشروع ${id}`,
+    `سيارة محمية بفيلم PPF شفاف عالي الجودة ${id}`,
+    `تفاصيل تركيب فيلم حماية الطلاء الاحترافي ${id}`
   ];
-  const altText = altTexts[i % altTexts.length];
-  
+  const alt = altTexts[i % altTexts.length];
+
   return {
-    id: `supa-${imageNumber}`,
-    src: `/gallery/supa-${imageNumber}.webp`,
-    thumbSrc: `/gallery/thumbs/supa-${imageNumber}.webp`,
-    alt: altText,
-    caption: `تركيب PPF احترافي — مشروع ${imageNumber}`
+    id,
+    thumb: `/gallery/thumbs/supa-${id}.webp`,
+    full: `/gallery/full/supa-${id}.webp`,
+    alt,
+    caption: `تركيب PPF احترافي — مشروع ${id}`,
   };
 });
 
+// Per-request stable seed for SSR shuffle without hydration mismatch
+const randomSeed = String(Date.now());
 ---
 
 <Layout 
@@ -48,27 +43,26 @@ const images: SimpleGalleryImage[] = Array.from({ length: 238 }, (_, i) => {
   type="website"
   schema={breadcrumbSchema}
 >
-  <section class="py-16 md:py-20 lg:py-24">
-    <!-- Gallery Hero Section with proper spacing -->
-    <div class="mb-24 md:mb-32">
-      <div class="text-center">
-        <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 tracking-tight font-arabic">
-          {t('gallery.hero.title', {}, Astro)}
-        </h1>
-        <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed font-arabic">
-          {t('gallery.hero.subtitle', {}, Astro)}
-        </p>
-        <div class="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full"></div>
-      </div>
+  <section class="py-10 md:py-14 lg:py-16">
+    <div class="mb-8 md:mb-10 text-center">
+      <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-orange-500 bg-clip-text text-transparent mb-6 tracking-tight font-arabic">
+        {t('gallery.hero.title', {}, Astro)}
+      </h1>
+      <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed font-arabic">
+        {t('gallery.hero.subtitle', {}, Astro)}
+      </p>
+      <div class="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full"></div>
     </div>
-    
-    <!-- Gallery Section -->
+
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <SimpleGallery 
-        client:load 
-        locale={currentLang as "en" | "ar"} 
+      <SimpleGalleryPro
+        client:load
+        locale={currentLang as "en" | "ar"}
         images={images}
-        heightClass="h-[56vh] md:h-[68vh]"
+        heightClass="h-[60svh] md:h-[68vh]"
+        randomize={true}
+        randomSeed={randomSeed}
+        wrapAround={true}
         showCounter={true}
         showCaptions={true}
       />

@@ -1,0 +1,35 @@
+/* contact-wizard-form.css */
+/* Force native radios/checkboxes to show even if a global reset hides them */
+.sk-radio {
+  appearance: auto !important;
+  -webkit-appearance: radio !important;
+  inline-size: 18px;
+  block-size: 18px;
+  accent-color: #bf1e2e;
+}
+
+.sk-checkbox {
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  inline-size: 20px;
+  block-size: 20px;
+  accent-color: #bf1e2e;
+}
+
+/* Optional: make labels tappable on mobile */
+.sk-choice-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Optional: dark theme contrast for native dots */
+.sk-radio,
+.sk-checkbox {
+  background: transparent;
+}
+
+/* Mobile polish - prevent logo overflow */
+.sk-card img {
+  max-inline-size: 100%;
+  height: auto;
+}

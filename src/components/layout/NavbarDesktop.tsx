@@ -32,6 +32,8 @@ export default function NavbarDesktop({ locale, activePath }: NavbarDesktopProps
           </a>
         );
       })}
+
+      {/* Language toggle removed here to avoid duplication; present in ActionPills on the right */}
     </nav>
   );
 }

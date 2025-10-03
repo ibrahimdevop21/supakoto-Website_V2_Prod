@@ -26,11 +26,48 @@ const XIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-const WarningIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+const TriangleIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+    <path d="M10 2l8 14H2L10 2z" />
   </svg>
 );
+
+// Floating mobile nudge button to encourage swipe
+const SwipeNudgeButton: React.FC<{
+  onNudged?: () => void;
+  target?: React.RefObject<HTMLDivElement>;
+  rtl?: boolean;
+}> = ({ onNudged, target, rtl }) => {
+  // Reverse visual arrow direction
+  const ARROW = rtl ? '→' : '←';
+  // Match nudge scroll to visual arrow
+  const dir = rtl ? 1 : -1;
+
+  const clickNudge = () => {
+    const el = target?.current;
+    if (!el) return;
+    try { el.scrollBy({ left: 180 * dir, behavior: 'smooth' }); } catch {}
+    onNudged?.();
+  };
+
+  const glow = '0 10px 28px -10px rgba(191,30,46,.35), 0 0 0 1px rgba(255,255,255,.12)';
+
+  return (
+    <button
+      type="button"
+      aria-label="Hold and swipe to compare"
+      onClick={clickNudge}
+      className="sm:hidden px-4 py-2.5 rounded-full text-[13px] font-semibold text-white/95 bg-slate-900/80 border border-white/15 backdrop-blur-md shadow-lg active:scale-[.98] focus:outline-none focus:ring-2 focus:ring-[#bf1e2e]/40 flex items-center gap-2.5 pointer-events-auto"
+      style={{ boxShadow: glow }}
+    >
+      <span className="relative inline-flex h-6 w-6 items-center justify-center">
+        <span className="absolute text-[#bf1e2e] opacity-90 animate-pulse text-base">{ARROW}</span>
+        <span className="absolute text-[#bf1e2e]/70 translate-x-2.5 rtl:-translate-x-2.5 animate-pulse [animation-delay:120ms] text-base">{ARROW}</span>
+      </span>
+      <span className="whitespace-nowrap">Hold & swipe {ARROW}</span>
+    </button>
+  );
+};
 
 // Column widths so mobile shows Feature + 1 compare column
 const mobileFirstColW = 'w-[44vw] min-w-[44vw]';
@@ -42,6 +79,25 @@ const cardBgSolid = 'bg-[#0b1220]'; // very dark blue/black
 // Spacing rhythm
 const cellX = 'px-4 md:px-6';
 const cellY = 'py-3 md:py-4 lg:py-5';
+
+// Brand accent (SupaKoto red)
+const BRAND = '#bf1e2e';
+
+type Rating = 'best' | 'avg' | 'weak';
+
+// Row order ratings per column (by row index from data file)
+// Rows in data: Origin, Durability, Warranty, Yellowing, Finish & Clarity, Installation, Self-Healing, Trust, Price
+const RATING_MATRIX: Array<[Rating, Rating, Rating]> = [
+  ['best','avg','weak'],       // Origin
+  ['best','avg','weak'],       // Durability
+  ['best','avg','weak'],       // Warranty
+  ['best','avg','weak'],       // Yellowing
+  ['best','avg','weak'],       // Finish & Clarity
+  ['best','avg','weak'],       // Installation
+  ['best','avg','weak'],       // Self-Healing
+  ['best','avg','weak'],       // Trust
+  ['avg','weak','weak'],       // Price (value proposition)
+];
 
 // Concise copy generator (English + Arabic)
 type ShortenOptions = { locale: 'en' | 'ar'; maxLen?: number };
@@ -225,41 +281,31 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
     return () => clearTimeout(t);
   }, [hasScrolled]);
 
-  // Enhanced content function - returns ReactNode directly
-  const enhanceContent = (content: string): React.ReactNode => {
-    const short = shortenCopy(String(content || ''), { locale, maxLen: 58 });
-
-    if (short.includes('✓')) {
+  // Render a clean rating line with icon + short phrase
+  const renderRated = (rating: Rating, text: string) => {
+    const short = shortenCopy(String(text || ''), { locale, maxLen: 56 });
+    if (rating === 'best') {
       return (
-        <div className="flex items-center gap-2">
-          <Badge variant="success" tooltip={locale === 'en' ? 'Available feature' : 'ميزة متوفرة'}>
-            <CheckIcon className="w-3 h-3" />
-          </Badge>
-          <span className="whitespace-normal break-words">{short.replace('✓','').trim()}</span>
+        <div className="inline-flex items-center gap-2">
+          <CheckIcon className="w-4 h-4 text-emerald-400" />
+          <span className="text-slate-200">{short}</span>
         </div>
       );
     }
-    if (short.match(/[✗❌]/)) {
+    if (rating === 'avg') {
       return (
-        <div className="flex items-center gap-2">
-          <Badge variant="warning" tooltip={locale === 'en' ? 'Limited or unavailable' : 'محدودة أو غير متوفرة'}>
-            <XIcon className="w-3 h-3" />
-          </Badge>
-          <span className="whitespace-normal break-words">{short.replace(/[✗❌]/g,'').trim()}</span>
+        <div className="inline-flex items-center gap-2">
+          <TriangleIcon className="w-3.5 h-3.5 text-amber-400" />
+          <span className="text-slate-300">{short}</span>
         </div>
       );
     }
-    if (short.includes('⚠️')) {
-      return (
-        <div className="flex items-center gap-2">
-          <Badge variant="warning" tooltip={locale === 'en' ? 'Caution advised' : 'ننصح بالحذر'}>
-            <WarningIcon className="w-3 h-3" />
-          </Badge>
-          <span className="whitespace-normal break-words">{short.replace('⚠️','').trim()}</span>
-        </div>
-      );
-    }
-    return <span className="whitespace-normal break-words">{short}</span>;
+    return (
+      <div className="inline-flex items-center gap-2">
+        <XIcon className="w-4 h-4 text-rose-400" />
+        <span className="text-slate-300">{short}</span>
+      </div>
+    );
   };
 
   // Cell class helpers (emerald highlight + solid sticky bgs + spacing)
@@ -268,25 +314,25 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
     'sticky top-0 z-30',
     cardBgSolid,                                   // SOLID to prevent iOS banding
     index === 0 && clsx(
-      'sticky sm:static z-40',                     // sticky first col ONLY on mobile
-      isRTL ? 'right-0 sm:right-auto' : 'left-0 sm:left-auto'
+      'sticky z-40',                                // sticky first col on ALL breakpoints
+      isRTL ? 'right-0' : 'left-0'
     ),
-    index === supaColIndex ? 'text-emerald-200' : 'text-gray-200',
+    index === supaColIndex ? 'text-slate-100' : 'text-gray-200',
     isRTL ? 'text-right' : 'text-left',
     index === 0 ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`,
-    "after:content-[''] after:absolute after:left-0 after:right-0 after:bottom-[-1px] after:h-px after:bg-white/10"
+    "after:content_[''] after:absolute after:left-0 after:right-0 after:bottom-[-1px] after:h-px after:bg-white/10"
   );
 
   const rowCellClass = (index: number, isFirstCol = false) => clsx(
     cellX, cellY, 'border-b border-white/5 transition-colors leading-snug md:leading-normal',
     'motion-safe:hover:bg-white/5',
     isFirstCol && clsx(
-      'sticky sm:static z-20',
+      'sticky z-20',
       cardBgSolid,                                 // SOLID sticky bg
-      isRTL ? 'right-0 sm:right-auto' : 'left-0 sm:left-auto',
+      isRTL ? 'right-0' : 'left-0',
       'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]'
     ),
-    index === supaColIndex && !isFirstCol && 'bg-gradient-to-b from-emerald-600/10 to-emerald-500/5 text-emerald-100 ring-1 ring-emerald-500/15',
+    // No glow here; Supa column elevation handled by sk-col-accent
     index !== supaColIndex && !isFirstCol && 'text-gray-300',
     isRTL ? 'text-right' : 'text-left',
     isFirstCol ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`
@@ -302,7 +348,7 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
     { 
       key: 'supa', 
       label: locale === 'en' ? 'Takai PPF (Premium)' : 'تاكاي PPF (مميز)',
-      color: 'bg-red-600',
+      color: 'bg-[\#bf1e2e]',
       textColor: 'text-red-200'
     },
     { 
@@ -343,10 +389,10 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
               <div key={item.key} className="flex items-center gap-2">
                 <div className={clsx(
                   'w-2.5 h-2.5 rounded-full',
-                  item.key === 'supa' ? 'bg-emerald-500' : item.color
+                  item.key === 'supa' ? 'bg-[\#bf1e2e]' : item.color
                 )}/>
                 <span className={clsx('text-xs md:text-sm font-medium',
-                  item.key === 'supa' ? 'text-emerald-200' : item.textColor
+                  item.key === 'supa' ? 'text-red-200' : item.textColor
                 )}>
                   {item.label}
                 </span>
@@ -367,7 +413,7 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
               <div
                 ref={scrollerRef}
                 className={clsx(
-                  'relative overflow-x-auto transform-gpu will-change-transform',
+                  'relative overflow-x-auto transform-gpu will-change-transform mobile-snap',
                   'scrollbar-thin',
                   '[&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-800/40 [&::-webkit-scrollbar-thumb]:bg-slate-600/50 [&::-webkit-scrollbar-thumb]:rounded-full'
                 )}
@@ -441,35 +487,44 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                         {/* Sticky First Column */}
                         <th 
                           scope="row"
-                          className={rowCellClass(0, true)}
+                          className={clsx(rowCellClass(0, true), 'sk-row')}
                         >
                           {row.feature[locale]}
                         </th>
                         
                         {/* Data Columns */}
-                        <td className={rowCellClass(1)}>
-                          <div className="relative z-10">
-                            {enhanceContent(row.supa[locale])}
-                          </div>
-                        </td>
-                        <td className={rowCellClass(2)}>
-                          {enhanceContent(row.xpel3m[locale])}
-                        </td>
-                        <td className={rowCellClass(3)}>
-                          {enhanceContent(row.china[locale])}
-                        </td>
+                        {(() => {
+                          const ratings = RATING_MATRIX[rowIndex] || ['best','avg','weak'];
+                          return (
+                            <>
+                              <td className={clsx(rowCellClass(1), 'sk-row', 'sk-col-accent')}>
+                                <div className="relative z-10">
+                                  {renderRated(ratings[0], row.supa[locale])}
+                                </div>
+                              </td>
+                              <td className={clsx(rowCellClass(2), 'sk-row')}>
+                                {renderRated(ratings[1], row.xpel3m[locale])}
+                              </td>
+                              <td className={clsx(rowCellClass(3), 'sk-row')}>
+                                {renderRated(ratings[2], row.china[locale])}
+                              </td>
+                            </>
+                          );
+                        })()}
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+              {/* Centered floating swipe nudge (mobile only) */}
+              {hintVisible && (
+                <div className="sm:hidden absolute inset-0 z-[60] pointer-events-none flex items-center justify-center">
+                  <SwipeNudgeButton target={scrollerRef} rtl={isRTL} onNudged={() => setHintVisible(false)} />
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-
-
-
       </div>
     </section>
   );

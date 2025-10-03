@@ -232,7 +232,7 @@ const localBusinessSchema = generateLocalBusinessSchema(
         }
       });
 
-      function updateBranchInfo(branch) {
+      function updateBranchInfo(branch: any) {
         // Update address
         const addressEl = document.getElementById('branch-address');
         if (addressEl) addressEl.textContent = branch.address;
@@ -240,7 +240,7 @@ const localBusinessSchema = generateLocalBusinessSchema(
         // Update hours
         const hoursEl = document.getElementById('branch-hours');
         if (hoursEl) {
-          hoursEl.innerHTML = branch.hours.map(hour => `<p class="text-neutral-300">${hour}</p>`).join('');
+          hoursEl.innerHTML = branch.hours.map((hour: string) => `<p class="text-neutral-300">${hour}</p>`).join('');
         }
 
         // Update action buttons

@@ -44,12 +44,35 @@ export const POST: APIRoute = async ({ request }) => {
     const message   = fd.get('message')?.toString().trim() || '';
     const country   = fd.get('country')?.toString().trim() || '';     // 'AE' | 'EG'
     const branchId  = fd.get('branch_id')?.toString().trim() || '';
+    
+    // New wizard fields
+    const carMake   = fd.get('car_make')?.toString().trim() || '';
+    const carYear   = fd.get('car_year')?.toString().trim() || '';
+    const paymentsRaw = fd.get('payments')?.toString() || '[]';
+    const whatsappOnly = fd.get('whatsapp_only')?.toString() || 'no';
 
-    // services can be "services" or "services[]"
-    const servicesRaw =
-      (fd.getAll('services').length ? fd.getAll('services') : fd.getAll('services[]'))
-      .map(v => v?.toString() || '')
-      .filter(Boolean);
+    // services can be "services" or "services[]" or JSON string from wizard
+    let servicesRaw: string[] = [];
+    const servicesField = fd.get('services')?.toString();
+    if (servicesField) {
+      try {
+        // Try parsing as JSON first (from wizard)
+        servicesRaw = JSON.parse(servicesField);
+      } catch {
+        // Fallback to form array handling
+        servicesRaw = (fd.getAll('services').length ? fd.getAll('services') : fd.getAll('services[]'))
+          .map(v => v?.toString() || '')
+          .filter(Boolean);
+      }
+    }
+
+    // Parse payments
+    let selectedPayments: string[] = [];
+    try {
+      selectedPayments = JSON.parse(paymentsRaw);
+    } catch {
+      // If parsing fails, it's okay - payments are optional
+    }
 
     // spam controls (your form already sets these)
     const honeypot = fd.get('_hp')?.toString() || '';     // should be empty
@@ -79,17 +102,25 @@ export const POST: APIRoute = async ({ request }) => {
     // route selection
     const { to, cc } = routeEmailByCountry(country, phone);
 
+    // Generate unique lead ID
+    const leadId = `SK-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     // build email
     const subject = `New SupaKoto Lead — ${servicesRaw.join(', ') || 'General'} — ${name}`;
     const html = `
       <div style="font-family:Inter,Arial,sans-serif">
         <h2>🚗 New lead from SupaKoto website</h2>
+        <p><b>Lead ID:</b> ${esc(leadId)}</p>
         <p><b>Name:</b> ${esc(name)}</p>
         ${email ? `<p><b>Email:</b> <a href="mailto:${esc(email)}">${esc(email)}</a></p>` : ''}
         <p><b>Phone:</b> <a href="tel:${esc(phone)}">${esc(phone)}</a></p>
         ${country ? `<p><b>Country:</b> ${esc(country)}</p>` : ''}
         ${branchId ? `<p><b>Branch ID:</b> ${esc(branchId)}</p>` : ''}
         <p><b>Services:</b> ${esc(servicesPretty.join(', '))}</p>
+        ${carMake ? `<p><b>Car Make:</b> ${esc(carMake)}</p>` : ''}
+        ${carYear ? `<p><b>Car Year:</b> ${esc(carYear)}</p>` : ''}
+        ${selectedPayments.length ? `<p><b>Payment Options:</b> ${esc(selectedPayments.join(', '))}</p>` : ''}
+        <p><b>WhatsApp Only:</b> ${whatsappOnly === 'yes' ? 'Yes' : 'No'}</p>
         ${message ? `<p><b>Message:</b><br>${esc(message).replace(/\n/g,'<br>')}</p>` : ''}
         <hr>
         <p style="font-size:12px;opacity:.7">Submitted: ${new Date().toISOString()}</p>
@@ -121,7 +152,14 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    return new Response(JSON.stringify({ ok: true }), {
+    return new Response(JSON.stringify({ 
+      ok: true, 
+      leadId, 
+      country, 
+      branch_id: branchId, 
+      whatsappOnly: whatsappOnly === 'yes', 
+      payments: selectedPayments 
+    }), {
       status: 200, headers: { 'content-type': 'application/json' }
     });
 

@@ -1,40 +1,35 @@
-/* Custom animations for logo strips - matches Testimonials component */
-
-/* Continuous scrolling animations */
-@keyframes scroll-ltr {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(-100% / 3));
-  }
+/* Unify how tracks animate — direction/speed via CSS vars */
+.scroll-track {
+  min-width: max-content;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-play-state: paused; /* resume when in view via JS */
+  animation-duration: var(--sk-duration, 28s);
+  animation-name: var(--sk-direction, marquee-left);
 }
 
-@keyframes scroll-rtl {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(calc(100% / 3));
-  }
+.is-animating {
+  animation-play-state: running;
 }
 
-.animate-scroll {
-  animation: scroll-ltr 80s linear infinite;
+/* Left-to-right logical movement isn't the goal — visual marquee is. */
+@keyframes marquee-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); } /* 3x duplication => 1/3 width shift */
 }
 
-[dir="rtl"] .animate-scroll {
-  animation: scroll-rtl 80s linear infinite;
+@keyframes marquee-right {
+  0%   { transform: translateX(-33.333%); }
+  100% { transform: translateX(0); }
 }
 
-/* Pause animation on hover */
-.animate-scroll:hover {
-  animation-play-state: paused;
-}
-
-/* Respect reduced motion preference */
+/* Respect user preference */
 @media (prefers-reduced-motion: reduce) {
-  .animate-scroll {
-    animation: none;
+  .scroll-track {
+    animation: none !important;
+    transform: none !important;
   }
 }

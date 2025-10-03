@@ -57,6 +57,12 @@ export const seoContent = {
       description: "Exclusive Paint Protection Film offers and packages from SupaKoto. Save on premium PPF installation with our special deals and comprehensive protection packages.",
       keywords: "PPF offers, paint protection deals, PPF packages, car protection promotions, vehicle protection offers, automotive protection deals, PPF discounts",
       h1: "Special Offers on Paint Protection Film"
+    },
+    business: {
+      title: "SupaKoto Business Partnership - Franchise & Partnership Opportunities | Automotive Protection Business",
+      description: "Join SupaKoto's growing network of automotive protection specialists. Franchise opportunities and business partnerships available across the Middle East. Proven business model, comprehensive training, and ongoing support.",
+      keywords: "SupaKoto franchise, automotive protection franchise, PPF franchise, car protection business, vehicle protection partnership, automotive franchise opportunities, paint protection business, Middle East franchise, business partnership automotive",
+      h1: "Partner with SupaKoto - Franchise & Partnership Opportunities"
     }
   },
   ar: {
@@ -107,6 +113,12 @@ export const seoContent = {
       description: "عروض وباقات حصرية لحماية الطلاء من سوباكوتو. وفر على تركيب حماية الطلاء الفاخر مع عروضنا الخاصة وباقات الحماية الشاملة.",
       keywords: "عروض حماية الطلاء, عروض حماية السيارات, باقات حماية الطلاء, عروض حماية السيارة, عروض حماية المركبة, عروض حماية السيارات, خصومات حماية الطلاء",
       h1: "عروض خاصة على أفلام حماية الطلاء"
+    },
+    business: {
+      title: "شراكة سوباكوتو التجارية - فرص الامتياز والشراكة | أعمال حماية السيارات",
+      description: "انضم إلى شبكة سوباكوتو المتنامية من متخصصي حماية السيارات. فرص امتياز تجاري وشراكات أعمال متاحة عبر الشرق الأوسط. نموذج أعمال مجرب وتدريب شامل ودعم مستمر.",
+      keywords: "امتياز سوباكوتو, امتياز حماية السيارات, امتياز حماية الطلاء, أعمال حماية السيارة, شراكة حماية المركبة, فرص امتياز السيارات, أعمال حماية الطلاء, امتياز الشرق الأوسط, شراكة أعمال السيارات",
+      h1: "شراكة مع سوباكوتو - فرص الامتياز والشراكة"
     }
   }
 } as const;

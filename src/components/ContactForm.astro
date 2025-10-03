@@ -10,12 +10,11 @@ export interface Props {
 const { selectedBranch, currentLang } = Astro.props;
 ---
 
-<form id="contact-form" method="POST" action="/api/contact" data-vercel="true" class="space-y-6">
+<form id="contact-form" method="POST" action="/api/contact" data-vercel="true" data-lang={currentLang} class="space-y-6">
   <!-- Test Mode Banner -->
   <div id="dry-run-banner" class="hidden rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm" role="status">
     {currentLang === 'ar' ? 'وضع الاختبار: سيتم محاكاة هذا الإرسال (لن يتم إرسال رسالة).' : 'Test Mode: This submission will be mocked (no message will be sent).'}
   </div>
-
   <!-- Honeypot field (hidden) -->
   <input type="text" name="_hp" class="hidden" tabindex="-1" autocomplete="off">
   
@@ -24,6 +23,19 @@ const { selectedBranch, currentLang } = Astro.props;
   
   <!-- Branch context -->
   <input type="hidden" name="branch_id" value={selectedBranch.id}>
+  <input type="hidden" name="branch_name" value={selectedBranch.name}>
+
+  <!-- Campaign & context (optional) -->
+  <input type="hidden" name="utm_source" id="utm_source">
+  <input type="hidden" name="utm_medium" id="utm_medium">
+  <input type="hidden" name="utm_campaign" id="utm_campaign">
+  <input type="hidden" name="referrer" id="referrer">
+  <input type="hidden" name="page_path" value={Astro.url.pathname}>
+
+  <!-- Dry Run/Test Mode Banner (shown when ?dryRun=1) -->
+  <div id="dryrun-banner" class="hidden p-3 rounded-lg border border-yellow-600/50 bg-yellow-900/20 text-yellow-200 text-sm">
+    {currentLang === 'ar' ? 'وضع الاختبار: لن يتم حفظ البيانات بشكل دائم.' : 'Test mode: Submissions will not be stored permanently.'}
+  </div>
 
   <!-- Name and Phone Row -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -41,57 +53,60 @@ const { selectedBranch, currentLang } = Astro.props;
       >
     </div>
 
-    <!-- Phone Field with responsive layout -->
+    <!-- Phone Field -->
     <div class="space-y-2">
       <label class="sk-label">
         {currentLang === 'ar' ? 'رقم الهاتف' : 'Phone Number'} <span class="text-red-400">*</span>
       </label>
 
-      <!-- Radios above input on mobile, inline row on ≥sm -->
-      <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-        <!-- Country radio group -->
-        <fieldset class="flex flex-row sm:flex-row items-center gap-2">
-          <!-- AE (default) -->
-          <label>
-            <input type="radio" name="country" value="AE" checked class="peer hidden" />
-            <div
-              class="h-10 sm:h-[44px] px-3 rounded-xl border border-slate-700/80 bg-slate-900/60
-                     text-sm text-slate-200 flex items-center gap-2 cursor-pointer select-none
-                     hover:border-[#bf1e2e]/60 transition
-                     peer-checked:bg-[#bf1e2e] peer-checked:text-white peer-checked:border-[#bf1e2e]"
-            >
-              🇦🇪 <span>AE</span>
-            </div>
-          </label>
+      <!-- Country dropdown + phone input -->
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,220px)_1fr] sm:items-center">
+        <!-- Custom listbox wrapper -->
+        <div class="relative" id="country-dropdown">
+          <input type="hidden" name="country" id="country-hidden" value="AE" />
+          <input type="hidden" name="country_code" id="country-code-hidden" value="+971" />
+          <button
+            id="country-trigger"
+            type="button"
+            class="sk-select w-full pr-10 rtl:pl-10 rtl:pr-3 flex items-center justify-between"
+            role="combobox"
+            aria-controls="country-panel"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+          >
+            <span id="country-label-text" class="truncate">🇦🇪 United Arab Emirates (+971)</span>
+            <svg class="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-slate-300"
+                 viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div
+            id="country-panel"
+            class="sk-panel absolute z-20 mt-1 w-full overflow-auto rounded-xl border border-slate-700/70 bg-slate-900/95 shadow-xl shadow-black/20 backdrop-blur-md max-h-64 hidden"
+            role="listbox"
+            tabindex="-1"
+          >
+            <!-- options injected by JS -->
+          </div>
+        </div>
 
-          <!-- EG -->
-          <label>
-            <input type="radio" name="country" value="EG" class="peer hidden" />
-            <div
-              class="h-10 sm:h-[44px] px-3 rounded-xl border border-slate-700/80 bg-slate-900/60
-                     text-sm text-slate-200 flex items-center gap-2 cursor-pointer select-none
-                     hover:border-[#bf1e2e]/60 transition
-                     peer-checked:bg-[#bf1e2e] peer-checked:text-white peer-checked:border-[#bf1e2e]"
-            >
-              🇪🇬 <span>EG</span>
-            </div>
-          </label>
-        </fieldset>
-
-        <!-- Phone input (moves below radios on mobile, inline on ≥sm) -->
+        <!-- Phone input -->
         <input
           type="tel"
           name="phone"
           id="phone-input"
           dir="ltr"
           required
-          class="sk-input w-full sm:flex-1 min-w-0"
-          placeholder="1234567890"
+          autocomplete="tel"
+          inputmode="tel"
+          class="sk-input w-full min-w-0"
+          placeholder="5XXXXXXX (AE) / 01XXXXXXXXX (EG)"
+          aria-describedby="phone-error phone-preview"
         />
       </div>
 
-      <div id="phone-error" class="sk-error hidden"></div>
-      <div id="phone-preview" class="sk-help"></div>
+      <div id="phone-error" class="sk-error hidden" aria-live="polite"></div>
+      <div id="phone-preview" class="sk-help" aria-live="polite"></div>
     </div>
   </div>
 
@@ -119,6 +134,32 @@ const { selectedBranch, currentLang } = Astro.props;
     </div>
 
     <div id="services-error" class="sk-error hidden"></div>
+  </div>
+
+  <!-- Preferred Contact (WhatsApp) -->
+  <div class="space-y-2">
+    <label class="sk-label">{currentLang === 'ar' ? 'طريقة التواصل المفضلة' : 'Preferred Contact'}</label>
+    <label class="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-[#bf1e2e]/60 transition cursor-pointer select-none">
+      <input type="checkbox" name="via_whatsapp" value="1" class="h-4 w-4 rounded-sm accent-[#bf1e2e] focus:outline-none" />
+      <span class="flex items-center gap-2 text-sm text-slate-200">
+        <!-- WhatsApp icon (cleaner glyph) -->
+        <svg class="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0012.06 0C5.5 0 .21 5.29.21 11.85c0 2.09.55 4.11 1.59 5.91L0 24l6.39-1.67a11.8 11.8 0 005.67 1.45h.01c6.56 0 11.85-5.29 11.85-11.85 0-3.17-1.23-6.15-3.4-8.45zM12.07 21.2H12a9.86 9.86 0 01-5.02-1.38l-.36-.21-3.79 1 1.01-3.69-.24-.38a9.84 9.84 0 01-1.5-5.23C2.1 6.39 6.39 2.11 11.99 2.11c2.63 0 5.1 1.02 6.96 2.88a9.8 9.8 0 012.88 6.95c0 5.6-4.28 9.89-9.76 9.26zm5.41-7.4c-.3-.15-1.76-.87-2.04-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.95 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.67-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.08-.79.38-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.72.23 1.38.2 1.9.12.58-.09 1.76-.72 2.01-1.42.25-.7.25-1.3.17-1.42-.07-.11-.26-.18-.56-.33z"/></svg>
+        {currentLang === 'ar' ? 'أفضل التواصل عبر واتساب' : 'Prefer WhatsApp'}
+      </span>
+    </label>
+  </div>
+
+  <!-- Payment & Installments -->
+  <div class="space-y-3">
+    <label id="payments-label" class="sk-label">{currentLang === 'ar' ? 'الدفع والتقسيط (اختياري)' : 'Payment & Installments (Optional)'}</label>
+    <!-- Auto-fit columns -->
+    <div
+      id="payments-grid"
+      data-lang={currentLang}
+      role="group"
+      aria-labelledby="payments-label"
+      class="grid grid-cols-1 md:grid-cols-3 gap-3"
+    ></div>
   </div>
 
   <!-- Optional Car Details -->
@@ -186,7 +227,7 @@ const { selectedBranch, currentLang } = Astro.props;
   </button>
 
   <!-- Success Message -->
-  <div id="success-message" class="hidden p-4 bg-green-900/30 border border-green-700/50 rounded-lg">
+  <div id="success-message" class="hidden p-4 bg-green-900/30 border border-green-700/50 rounded-lg" aria-live="polite">
     <div class="flex items-center">
       <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
@@ -201,7 +242,7 @@ const { selectedBranch, currentLang } = Astro.props;
   </div>
 
   <!-- Error Message -->
-  <div id="error-message" class="hidden p-4 bg-red-900/30 border border-red-700/50 rounded-lg">
+  <div id="error-message" class="hidden p-4 bg-red-900/30 border border-red-700/50 rounded-lg" aria-live="polite">
     <div class="flex items-center">
       <svg class="w-5 h-5 text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
@@ -221,7 +262,34 @@ const { selectedBranch, currentLang } = Astro.props;
   .sk-input {
     @apply w-full rounded-xl bg-slate-900/60 border border-slate-700/80 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#bf1e2e]/60 hover:border-slate-600 transition;
   }
-  
+
+  .sk-select {
+    @apply w-full appearance-none rounded-xl bg-slate-900/60 border border-slate-700/80 px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#bf1e2e]/60 hover:border-slate-600 transition;
+  }
+  .sk-panel { @apply outline-none; }
+  .sk-panel-scroll { @apply max-h-72 overflow-auto overscroll-contain; }
+  .sk-panel-head { @apply sticky top-0 z-10 bg-slate-900/95 backdrop-blur px-2 py-2 border-b border-slate-800/60; }
+  .sk-panel-group { @apply px-3 py-1.5 text-[11px] tracking-wide uppercase text-slate-400; }
+  .sk-option-btn {
+    @apply grid grid-cols-[1.5rem,1fr,auto] items-center gap-3 w-full px-3 py-2.5 text-sm text-slate-100 hover:bg-slate-800/70 focus:bg-slate-800/70 rounded-[10px];
+  }
+  .sk-option-flag { @apply text-base leading-none; }
+  .sk-option-name { @apply truncate; }
+  .sk-option-dial { @apply text-slate-400 text-xs; }
+  .sk-option-active { @apply bg-slate-800/80; }
+
+  /* subtle custom scrollbar */
+  .sk-panel::-webkit-scrollbar { width: 10px; }
+  .sk-panel::-webkit-scrollbar-thumb { background: rgb(71 85 105 / .6); border-radius: 8px; }
+  .sk-panel::-webkit-scrollbar-track { background: transparent; }
+
+  /* Payments parity helpers (only for inner elements) */
+  .pay-input { @apply h-4 w-4 rounded-sm accent-[#bf1e2e] focus:outline-none shrink-0; }
+  .pay-text      { @apply text-sm leading-5 md:leading-6 text-slate-200; }
+  /* Fixed logo lane width so all providers occupy identical space */
+  .pay-logo-box  { @apply h-5 md:h-6 inline-flex items-center justify-start w-[120px] md:w-[140px] overflow-hidden; }
+  .pay-logo      { @apply h-full w-auto max-w-full max-h-full object-contain align-middle; }
+
   .sk-btn {
     @apply rounded-xl bg-[#bf1e2e] px-5 py-3 text-white font-medium shadow hover:brightness-110 focus:ring-2 focus:ring-[#bf1e2e] disabled:opacity-60 transition;
   }
@@ -252,11 +320,17 @@ const { selectedBranch, currentLang } = Astro.props;
   }
 
   // Phone number validation and E.164 formatting
-  const countryRadios = document.querySelectorAll('input[name="country"]');
-  const getCountry = () => {
-    const checked = document.querySelector('input[name="country"]:checked');
-    return checked ? (checked as HTMLInputElement).value : 'AE';
-  };
+  const CURRENT_LANG = (() => {
+    const el = document.getElementById('contact-form');
+    const lang = (el as HTMLElement)?.dataset?.lang as 'en' | 'ar' | undefined;
+    return (lang === 'ar' || lang === 'en') ? lang : 'en';
+  })();
+  const countryHidden = document.getElementById('country-hidden') as HTMLInputElement | null;
+  const countryCodeHidden = document.getElementById('country-code-hidden') as HTMLInputElement | null;
+  const countryTrigger = document.getElementById('country-trigger') as HTMLButtonElement | null;
+  const countryLabelText = document.getElementById('country-label-text') as HTMLSpanElement | null;
+  const countryPanel = document.getElementById('country-panel') as HTMLDivElement | null;
+  const getCountry = () => (countryHidden?.value || 'AE');
   const phoneInput = document.getElementById('phone-input');
   const phoneError = document.getElementById('phone-error');
   const phonePreview = document.getElementById('phone-preview');
@@ -269,10 +343,55 @@ const { selectedBranch, currentLang } = Astro.props;
   const errorText = document.getElementById('error-text');
   const loadTimeInput = document.getElementById('load-time');
   const dryRunBanner = document.getElementById('dry-run-banner');
+  const paymentsGrid = document.getElementById('payments-grid');
+  const utmSource = document.getElementById('utm_source') as HTMLInputElement | null;
+  const utmMedium = document.getElementById('utm_medium') as HTMLInputElement | null;
+  const utmCampaign = document.getElementById('utm_campaign') as HTMLInputElement | null;
+  const referrerInput = document.getElementById('referrer') as HTMLInputElement | null;
+  
+  // Detect dryRun mode
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('dryRun') === '1' && dryRunBanner) {
+      dryRunBanner.classList.remove('hidden');
+    }
+  } catch {}
 
   // Track form load time
   const loadTime = Date.now();
+  // Capture UTM & referrer (best-effort)
+  try {
+    const usp = new URLSearchParams(window.location.search);
+    if (utmSource) utmSource.value = usp.get('utm_source') || '';
+    if (utmMedium) utmMedium.value = usp.get('utm_medium') || '';
+    if (utmCampaign) utmCampaign.value = usp.get('utm_campaign') || '';
+    if (referrerInput) referrerInput.value = document.referrer || '';
+  } catch {}
   
+  // Preferred countries pinned and minimal list for fallback validation/placeholders
+  const PREFERRED = ['AE', 'EG'] as const;
+  const COUNTRIES: Array<{iso2:string; name:string; dial:string; flag:string; example?:string}> = [
+    { iso2:'AE', name:'United Arab Emirates', dial:'971', flag:'🇦🇪', example:'5XXXXXXXX' },
+    { iso2:'EG', name:'Egypt',                 dial:'20',  flag:'🇪🇬', example:'01XXXXXXXXX' },
+    { iso2:'SA', name:'Saudi Arabia',  dial:'966', flag:'🇸🇦', example:'5XXXXXXXX' },
+    { iso2:'QA', name:'Qatar',         dial:'974', flag:'🇶🇦' },
+    { iso2:'KW', name:'Kuwait',        dial:'965', flag:'🇰🇼' },
+    { iso2:'OM', name:'Oman',          dial:'968', flag:'🇴🇲' },
+    { iso2:'BH', name:'Bahrain',       dial:'973', flag:'🇧🇭' },
+    { iso2:'JO', name:'Jordan',        dial:'962', flag:'🇯🇴' },
+    { iso2:'LB', name:'Lebanon',       dial:'961', flag:'🇱🇧' },
+    { iso2:'MA', name:'Morocco',       dial:'212', flag:'🇲🇦' },
+    { iso2:'TN', name:'Tunisia',       dial:'216', flag:'🇹🇳' },
+    { iso2:'TR', name:'Türkiye',       dial:'90',  flag:'🇹🇷' },
+    { iso2:'GB', name:'United Kingdom',dial:'44',  flag:'🇬🇧' },
+    { iso2:'US', name:'United States', dial:'1',   flag:'🇺🇸' },
+    { iso2:'DE', name:'Germany',       dial:'49',  flag:'🇩🇪' },
+    { iso2:'FR', name:'France',        dial:'33',  flag:'🇫🇷' },
+    { iso2:'IT', name:'Italy',         dial:'39',  flag:'🇮🇹' },
+    { iso2:'IN', name:'India',         dial:'91',  flag:'🇮🇳' },
+    { iso2:'PK', name:'Pakistan',      dial:'92',  flag:'🇵🇰' },
+  ];
+
   // Check for dryRun mode and show banner if enabled
   const isDryRunMode = new URLSearchParams(location.search).get('dryRun') === '1';
   if (isDryRunMode && dryRunBanner) {
@@ -280,7 +399,7 @@ const { selectedBranch, currentLang } = Astro.props;
   }
   
   // Phone validation patterns
-  const phonePatterns = {
+  const phoneValidationPatterns = {
     EG: {
       pattern: /^(01)[0-9]{9}$/,
       code: '+20',
@@ -291,37 +410,232 @@ const { selectedBranch, currentLang } = Astro.props;
       code: '+971',
       format: 'UAE: 5XXXXXXXX or 05XXXXXXXX (9-10 digits)'
     }
-  };
+  } as const;
 
-  function validatePhone(country: string, phone: string) {
-    const pattern = phonePatterns[country as keyof typeof phonePatterns];
-    if (!pattern) return { valid: false, error: 'Invalid country' };
+  function openCountryPanel() {
+    if (!countryPanel || !countryTrigger) return;
+    countryPanel.classList.remove('hidden');
+    countryTrigger.setAttribute('aria-expanded', 'true');
+  }
+  function closeCountryPanel() {
+    if (!countryPanel || !countryTrigger) return;
+    countryPanel.classList.add('hidden');
+    countryTrigger.setAttribute('aria-expanded', 'false');
+  }
 
-    // Clean phone number
-    const cleanPhone = phone.replace(/\D/g, '');
-    
-    if (!pattern.pattern.test(cleanPhone)) {
-      return { 
-        valid: false, 
-        error: `Invalid format. Expected: ${pattern.format}` 
-      };
-    }
+  function initCountryListbox(defaultIso = 'AE') {
+    if (!countryPanel || !countryHidden || !countryTrigger || !countryLabelText) return;
+    countryPanel.innerHTML = '';
 
-    // Format to E.164
-    let formatted = cleanPhone;
-    if (country === 'EG') {
-      // Remove leading 0 and add +20
-      formatted = pattern.code + cleanPhone.substring(1);
-    } else if (country === 'AE') {
-      // Remove leading 0 if present and add +971
-      if (cleanPhone.startsWith('0')) {
-        formatted = pattern.code + cleanPhone.substring(1);
-      } else {
-        formatted = pattern.code + cleanPhone;
+    // Head: search
+    const head = document.createElement('div');
+    head.className = 'sk-panel-head';
+    head.innerHTML = `
+      <input id="country-search" class="w-full rounded-lg bg-slate-900/70 px-3 py-2 text-sm text-white placeholder:text-slate-400 border border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-[#bf1e2e]/60" placeholder="${CURRENT_LANG === 'ar' ? 'ابحث باسم الدولة أو الكود' : 'Search by country or code'}" aria-label="Search countries" />
+    `;
+    countryPanel.appendChild(head);
+
+    const listWrap = document.createElement('div');
+    listWrap.className = 'sk-panel sk-panel-scroll px-2 pb-2 pt-1';
+    countryPanel.appendChild(listWrap);
+
+    const addButton = (c: typeof COUNTRIES[number]) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.role = 'option';
+      btn.dataset.value = c.iso2;
+      btn.className = 'sk-option-btn';
+      btn.innerHTML = `
+        <span class="sk-option-flag">${c.flag}</span>
+        <span class="sk-option-name">${c.name}</span>
+        <span class="sk-option-dial">(+${c.dial})</span>
+      `;
+      btn.addEventListener('click', () => {
+        updateCountry(c.iso2);
+        closeCountryPanel();
+        countryTrigger.focus();
+      });
+      listWrap.appendChild(btn);
+    };
+
+    const renderList = (query = '') => {
+      listWrap.innerHTML = '';
+      const q = query.trim().toLowerCase();
+
+      if (!q) {
+        const pinnedLabel = document.createElement('div');
+        pinnedLabel.className = 'sk-panel-group';
+        pinnedLabel.textContent = CURRENT_LANG === 'ar' ? 'مُثبت' : 'Pinned';
+        listWrap.appendChild(pinnedLabel);
+        PREFERRED.forEach(code => {
+          const c = COUNTRIES.find(x => x.iso2 === code);
+          if (c) addButton(c);
+        });
+        const hr = document.createElement('div');
+        hr.className = 'my-2 border-t border-slate-800/60';
+        listWrap.appendChild(hr);
       }
-    }
 
-    return { valid: true, formatted };
+      const pool = !q
+        ? COUNTRIES.filter(c => !PREFERRED.includes(c.iso2 as any)).sort((a,b)=>a.name.localeCompare(b.name))
+        : COUNTRIES.filter(c =>
+            c.name.toLowerCase().includes(q) ||
+            c.iso2.toLowerCase().includes(q) ||
+            (`+${c.dial}`).includes(q.replace(/[^\d+]/g,''))
+          ).sort((a,b)=>a.name.localeCompare(b.name));
+
+      pool.forEach(addButton);
+    };
+
+    head.querySelector('input')?.addEventListener('input', (e) => {
+      renderList((e.target as HTMLInputElement).value);
+    });
+
+    renderList();
+
+    const initial = COUNTRIES.some(c => c.iso2 === defaultIso) ? defaultIso : 'AE';
+    updateCountry(initial, false);
+  }
+
+  function updateCountry(iso: string, updateUI: boolean = true) {
+    if (!countryHidden || !countryLabelText) return;
+    const c = COUNTRIES.find(x => x.iso2 === iso) || COUNTRIES[0];
+    countryHidden.value = c.iso2;
+    if (countryCodeHidden) countryCodeHidden.value = `+${c.dial}`;
+    if (updateUI) countryLabelText.textContent = `${c.flag} ${c.name} (+${c.dial})`;
+    updatePhonePlaceholder();
+    updatePhonePreview();
+    renderPayments();
+  }
+
+
+  function updatePhonePlaceholder() {
+    const iso = getCountry();
+    const c = COUNTRIES.find(x => x.iso2 === iso);
+    const example = c?.example ? ` (${iso}) ${c.example}` : '';
+    if (phoneInput) {
+      (phoneInput as HTMLInputElement).placeholder =
+        iso === 'AE' ? '5XXXXXXX (AE)'
+        : iso === 'EG' ? '01XXXXXXXXX (EG)'
+        : `${(CURRENT_LANG === 'ar') ? 'رقم الهاتف' : 'Phone number'} +${c?.dial || ''}${example ? ' ' + example : ''}`;
+    }
+  }
+
+  function validatePhone(countryIso: string, phone: string) {
+    const cleanPhone = (phone || '').replace(/\D/g, '');
+    if (countryIso === 'EG' || countryIso === 'AE') {
+      const spec = phoneValidationPatterns[countryIso as 'EG' | 'AE'];
+      if (!spec.pattern.test(cleanPhone)) {
+        return { valid:false, error:`Invalid format. Expected: ${spec.format}` };
+      }
+      let formatted = cleanPhone;
+      if (countryIso === 'EG') formatted = spec.code + cleanPhone.substring(1);
+      if (countryIso === 'AE') formatted = cleanPhone.startsWith('0') ? spec.code + cleanPhone.substring(1) : spec.code + cleanPhone;
+      return { valid:true, formatted };
+    }
+    const c = COUNTRIES.find(x => x.iso2 === countryIso);
+    const dial = c?.dial || '';
+    if (!dial) return { valid:false, error:'Unsupported country' };
+    if (cleanPhone.length < 6 || cleanPhone.length > 15) {
+      return { valid:false, error:`Enter a valid number (6–15 digits) for +${dial}` };
+    }
+    const formatted = `+${dial}${cleanPhone}`;
+    return { valid:true, formatted };
+  }
+
+  // Dynamic Payment & Installments by country (module scope)
+  const paymentOptions = {
+    EG: [
+      { v: 'valu', src: '/payment/eg/valu.webp', alt: 'Valu' },
+      { v: 'nbe', src: '/payment/eg/NBE-logo.svg', alt: 'NBE' },
+      { v: 'banque_misr', src: '/payment/eg/bmp-logo.png', alt: 'Banque Misr' }
+      // Note: Keeping EG to installment providers only per earlier UX; can add Visa/MasterCard if desired
+    ],
+    AE: [
+      { v: 'tabby', src: '/payment/ae/tabby-logo-1.png', alt: 'Tabby' }
+    ]
+  } as const;
+
+  function renderPayments() {
+    if (!paymentsGrid) return;
+
+    // Preserve current selections
+    const selected = new Set<string>();
+    paymentsGrid.querySelectorAll('input[name="payments[]"]:checked')
+      ?.forEach(el => selected.add((el as HTMLInputElement).value));
+
+    const country = getCountry();
+    const list = paymentOptions[country as keyof typeof paymentOptions] || [];
+    const isAR = (paymentsGrid as HTMLElement).dataset.lang === 'ar';
+
+    paymentsGrid.innerHTML = '';
+
+    list.forEach(p => {
+      const label = document.createElement('label');
+      label.className = 'w-full flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-[#bf1e2e]/60 transition cursor-pointer select-none';
+      label.title = p.alt;
+
+      // native checkbox (visible like Services)
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.name = 'payments[]';
+      input.value = p.v;
+      input.className = 'pay-input';
+      input.setAttribute('aria-label', p.alt);
+      if (selected.has(p.v)) input.checked = true;
+
+      // logo in fixed-height box matching a single text line
+      const logoBox = document.createElement('div');
+      logoBox.className = 'pay-logo-box';
+      const img = document.createElement('img');
+      img.src = p.src;
+      img.alt = p.alt;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 120; // prevent CLS
+      img.height = 28;
+      img.className = 'pay-logo';
+      logoBox.appendChild(img);
+
+      // SR-only text (for accessibility)
+      const sr = document.createElement('span');
+      sr.className = 'sr-only';
+      sr.textContent = p.alt;
+
+      // Order identical to Services: [checkbox, text] -> here [checkbox, logoBox]
+      label.appendChild(input);
+      label.appendChild(logoBox);
+      label.appendChild(sr);
+
+      paymentsGrid.appendChild(label);
+    });
+  }
+
+  // Init custom listbox and placeholders
+  initCountryListbox('AE');
+  updatePhonePlaceholder();
+  updatePhonePreview();
+
+  // Render immediately in case DOMContentLoaded already fired
+  renderPayments();
+
+  // Initialize payments on load
+  document.addEventListener('DOMContentLoaded', () => {
+    renderPayments();
+  });
+
+  // ARIA helpers for invalid state (script scope)
+  function setInvalid(el: HTMLElement | null, msgId?: string) {
+    try {
+      el?.setAttribute('aria-invalid', 'true');
+      if (msgId) el?.setAttribute('aria-describedby', msgId);
+    } catch {}
+  }
+  function clearInvalid(el: HTMLElement | null) {
+    try {
+      el?.removeAttribute('aria-invalid');
+      el?.removeAttribute('aria-describedby');
+    } catch {}
   }
 
   function updatePhonePreview() {
@@ -343,6 +657,7 @@ const { selectedBranch, currentLang } = Astro.props;
         phoneInput.classList.remove('border-red-500');
         phoneInput.classList.add('border-slate-700');
       }
+      clearInvalid(phoneInput as HTMLElement);
     } else {
       if (phonePreview) phonePreview.textContent = '';
       if (phoneError) {
@@ -353,15 +668,51 @@ const { selectedBranch, currentLang } = Astro.props;
         phoneInput.classList.add('border-red-500');
         phoneInput.classList.remove('border-slate-700');
       }
+      setInvalid(phoneInput as HTMLElement, 'phone-error');
     }
   }
 
-  // Event listeners
-  if (phoneInput) {
-    phoneInput.addEventListener('input', updatePhonePreview);
+  // Debounce utility and event listeners
+  function debounce<T extends (...args: any[]) => void>(fn: T, ms = 180) {
+    let t: number | undefined;
+    return (...args: Parameters<T>) => {
+      if (t) window.clearTimeout(t);
+      t = window.setTimeout(() => fn(...args), ms);
+    };
   }
-  if (countryRadios?.length) {
-    countryRadios.forEach(r => r.addEventListener('change', updatePhonePreview));
+  if (phoneInput) {
+    phoneInput.addEventListener('input', debounce(updatePhonePreview, 180));
+  }
+  // Dropdown open/close & keyboard
+  if (countryTrigger && countryPanel) {
+    countryTrigger.addEventListener('click', () => {
+      const expanded = countryTrigger.getAttribute('aria-expanded') === 'true';
+      if (expanded) closeCountryPanel(); else openCountryPanel();
+    });
+    document.addEventListener('click', (e) => {
+      if (!countryPanel || !countryTrigger) return;
+      if (!countryPanel.contains(e.target as Node) && !countryTrigger.contains(e.target as Node)) {
+        closeCountryPanel();
+      }
+    });
+    countryTrigger.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openCountryPanel();
+        // focus first option
+        const first = countryPanel.querySelector('button[role="option"]') as HTMLButtonElement | null;
+        first?.focus();
+      }
+    });
+    countryPanel.addEventListener('keydown', (e) => {
+      const options = Array.from(countryPanel.querySelectorAll('button[role="option"]')) as HTMLButtonElement[];
+      const idx = options.indexOf(document.activeElement as HTMLButtonElement);
+      if (e.key === 'Escape') { e.preventDefault(); closeCountryPanel(); countryTrigger.focus(); }
+      if (e.key === 'ArrowDown') { e.preventDefault(); options[Math.min(options.length-1, idx+1)]?.focus(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); options[Math.max(0, idx-1)]?.focus(); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (document.activeElement as HTMLButtonElement)?.click(); }
+      if (e.key === 'Tab') { closeCountryPanel(); }
+    });
   }
 
   // Validation functions
@@ -465,6 +816,34 @@ const { selectedBranch, currentLang } = Astro.props;
         const formData = new FormData(form as HTMLFormElement);
         formData.set('phone', phoneValidation.formatted || ''); // Use E.164 format
         
+        // contact preference
+        const viaWhats = (form as HTMLFormElement).querySelector('input[name="via_whatsapp"]') as HTMLInputElement | null;
+        if (viaWhats?.checked) {
+          formData.set('contact_pref', 'whatsapp');
+        } else {
+          formData.set('contact_pref', 'phone');
+        }
+        
+        // Pass dryRun if enabled
+        try {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get('dryRun') === '1') formData.set('_dryRun', '1');
+        } catch {}
+        
+        // Submit to API with timeout protection
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), 10000);
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        }).catch((err) => {
+          if ((err as any)?.name === 'AbortError') {
+            throw new Error('Network timeout. Please try again.');
+          }
+          throw err;
+        });
+        
         // Get selected services
         const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
           .map(cb => (cb as HTMLInputElement).value);
@@ -499,40 +878,24 @@ const { selectedBranch, currentLang } = Astro.props;
           });
         }
 
-        if (!ok) throw new Error(result.error || 'Submit failed');
+        window.clearTimeout(timer);
 
-        // Fire tracking as NO-OP for now (kept for future parity)
-        trackTikTok('SubmitForm', {
-          services: selectedServices,
-          country: country,
-          car_make: carMake,
-          car_year: carYear,
-          page: location.pathname,
-        });
+        if (ok) {
+          // Analytics hooks (graceful if not present)
+          try { if (typeof (window as any).fbq !== 'undefined') (window as any).fbq('track', 'Lead', { source: 'contact_form' }); } catch {}
+          try { if (typeof (window as any).gtag !== 'undefined') (window as any).gtag('event', 'form_submit', { form: 'contact' }); } catch {}
+          try { if (typeof (window as any).ttq !== 'undefined') (window as any).ttq.track('SubmitForm', { form: 'contact' }); } catch {}
 
-        // Success - trigger other tracking events
-        if (typeof (window as any).fbq !== 'undefined') {
-          (window as any).fbq('track', 'Lead', {
-            content_name: 'Contact Form',
-            content_category: 'Lead Generation'
-          });
+          // Show success message and reset form
+          if (successMessage) successMessage.classList.remove('hidden');
+          (form as HTMLFormElement).reset();
+          if (phonePreview) phonePreview.textContent = '';
+          
+          // Scroll to success message
+          if (successMessage) successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error(result.error || 'Failed to send message');
         }
-        
-        if (typeof (window as any).gtag !== 'undefined') {
-          (window as any).gtag('event', 'form_submit', {
-            event_category: 'engagement',
-            event_label: 'contact_form',
-            value: 1
-          });
-        }
-
-        // Show success message and reset form
-        if (successMessage) successMessage.classList.remove('hidden');
-        (form as HTMLFormElement).reset();
-        if (phonePreview) phonePreview.textContent = '';
-        
-        // Scroll to success message
-        if (successMessage) successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } catch (error) {
         console.error('Form submission error:', error);
         if (errorText) errorText.textContent = (error as Error).message || 'Please try again';

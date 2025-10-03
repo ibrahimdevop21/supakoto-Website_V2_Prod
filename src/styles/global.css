@@ -9,6 +9,60 @@
   to   { transform: translateY(0);    opacity: 1;  }
 }
 
+/* SupaKoto Comparison Table Utilities */
+@layer utilities {
+  /* Neutral, premium hairline separators */
+  .sk-row { @apply border-t border-white/5; }
+  .sk-row:first-child { @apply border-t-0; }
+
+  /* SupaKoto column — quiet elevation + hairline accent */
+  .sk-col-accent {
+    @apply relative bg-slate-900/30 text-slate-100;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.04),
+      0 12px 30px -18px rgba(191, 30, 46, .18);
+  }
+  .sk-col-accent::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      rgba(191, 30, 46, .28),
+      rgba(191, 30, 46, .12)
+    );
+    border-radius: 2px;
+  }
+  .sk-col-accent::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(191, 30, 46, .10);
+    border-radius: 10px; /* match table cell radius */
+  }
+
+  @media (hover:hover) {
+    .sk-col-accent:hover {
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 16px 34px -18px rgba(191, 30, 46, .24);
+    }
+  }
+
+  /* Optional smoother mobile scroll */
+  @media (max-width: 767px) {
+    .mobile-snap {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+  }
+}
+
+/* Remove any legacy glow separators */
+.glowy-sep, .red-glow-line { display: none !important; }
+
 /* Utility classes for fractional opacity */
 .bg-white\/8 { background-color: rgba(255,255,255,0.08); }
 

@@ -42,7 +42,7 @@ const logoPath = '/logo.svg';
     <!-- Right: CTAs ALWAYS visible + burger on mobile -->
     <div class="flex items-center gap-3">
       <ActionPills client:load locale={locale} currentPath={pathname} />
-      <NavbarMobile client:load locale={locale} />
+      <NavbarMobile client:load locale={locale} activePath={activePath} />
     </div>
   </div>
 

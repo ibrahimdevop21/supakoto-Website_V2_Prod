@@ -29,6 +29,7 @@
   "dependencies": {
     "@astrojs/react": "^3.0.0",
     "@astrojs/tailwind": "^5.0.0",
+    "@headlessui/react": "^2.2.9",
     "@iconify-json/mdi": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.51",
     "@playwright/test": "^1.55.0",
