@@ -415,7 +415,6 @@ const { selectedBranch, currentLang } = Astro.props;
   function openCountryPanel() {
     if (!countryPanel || !countryTrigger) return;
     countryPanel.classList.remove('hidden');
-{{ ... }}
     countryTrigger.setAttribute('aria-expanded', 'true');
   }
   function closeCountryPanel() {
@@ -881,9 +880,7 @@ const { selectedBranch, currentLang } = Astro.props;
 
         window.clearTimeout(timer);
 
-        const result = await response.json();
-
-        if (response.ok) {
+        if (ok) {
           // Analytics hooks (graceful if not present)
           try { if (typeof (window as any).fbq !== 'undefined') (window as any).fbq('track', 'Lead', { source: 'contact_form' }); } catch {}
           try { if (typeof (window as any).gtag !== 'undefined') (window as any).gtag('event', 'form_submit', { form: 'contact' }); } catch {}
