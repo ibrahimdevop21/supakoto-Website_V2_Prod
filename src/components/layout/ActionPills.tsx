@@ -49,24 +49,31 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
   // Show the target language (what it will switch TO), not current language
   const langTag = locale === "ar" ? "EN" : "ع";
 
-  // Glass icon style - clean circular icons (used for call/WhatsApp)
+  // Luxury glowing call button with amber/orange theme - matching WhatsApp size
+  const luxuryCallButton = "relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f59e0b] to-[#d97706] border border-[#f59e0b]/30 hover:from-[#fbbf24] hover:to-[#f59e0b] text-white transition-all duration-300 shadow-lg shadow-[#f59e0b]/25 hover:shadow-xl hover:shadow-[#f59e0b]/40 hover:scale-105 animate-pulse-ring";
+  
+  // Glass icon style - clean circular icons (used for WhatsApp/Language)
   const glassIcon = "inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 hover:bg-white/20 text-white transition";
-  // Language toggle uses same circular glass style as call/WhatsApp
 
   return (
     <div className="flex items-center gap-2">
-      {/* Call */}
+      {/* Luxury Call Button */}
       <a 
         href={`tel:${tel}`} 
-        aria-label="Call" 
-        className={glassIcon}
+        aria-label="Call Now" 
+        className={luxuryCallButton}
         onClick={() => {
           // Fire tracking as NO-OP for now (kept for future parity)
           trackTikTok('ClickButton', { button: 'Call', region: 'UAE' });
         }}
       >
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.77.66 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.18a2 2 0 0 1 2.11-.45c.83.32 1.7.54 2.6.66A2 2 0 0 1 22 16.92z"/>
+        {/* Pulsing ring animation */}
+        <div className="absolute inset-0 rounded-full border-2 border-[#f59e0b]/40 animate-ping"></div>
+        <div className="absolute inset-0 rounded-full border border-[#f59e0b]/20 animate-pulse"></div>
+        
+        {/* Phone icon */}
+        <svg className="relative z-10 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.77.66 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.18a2 2 0 0 1 2.11-.45c.83.32 1.7.54 2.6.66A2 2 0 0 1 22 16.92z"/>
         </svg>
       </a>
 
