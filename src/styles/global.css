@@ -9,9 +9,7 @@
   to   { transform: translateY(0);    opacity: 1;  }
 }
 
-/* ==========================
-   SupaKoto Comparison Table Utilities
-   ========================== */
+/* SupaKoto Comparison Table Utilities */
 @layer utilities {
   /* Neutral, premium hairline separators */
   .sk-row { @apply border-t border-white/5; }
