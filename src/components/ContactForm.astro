@@ -283,12 +283,6 @@ const { selectedBranch, currentLang } = Astro.props;
   .sk-panel::-webkit-scrollbar-thumb { background: rgb(71 85 105 / .6); border-radius: 8px; }
   .sk-panel::-webkit-scrollbar-track { background: transparent; }
 
-  /* Payments parity helpers (only for inner elements) */
-  .pay-input { @apply h-4 w-4 rounded-sm accent-[#bf1e2e] focus:outline-none shrink-0; }
-  .pay-text      { @apply text-sm leading-5 md:leading-6 text-slate-200; }
-  /* Fixed logo lane width so all providers occupy identical space */
-  .pay-logo-box  { @apply h-5 md:h-6 inline-flex items-center justify-start w-[120px] md:w-[140px] overflow-hidden; }
-  .pay-logo      { @apply h-full w-auto max-w-full max-h-full object-contain align-middle; }
 
   .sk-btn {
     @apply rounded-xl bg-[#bf1e2e] px-5 py-3 text-white font-medium shadow hover:brightness-110 focus:ring-2 focus:ring-[#bf1e2e] disabled:opacity-60 transition;
@@ -572,40 +566,39 @@ const { selectedBranch, currentLang } = Astro.props;
 
     list.forEach(p => {
       const label = document.createElement('label');
-      label.className = 'w-full flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-[#bf1e2e]/60 transition cursor-pointer select-none';
+      // Match exact styling from Services section
+      label.className = 'w-full flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-[#bf1e2e]/60 transition cursor-pointer';
       label.title = p.alt;
 
-      // native checkbox (visible like Services)
+      // native checkbox (identical to Services)
       const input = document.createElement('input');
       input.type = 'checkbox';
       input.name = 'payments[]';
       input.value = p.v;
-      input.className = 'pay-input';
+      input.className = 'h-4 w-4 rounded-sm accent-[#bf1e2e] focus:outline-none';
       input.setAttribute('aria-label', p.alt);
       if (selected.has(p.v)) input.checked = true;
 
-      // logo in fixed-height box matching a single text line
-      const logoBox = document.createElement('div');
-      logoBox.className = 'pay-logo-box';
+      // logo container with consistent spacing
+      const logoContainer = document.createElement('span');
+      logoContainer.className = 'flex items-center text-sm text-slate-200';
+      
       const img = document.createElement('img');
       img.src = p.src;
       img.alt = p.alt;
-      img.loading = 'lazy';
+      img.className = 'h-5 w-auto max-w-[120px] object-contain';
       img.decoding = 'async';
-      img.width = 120; // prevent CLS
-      img.height = 28;
-      img.className = 'pay-logo';
-      logoBox.appendChild(img);
+      img.loading = 'lazy';
+      
+      // Optional per-brand micro-tuning for optical parity
+      if (p.v === 'banque_misr') img.classList.add('scale-[1.08]');
+      if (p.v === 'nbe')         img.classList.add('scale-[1.04]');
+      
+      logoContainer.appendChild(img);
 
-      // SR-only text (for accessibility)
-      const sr = document.createElement('span');
-      sr.className = 'sr-only';
-      sr.textContent = p.alt;
-
-      // Order identical to Services: [checkbox, text] -> here [checkbox, logoBox]
+      // Order identical to Services: [checkbox, content]
       label.appendChild(input);
-      label.appendChild(logoBox);
-      label.appendChild(sr);
+      label.appendChild(logoContainer);
 
       paymentsGrid.appendChild(label);
     });
