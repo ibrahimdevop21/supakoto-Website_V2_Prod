@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BRANCHES, type Branch } from '../../data/branches';
 
+// No-op function for TikTok tracking while disabled
+function trackTikTok(_event: string, _props: Record<string, unknown> = {}) {
+  // Intentionally a no-op while TikTok is disabled.
+  // TODO: Re-enable later with guarded calls (if (window.ttq?.track) window.ttq.track(...))
+}
+
 interface ActionButtonsProps {
   locale: 'en' | 'ar';
   size?: 'sm' | 'md';
@@ -78,6 +84,9 @@ export default function ActionButtons({
   };
 
   const handleCallClick = () => {
+    // Fire tracking as NO-OP for now (kept for future parity)
+    trackTikTok('ClickButton', { button: 'Call', region: 'UAE' });
+
     if (selectedBranch) {
       window.location.href = `tel:${selectedBranch.phones[0]}`;
     } else {
@@ -86,6 +95,9 @@ export default function ActionButtons({
   };
 
   const handleWhatsAppClick = () => {
+    // Fire tracking as NO-OP for now (kept for future parity)
+    trackTikTok('ClickButton', { button: 'WhatsApp', region: 'UAE' });
+
     if (selectedBranch) {
       window.open(`https://wa.me/${selectedBranch.whatsapp}`, '_blank');
     } else {

@@ -6,15 +6,13 @@ import '../styles/navbar-glass.css';
 import '../styles/leaflet.css';
 import '../styles/sk.css';
 import Footer from '../components/layout/Footer.astro';
-import Nav from '../components/nav/Nav.astro';
+import Nav from '../components/layout/Nav.astro';
 import Preload from '../components/shared/Preload.astro';
-import SEOHead from '../components/seo/SEOHead.astro';
+import SEOHead from '../components/layout/SEOHead.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
 import '../styles/global.css';
 import '../styles/critical.css';
-import Analytics from '@vercel/analytics/astro';
-import SpeedInsights from '@vercel/speed-insights/astro';
 
 
 
@@ -323,7 +321,17 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 
 		<!-- Legacy Meta Pixel Code Removed - Replaced with GTM -->
 
-		<!-- Legacy Google Analytics Code Removed - Replaced with GTM -->
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-ENPYD2K4R3"></script>
+		<script is:inline>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'G-ENPYD2K4R3');
+		</script>
+
+		<!-- TODO: TikTok Pixel intentionally removed. Re-enable later with a guarded loader. -->
 	</head>
 	<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-foreground font-sans antialiased" class:list={[rtl && 'font-arabic']}>
 		<Nav />
@@ -339,9 +347,13 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		
 		
 		<!-- Vercel Analytics -->
-		<Analytics />
+		<script>
+			import('@vercel/analytics').then(({ inject }) => inject());
+		</script>
 		
 		<!-- Vercel Speed Insights -->
-		<SpeedInsights />
+		<script>
+			import('@vercel/speed-insights').then(({ injectSpeedInsights }) => injectSpeedInsights());
+		</script>
 	</body>
 </html>

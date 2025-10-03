@@ -11,6 +11,10 @@ const { selectedBranch, currentLang } = Astro.props;
 ---
 
 <form id="contact-form" method="POST" action="/api/contact" data-vercel="true" data-lang={currentLang} class="space-y-6">
+  <!-- Test Mode Banner -->
+  <div id="dry-run-banner" class="hidden rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm" role="status">
+    {currentLang === 'ar' ? 'وضع الاختبار: سيتم محاكاة هذا الإرسال (لن يتم إرسال رسالة).' : 'Test Mode: This submission will be mocked (no message will be sent).'}
+  </div>
   <!-- Honeypot field (hidden) -->
   <input type="text" name="_hp" class="hidden" tabindex="-1" autocomplete="off">
   
@@ -309,6 +313,12 @@ const { selectedBranch, currentLang } = Astro.props;
 
 <!-- Contact Form JavaScript -->
 <script>
+  // Add at top of the component file
+  function trackTikTok(_event: string, _props: Record<string, unknown> = {}) {
+    // Intentionally a no-op while TikTok is disabled.
+    // TODO: Re-enable later with guarded calls (if (window.ttq?.track) window.ttq.track(...))
+  }
+
   // Phone number validation and E.164 formatting
   const CURRENT_LANG = (() => {
     const el = document.getElementById('contact-form');
@@ -332,6 +342,7 @@ const { selectedBranch, currentLang } = Astro.props;
   const errorMessage = document.getElementById('error-message');
   const errorText = document.getElementById('error-text');
   const loadTimeInput = document.getElementById('load-time');
+<<<<<<< HEAD
   const dryRunBanner = document.getElementById('dryrun-banner');
   const paymentsGrid = document.getElementById('payments-grid');
   const utmSource = document.getElementById('utm_source') as HTMLInputElement | null;
@@ -345,6 +356,9 @@ const { selectedBranch, currentLang } = Astro.props;
       dryRunBanner.classList.remove('hidden');
     }
   } catch {}
+=======
+  const dryRunBanner = document.getElementById('dry-run-banner');
+>>>>>>> main
 
   // Track form load time
   const loadTime = Date.now();
@@ -357,6 +371,7 @@ const { selectedBranch, currentLang } = Astro.props;
     if (referrerInput) referrerInput.value = document.referrer || '';
   } catch {}
   
+<<<<<<< HEAD
   // Preferred countries pinned and minimal list for fallback validation/placeholders
   const PREFERRED = ['AE', 'EG'] as const;
   const COUNTRIES: Array<{iso2:string; name:string; dial:string; flag:string; example?:string}> = [
@@ -380,6 +395,27 @@ const { selectedBranch, currentLang } = Astro.props;
     { iso2:'IN', name:'India',         dial:'91',  flag:'🇮🇳' },
     { iso2:'PK', name:'Pakistan',      dial:'92',  flag:'🇵🇰' },
   ];
+=======
+  // Check for dryRun mode and show banner if enabled
+  const isDryRunMode = new URLSearchParams(location.search).get('dryRun') === '1';
+  if (isDryRunMode && dryRunBanner) {
+    dryRunBanner.classList.remove('hidden');
+  }
+  
+  // Phone validation patterns
+  const phonePatterns = {
+    EG: {
+      pattern: /^(01)[0-9]{9}$/,
+      code: '+20',
+      format: 'Egypt: 01XXXXXXXXX (11 digits)'
+    },
+    AE: {
+      pattern: /^(0?5)[0-9]{8}$/,
+      code: '+971',
+      format: 'UAE: 5XXXXXXXX or 05XXXXXXXX (9-10 digits)'
+    }
+  };
+>>>>>>> main
 
   function openCountryPanel() {
     if (!countryPanel || !countryTrigger) return;
@@ -785,9 +821,10 @@ const { selectedBranch, currentLang } = Astro.props;
       if (errorMessage) errorMessage.classList.add('hidden');
 
       try {
-        // Prepare form data
+        // Build payload from current form state
         const formData = new FormData(form as HTMLFormElement);
         formData.set('phone', phoneValidation.formatted || ''); // Use E.164 format
+<<<<<<< HEAD
         // contact preference
         const viaWhats = (form as HTMLFormElement).querySelector('input[name="via_whatsapp"]') as HTMLInputElement | null;
         if (viaWhats?.checked) {
@@ -812,9 +849,56 @@ const { selectedBranch, currentLang } = Astro.props;
             throw new Error('Network timeout. Please try again.');
           }
           throw err;
+=======
+        
+        // Get selected services
+        const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
+          .map(cb => (cb as HTMLInputElement).value);
+        
+        const carMake = (document.getElementById('car-make') as HTMLInputElement)?.value?.trim() || null;
+        const carYear = (document.getElementById('car-year') as HTMLInputElement)?.value || null;
+        
+        // If test mode (see section 3), short-circuit the request
+        const isDryRun = new URLSearchParams(location.search).get('dryRun') === '1';
+        let ok = true;
+        let result: any = {};
+
+        if (!isDryRun) {
+          const response = await fetch('/api/contact', {
+            method: 'POST',
+            body: formData
+          });
+          ok = response.ok;
+          result = await response.json();
+        } else {
+          // Simulate latency + success
+          await new Promise(r => setTimeout(r, 300));
+          console.info('[ContactForm] DRY RUN: submission mocked OK', {
+            name: formData.get('name'),
+            phone: phoneValidation.formatted,
+            country: country,
+            services: selectedServices,
+            carMake,
+            carYear,
+            message: formData.get('message'),
+            pagePath: location.pathname
+          });
+        }
+
+        if (!ok) throw new Error(result.error || 'Submit failed');
+
+        // Fire tracking as NO-OP for now (kept for future parity)
+        trackTikTok('SubmitForm', {
+          services: selectedServices,
+          country: country,
+          car_make: carMake,
+          car_year: carYear,
+          page: location.pathname,
+>>>>>>> main
         });
         window.clearTimeout(timer);
 
+<<<<<<< HEAD
         const result = await response.json();
 
         if (response.ok) {
@@ -832,7 +916,31 @@ const { selectedBranch, currentLang } = Astro.props;
           if (successMessage) successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
           throw new Error(result.error || 'Failed to send message');
+=======
+        // Success - trigger other tracking events
+        if (typeof (window as any).fbq !== 'undefined') {
+          (window as any).fbq('track', 'Lead', {
+            content_name: 'Contact Form',
+            content_category: 'Lead Generation'
+          });
+>>>>>>> main
         }
+        
+        if (typeof (window as any).gtag !== 'undefined') {
+          (window as any).gtag('event', 'form_submit', {
+            event_category: 'engagement',
+            event_label: 'contact_form',
+            value: 1
+          });
+        }
+
+        // Show success message and reset form
+        if (successMessage) successMessage.classList.remove('hidden');
+        (form as HTMLFormElement).reset();
+        if (phonePreview) phonePreview.textContent = '';
+        
+        // Scroll to success message
+        if (successMessage) successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } catch (error) {
         console.error('Form submission error:', error);
         if (errorText) errorText.textContent = (error as Error).message || 'Please try again';
