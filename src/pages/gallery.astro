@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SimpleGalleryPro, { type GalleryImage } from '../components/gallery/SimpleGalleryPro.tsx';
+import SimpleGalleryPro, { type GalleryImage } from '../components/gallery/SimpleGalleryPro';
 import { t } from '../i18n';
 import { getSEOData } from '../utils/seo-content';
 import { generateBreadcrumbSchema } from '../utils/seo-schemas';
@@ -33,9 +33,9 @@ const images: GalleryImage[] = Array.from({ length: 238 }, (_, i) => {
   return {
     id,
     thumb: `/gallery/thumbs/supa-${id}.webp`,
-    full:  `/gallery/full/supa-${id}.webp`,
+    full: `/gallery/full/supa-${id}.webp`,
     alt,
-    caption: currentLang === 'ar' ? `تركيب حماية طلاء احترافي — مشروع ${id}` : `Professional PPF Installation — Project ${id}`,
+    caption: `Professional PPF Installation — Project ${id}`,
   };
 });
 // Per-request stable seed for SSR shuffle without hydration mismatch
@@ -71,7 +71,6 @@ const randomSeed = String(Date.now());
         wrapAround={true}
         showCounter={true}
         showCaptions={true}
-        className="py-0"
       />
     </div>
   </section>
