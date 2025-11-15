@@ -823,20 +823,6 @@ const { selectedBranch, currentLang } = Astro.props;
           if (params.get('dryRun') === '1') formData.set('_dryRun', '1');
         } catch {}
         
-        // Submit to API with timeout protection
-        const controller = new AbortController();
-        const timer = window.setTimeout(() => controller.abort(), 10000);
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          body: formData,
-          signal: controller.signal
-        }).catch((err) => {
-          if ((err as any)?.name === 'AbortError') {
-            throw new Error('Network timeout. Please try again.');
-          }
-          throw err;
-        });
-        
         // Get selected services
         const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
           .map(cb => (cb as HTMLInputElement).value);
@@ -850,12 +836,22 @@ const { selectedBranch, currentLang } = Astro.props;
         let result: any = {};
 
         if (!isDryRun) {
+          // Submit to API with timeout protection
+          const controller = new AbortController();
+          const timer = window.setTimeout(() => controller.abort(), 10000);
           const response = await fetch('/api/contact', {
             method: 'POST',
-            body: formData
+            body: formData,
+            signal: controller.signal
+          }).catch((err) => {
+            if ((err as any)?.name === 'AbortError') {
+              throw new Error('Network timeout. Please try again.');
+            }
+            throw err;
           });
           ok = response.ok;
           result = await response.json();
+          window.clearTimeout(timer);
         } else {
           // Simulate latency + success
           await new Promise(r => setTimeout(r, 300));
@@ -870,8 +866,6 @@ const { selectedBranch, currentLang } = Astro.props;
             pagePath: location.pathname
           });
         }
-
-        window.clearTimeout(timer);
 
         if (ok) {
           // Analytics hooks (graceful if not present)

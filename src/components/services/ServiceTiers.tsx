@@ -83,10 +83,6 @@ const ServiceTiers: React.FC<ServiceTiersProps> = ({ currentLocale, isRTL }) => 
     }
   ];
 
-  const handleQuoteRequest = () => {
-    // This would integrate with existing quote flow
-    window.open('https://wa.me/966123456789', '_blank');
-  };
 
   return (
     <div className={`${isRTL ? 'rtl font-arabic' : 'ltr'}`}>
