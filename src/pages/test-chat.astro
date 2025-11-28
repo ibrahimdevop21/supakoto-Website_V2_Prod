@@ -1,0 +1,136 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Tactful Chat Test">
+  <div class="min-h-screen flex items-center justify-center p-8">
+    <div class="max-w-2xl w-full bg-slate-800 rounded-lg p-8 shadow-xl">
+      <h1 class="text-3xl font-bold text-white mb-6">🧪 Tactful Webchat Test Page</h1>
+      
+      <div class="space-y-4 text-white/80">
+        <p class="text-lg">This page helps you verify the Tactful webchat integration.</p>
+        
+        <div class="bg-slate-700 p-4 rounded-lg">
+          <h2 class="text-xl font-semibold text-white mb-3">✅ What to Check:</h2>
+          <ol class="list-decimal list-inside space-y-2">
+            <li>Look for a chat widget (usually bottom-right corner)</li>
+            <li>Open browser console (F12) and check for messages</li>
+            <li>You should see: <code class="bg-slate-900 px-2 py-1 rounded text-green-400">✅ Tactful webchat initialized</code></li>
+            <li>Click the chat widget to open the chat interface</li>
+          </ol>
+        </div>
+
+        <div class="bg-slate-700 p-4 rounded-lg">
+          <h2 class="text-xl font-semibold text-white mb-3">🔍 Debugging:</h2>
+          <ul class="list-disc list-inside space-y-2">
+            <li>Check if <code class="bg-slate-900 px-2 py-1 rounded">#embedded_messenger</code> div exists</li>
+            <li>Check if <code class="bg-slate-900 px-2 py-1 rounded">#widget-launcher</code> div exists</li>
+            <li>Check if Tactful CSS is loaded</li>
+            <li>Check if Tactful script is loaded</li>
+            <li>Look for any JavaScript errors in console</li>
+          </ul>
+        </div>
+
+        <div class="bg-blue-900/30 border border-blue-500/50 p-4 rounded-lg">
+          <h2 class="text-xl font-semibold text-blue-300 mb-3">📋 Current Configuration:</h2>
+          <div class="space-y-1 font-mono text-sm">
+            <p>Profile ID: <span class="text-green-400" id="profile-id">Loading...</span></p>
+            <p>Token: <span class="text-green-400" id="token-preview">Loading...</span></p>
+          </div>
+        </div>
+
+        <button 
+          id="test-btn"
+          class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+        >
+          🔍 Run Diagnostics
+        </button>
+
+        <div id="diagnostics" class="hidden bg-slate-900 p-4 rounded-lg">
+          <h3 class="text-lg font-semibold text-white mb-2">Diagnostic Results:</h3>
+          <pre id="diagnostic-output" class="text-xs text-green-400 overflow-auto"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Display configuration
+  const profileIdEl = document.getElementById('profile-id');
+  const tokenPreviewEl = document.getElementById('token-preview');
+  
+  // This will be replaced by Astro with actual values
+  const config = {
+    profileId: import.meta.env.PUBLIC_TACTFUL_PROFILE_ID || '954',
+    token: import.meta.env.PUBLIC_TACTFUL_TOKEN || 'Not set'
+  };
+  
+  if (profileIdEl) profileIdEl.textContent = config.profileId;
+  if (tokenPreviewEl) tokenPreviewEl.textContent = config.token ? config.token.substring(0, 20) + '...' : 'Not set';
+
+  // Diagnostic button
+  const testBtn = document.getElementById('test-btn');
+  const diagnosticsDiv = document.getElementById('diagnostics');
+  const diagnosticOutput = document.getElementById('diagnostic-output');
+
+  testBtn?.addEventListener('click', () => {
+    const results = [];
+    
+    // Check DOM elements
+    const messenger = document.getElementById('embedded_messenger');
+    const launcher = document.getElementById('widget-launcher');
+    const iframe = document.getElementById('tactful_client');
+    
+    results.push('=== DOM Elements ===');
+    results.push(`#embedded_messenger: ${messenger ? '✅ Found' : '❌ Not found'}`);
+    results.push(`#widget-launcher: ${launcher ? '✅ Found' : '❌ Not found'}`);
+    results.push(`#tactful_client: ${iframe ? '✅ Found' : '❌ Not found'}`);
+    results.push('');
+    
+    // Check if Tactful is loaded
+    results.push('=== Tactful Object ===');
+    results.push(`Tactful available: ${typeof (window as any).Tactful !== 'undefined' ? '✅ Yes' : '❌ No'}`);
+    if (typeof (window as any).Tactful !== 'undefined') {
+      results.push(`Tactful.start: ${typeof (window as any).Tactful.start === 'function' ? '✅ Function exists' : '❌ Not a function'}`);
+    }
+    results.push('');
+    
+    // Check CSS
+    results.push('=== Stylesheets ===');
+    const stylesheets = Array.from(document.styleSheets);
+    const tactfulCSS = stylesheets.find(sheet => 
+      sheet.href && sheet.href.includes('tactful.ai')
+    );
+    results.push(`Tactful CSS: ${tactfulCSS ? '✅ Loaded' : '❌ Not loaded'}`);
+    results.push('');
+    
+    // Check scripts
+    results.push('=== Scripts ===');
+    const scripts = Array.from(document.scripts);
+    const tactfulScript = scripts.find(script => 
+      script.src && script.src.includes('tactful.ai')
+    );
+    results.push(`Tactful Script: ${tactfulScript ? '✅ Loaded' : '❌ Not loaded'}`);
+    if (tactfulScript) {
+      results.push(`Script URL: ${tactfulScript.src}`);
+    }
+    results.push('');
+    
+    // Configuration
+    results.push('=== Configuration ===');
+    results.push(`Profile ID: ${config.profileId}`);
+    results.push(`Token: ${config.token.substring(0, 20)}...`);
+    
+    if (diagnosticOutput) {
+      diagnosticOutput.textContent = results.join('\n');
+    }
+    diagnosticsDiv?.classList.remove('hidden');
+  });
+</script>
+
+<style>
+  code {
+    font-family: 'Courier New', monospace;
+  }
+</style>

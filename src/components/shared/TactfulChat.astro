@@ -1,0 +1,65 @@
+---
+// Tactful AI Webchat Integration
+const tactfulProfileId = import.meta.env.PUBLIC_TACTFUL_PROFILE_ID || "954";
+const tactfulToken = import.meta.env.PUBLIC_TACTFUL_TOKEN || "8f279b5c09a52f10e273f130e7e8856f363dccd4dfaa89c1058892214ddb7bcb";
+---
+
+<!-- Tactful AI Webchat Widget -->
+<div id="embedded_messenger">
+  <div id="widget-launcher"></div>
+  <iframe id="tactful_client" src="https://webchat.tactful.ai/webchat/chatChannel.html"></iframe>
+</div>
+
+<link rel="stylesheet" href="https://webchat.tactful.ai/webchat/css/embed.css" />
+<script is:inline src="https://webchat.tactful.ai/webchat/embed/embed.js"></script>
+
+<script is:inline define:vars={{ tactfulProfileId, tactfulToken }}>
+  // Wait for Tactful to load and initialize
+  (function() {
+    var attempts = 0;
+    var maxAttempts = 100;
+    
+    function initTactful() {
+      attempts++;
+      
+      if (typeof Tactful !== 'undefined' && typeof Tactful.start === 'function') {
+        try {
+          Tactful.start({ 
+            profileId: tactfulProfileId, 
+            token: tactfulToken 
+          });
+          console.log('✅ Tactful webchat initialized successfully');
+        } catch (error) {
+          console.error('❌ Tactful initialization error:', error);
+        }
+      } else if (attempts < maxAttempts) {
+        setTimeout(initTactful, 50);
+      } else {
+        console.error('❌ Tactful failed to load after', maxAttempts * 50, 'ms');
+      }
+    }
+    
+    initTactful();
+  })();
+</script>
+
+<style is:global>
+  /* Ensure Tactful widget is above other elements but below modals */
+  #embedded_messenger {
+    z-index: 9999 !important;
+  }
+  
+  #widget-launcher {
+    z-index: 9999 !important;
+  }
+  
+  #tactful_client {
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure widget works well in RTL mode */
+  [dir="rtl"] #embedded_messenger {
+    left: 20px !important;
+    right: auto !important;
+  }
+</style>
