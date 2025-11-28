@@ -79,7 +79,7 @@ const LABELS = {
     },
     error: {
       title: 'Error sending inquiry',
-      message: 'Please try again or contact us directly at business@supakoto.com'
+      message: 'Please try again or contact us directly at leads@supakoto.org'
     }
   },
   ar: {
@@ -118,7 +118,7 @@ const LABELS = {
     },
     error: {
       title: 'خطأ في إرسال الاستفسار',
-      message: 'يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة على business@supakoto.com'
+      message: 'يرجى المحاولة مرة أخرى أو التواصل معنا مباشرة على leads@supakoto.org'
     }
   }
 };

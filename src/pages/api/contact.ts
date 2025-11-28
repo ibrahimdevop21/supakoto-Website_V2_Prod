@@ -16,24 +16,6 @@ const SERVICE_MAP: Record<string, { en: string; ar: string }> = {
 const esc = (s = '') =>
   s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]!));
 
-// Route logic: UAE vs EG
-function routeEmailByCountry(country: string, phone: string) {
-  const admin = (import.meta.env.ADMIN_EMAIL || 'admin@supakoto.org').trim();
-  const uae = (import.meta.env.SALES_UAE_EMAIL || 'uae@supakoto.org').trim();
-  const eg  = (import.meta.env.SALES_EGYPT_EMAIL || 'egypt@supakoto.org').trim();
-
-  // Prefer explicit country from the form; fallback to phone prefix
-  const c = (country || '').toUpperCase();
-  if (c === 'AE') return { to: [uae], cc: [admin] };
-  if (c === 'EG') return { to: [eg], cc: [admin] };
-
-  if (phone.startsWith('+971')) return { to: [uae], cc: [admin] };
-  if (phone.startsWith('+20'))  return { to: [eg],  cc: [admin] };
-
-  // fallback: send both teams + admin
-  return { to: [uae, eg], cc: [admin] };
-}
-
 export const POST: APIRoute = async ({ request }) => {
   try {
     const fd = await request.formData();
@@ -99,8 +81,9 @@ export const POST: APIRoute = async ({ request }) => {
       : s
     );
 
-    // route selection
-    const { to, cc } = routeEmailByCountry(country, phone);
+    // Unified email routing - all submissions go to leads inbox
+    const leadsEmail = (import.meta.env.LEADS_EMAIL || 'leads@supakoto.org').trim();
+    const adminEmail = (import.meta.env.ADMIN_EMAIL || 'admin@supakoto.org').trim();
 
     // Generate unique lead ID
     const leadId = `SK-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -135,8 +118,8 @@ export const POST: APIRoute = async ({ request }) => {
       // Development mode - log the email instead of sending
       console.log('=== EMAIL WOULD BE SENT (no RESEND_API_KEY) ===');
       console.log('From:', from);
-      console.log('To:', to);
-      console.log('CC:', cc);
+      console.log('To:', leadsEmail);
+      console.log('CC:', adminEmail);
       console.log('Subject:', subject);
       console.log('HTML:', html);
       console.log('=== END EMAIL ===');
@@ -145,8 +128,8 @@ export const POST: APIRoute = async ({ request }) => {
       const resend = new Resend(resendApiKey);
       await resend.emails.send({
         from,
-        to,
-        cc,
+        to: [leadsEmail],
+        cc: [adminEmail],
         subject,
         html,
       });

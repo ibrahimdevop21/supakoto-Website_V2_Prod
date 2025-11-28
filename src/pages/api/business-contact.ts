@@ -7,22 +7,6 @@ export const prerender = false; // must be dynamic
 const esc = (s = '') =>
   s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]!));
 
-// Route business inquiries to appropriate teams
-function routeBusinessEmail(country: string, inquiryType: string) {
-  const admin = (import.meta.env.ADMIN_EMAIL || 'admin@supakoto.org').trim();
-  const business = (import.meta.env.BUSINESS_EMAIL || 'business@supakoto.org').trim();
-  const uae = (import.meta.env.SALES_UAE_EMAIL || 'uae@supakoto.org').trim();
-  const eg = (import.meta.env.SALES_EGYPT_EMAIL || 'egypt@supakoto.org').trim();
-
-  // Business inquiries go to business development team + regional team
-  const c = (country || '').toUpperCase();
-  if (c === 'AE') return { to: [business, uae], cc: [admin] };
-  if (c === 'EG') return { to: [business, eg], cc: [admin] };
-  
-  // For other countries, send to business team + both regional teams
-  return { to: [business], cc: [admin, uae, eg] };
-}
-
 export const POST: APIRoute = async ({ request }) => {
   try {
     const fd = await request.formData();
@@ -80,8 +64,9 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Route email based on country and inquiry type
-    const { to, cc } = routeBusinessEmail(country, inquiryType);
+    // Unified email routing - all business inquiries go to leads inbox
+    const leadsEmail = (import.meta.env.LEADS_EMAIL || 'leads@supakoto.org').trim();
+    const adminEmail = (import.meta.env.ADMIN_EMAIL || 'admin@supakoto.org').trim();
 
     // Generate unique inquiry ID
     const inquiryId = `BIZ-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -141,12 +126,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Send via Resend
     const resend = new Resend(import.meta.env.RESEND_API_KEY);
-    const from = import.meta.env.EMAIL_FROM || 'business@supakoto.org';
+    const from = import.meta.env.EMAIL_FROM || 'leads@supakoto.org';
 
     await resend.emails.send({
       from,
-      to,
-      cc,
+      to: [leadsEmail],
+      cc: [adminEmail],
       subject,
       html,
     });
