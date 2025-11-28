@@ -187,7 +187,7 @@ const { selectedBranch, currentLang } = Astro.props;
         name="car_year" 
         id="car-year"
         min="1900" 
-        max="2025"
+        max="2027"
         class="sk-input max-w-full"
         placeholder={currentLang === 'ar' ? 'مثل: 2020' : 'e.g. 2020'}
       >
@@ -748,12 +748,13 @@ const { selectedBranch, currentLang } = Astro.props;
       isValid = false;
     }
 
-    // Validate car year (if provided, should be between 1900 and 2025)
+    // Validate car year (if provided, should be between 1900 and current year + 2)
     if ((carYear as HTMLInputElement)?.value) {
       const year = parseInt((carYear as HTMLInputElement).value);
-      if (year < 1900 || year > 2025) {
+      const maxYear = new Date().getFullYear() + 2;
+      if (year < 1900 || year > maxYear) {
         if (carYearError) {
-          carYearError.textContent = 'Please enter a valid year between 1900 and 2025';
+          carYearError.textContent = `Please enter a valid year between 1900 and ${maxYear}`;
           carYearError.classList.remove('hidden');
         }
         if (carYear) carYear.classList.add('border-red-500');

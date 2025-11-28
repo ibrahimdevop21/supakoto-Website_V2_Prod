@@ -35,6 +35,7 @@ type FormAction =
   | { type: 'RESET_FORM'; preserveCountry?: boolean };
 
 const CURRENT_YEAR = new Date().getFullYear();
+const MAX_YEAR = CURRENT_YEAR + 2; // Allow next year models
 
 const INITIAL_DATA: FormData = {
   name: '',
@@ -183,7 +184,7 @@ function useFormValidation(data: FormData, currentLang: Lang) {
     if (stepNum === 2) {
       if (data.services.length === 0) errors.services = t.errors.servicesRequired;
       if (showVehicleBlock || data.carMake || data.carYear) {
-        const minYear = 1900, maxYear = CURRENT_YEAR;
+        const minYear = 1900, maxYear = MAX_YEAR;
         if (data.carYear) {
           const y = parseInt(data.carYear, 10);
           if (isNaN(y) || y < minYear || y > maxYear) errors.carYear = t.errors.carYearInvalid(minYear, maxYear);
@@ -468,7 +469,7 @@ export default function ContactWizard({ branchId, currentLang }: ContactWizardPr
                       value={data.carYear}
                       onChange={(e) => updateField('carYear', e.target.value)}
                       min={1900}
-                      max={CURRENT_YEAR}
+                      max={MAX_YEAR}
                       className={`sk-input h-12 rounded-xl px-4 text-base sm:text-sm ${errors.carYear ? 'border-red-500' : ''}`}
                       placeholder={currentLang === 'ar' ? 'مثل: 2020' : 'e.g. 2020'}
                     />
