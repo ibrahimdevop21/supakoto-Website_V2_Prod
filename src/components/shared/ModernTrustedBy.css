@@ -15,7 +15,7 @@
   animation-play-state: running;
 }
 
-/* Left-to-right logical movement isn't the goal — visual marquee is. */
+/* LTR Animations - Standard left/right scrolling */
 @keyframes marquee-left {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-33.333%); } /* 3x duplication => 1/3 width shift */
@@ -23,6 +23,17 @@
 
 @keyframes marquee-right {
   0%   { transform: translateX(-33.333%); }
+  100% { transform: translateX(0); }
+}
+
+/* RTL Animations - Reversed for proper RTL display */
+@keyframes marquee-left-rtl {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(33.333%); } /* Positive for RTL */
+}
+
+@keyframes marquee-right-rtl {
+  0%   { transform: translateX(33.333%); }
   100% { transform: translateX(0); }
 }
 

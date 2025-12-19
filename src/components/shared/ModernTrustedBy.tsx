@@ -119,6 +119,13 @@ export default function ServicedBrandStrip({
   const brandItems = hasAnimated ? [...items, ...items, ...items] : [];
   const partnerItems = hasPartners ? [...partners, ...partners, ...partners] : [];
 
+  // Calculate proportional duration for serviced brands to match visual speed
+  // Both carousels should move at the same pixels-per-second rate
+  const partnersDuration = durationSec;
+  const servicedDuration = hasAnimated && hasPartners 
+    ? durationSec * (items.length / partners.length) 
+    : durationSec;
+
   // Shared card classes (make both carousels identical styling)
   const cardCls =
     "shrink-0 flex items-center justify-center rounded-xl bg-black/10 hover:bg-black/15 " +
@@ -174,7 +181,7 @@ export default function ServicedBrandStrip({
             </div>
           </div>
 
-          {/* Partners Carousel — LEFT */}
+          {/* Partners Carousel — LEFT (or RIGHT in RTL) */}
           <div
             className="relative w-full overflow-hidden"
             style={{
@@ -190,8 +197,8 @@ export default function ServicedBrandStrip({
               )}
               style={
                 {
-                  "--sk-duration": `${durationSec}s`,
-                  "--sk-direction": "marquee-left",
+                  "--sk-duration": `${partnersDuration}s`,
+                  "--sk-direction": isRTL ? "marquee-right-rtl" : "marquee-left",
                 } as React.CSSProperties
               }
             >
@@ -234,7 +241,7 @@ export default function ServicedBrandStrip({
             </p>
           </div>
 
-          {/* Serviced Brands Carousel — RIGHT (opposite direction) */}
+          {/* Serviced Brands Carousel — RIGHT (opposite direction, or LEFT in RTL) */}
           <div
             className="relative w-full overflow-hidden"
             style={{
@@ -250,8 +257,8 @@ export default function ServicedBrandStrip({
               )}
               style={
                 {
-                  "--sk-duration": `${durationSec}s`,
-                  "--sk-direction": "marquee-right",
+                  "--sk-duration": `${servicedDuration}s`,
+                  "--sk-direction": isRTL ? "marquee-left-rtl" : "marquee-right",
                 } as React.CSSProperties
               }
             >
