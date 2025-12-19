@@ -1,0 +1,122 @@
+---
+// ✅ CLEAN MINIMAL TACTFUL INTEGRATION - Using Official Structure
+// ⚠️ DISABLED - Tactful widget commented out
+---
+
+<!-- TACTFUL WIDGET DISABLED
+<div id="embedded_messenger">
+    <div id="widget-launcher"></div>
+    <iframe id="tactful_client" src="https://webchat.tactful.ai/webchat/chatChannel.html"></iframe>
+</div>
+<script src="https://webchat.tactful.ai/webchat/embed/embed.js"></script>
+<link rel="stylesheet" href="https://webchat.tactful.ai/webchat/css/embed.css" />
+<style>
+    #embedded_messenger {
+        position: fixed !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        z-index: 99999 !important;
+    }
+    
+    #widget-launcher {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 60px !important;
+        height: 60px !important;
+        background: linear-gradient(135deg, #bf1e2e 0%, #8b1a1a 100%) !important;
+        border: 2px solid white !important;
+        border-radius: 50% !important;
+        cursor: pointer !important;
+        font-size: 28px !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(191, 30, 46, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    #widget-launcher:hover {
+        transform: scale(1.05) !important;
+        box-shadow: 0 6px 16px rgba(191, 30, 46, 0.6) !important;
+        background: linear-gradient(135deg, #d32f2f 0%, #9c1a1a 100%) !important;
+    }
+    
+    #tactful_client {
+        position: fixed !important;
+        bottom: 90px !important;
+        right: 24px !important;
+        width: 350px !important;
+        max-width: 90vw !important;
+        height: 480px !important;
+        max-height: 70vh !important;
+        border: none !important;
+        border-radius: 16px !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
+        background: white !important;
+        z-index: 99998 !important;
+    }
+    
+    [dir="rtl"] #embedded_messenger {
+        right: auto !important;
+        left: 24px !important;
+    }
+    
+    [dir="rtl"] #tactful_client {
+        right: auto !important;
+        left: 24px !important;
+    }
+    
+    @media (max-width: 640px) {
+        #widget-launcher {
+            width: 56px !important;
+            height: 56px !important;
+            font-size: 24px !important;
+        }
+        
+        #tactful_client {
+            width: calc(100vw - 32px) !important;
+            height: calc(100vh - 120px) !important;
+            bottom: 80px !important;
+            right: 16px !important;
+        }
+        
+        [dir="rtl"] #tactful_client {
+            right: auto !important;
+            left: 16px !important;
+        }
+    }
+</style>
+
+<script is:inline>
+    // ===== CLEAN MINIMAL TACTFUL INTEGRATION =====
+    (function() {
+        // Initialize Tactful SDK
+        function initTactful() {
+            if (window.Tactful) {
+                Tactful.start({
+                    profileId: "954",
+                    token: "8f279b5c09a52f10e273f130e7e8856f363dccd4dfaa89c1058892214ddb7bcb"
+                });
+                
+                // Add chat emoji to launcher after Tactful loads
+                setTimeout(function() {
+                    const launcher = document.getElementById('widget-launcher');
+                    if (launcher && !launcher.textContent.trim()) {
+                        launcher.textContent = '💬';
+                    }
+                }, 1000);
+                
+                console.log('✅ Tactful widget ready');
+            } else {
+                setTimeout(initTactful, 100);
+            }
+        }
+        
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTactful);
+        } else {
+            initTactful();
+        }
+    })();
+</script>
+-->

@@ -9,11 +9,9 @@ import Footer from '../components/layout/Footer.astro';
 import Nav from '../components/layout/Nav.astro';
 import Preload from '../components/shared/Preload.astro';
 import SEOHead from '../components/layout/SEOHead.astro';
-import TactfulChat from '../components/shared/TactfulChat.astro';
+import TactfulWidget from '../components/TactfulWidget.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
-import '../styles/global.css';
-import '../styles/critical.css';
 
 
 
@@ -347,8 +345,8 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		
 		<Footer />
 		
-		<!-- Tactful AI Webchat Widget -->
-		<TactfulChat />
+		<!-- Tactful Chat Widget (Disabled) -->
+		<TactfulWidget />
 		
 		<!-- Vercel Analytics -->
 		<script>
