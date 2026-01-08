@@ -1,0 +1,71 @@
+name: Theme Token Enforcement
+
+on:
+  pull_request:
+    paths:
+      - 'src/**/*.tsx'
+      - 'src/**/*.ts'
+      - 'src/**/*.astro'
+      - 'src/**/*.jsx'
+      - 'src/**/*.js'
+
+jobs:
+  check-hardcoded-colors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for hardcoded brand red
+        run: |
+          # Allow hardcoded #bf1e2e only in theme-tokens.css
+          VIOLATIONS=$(grep -rn "#bf1e2e" src/ --exclude-dir=node_modules | grep -v "theme-tokens.css" || true)
+          
+          if [ -n "$VIOLATIONS" ]; then
+            echo "❌ Hardcoded brand red (#bf1e2e) detected outside theme-tokens.css:"
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Please use semantic tokens instead:"
+            echo "  - text-brand-primary"
+            echo "  - bg-brand-primary"
+            echo "  - border-brand-primary"
+            echo "  - var(--brand-primary)"
+            exit 1
+          else
+            echo "✅ No hardcoded brand colors detected"
+          fi
+      
+      - name: Check for hardcoded WhatsApp green
+        run: |
+          # Allow hardcoded #25D366 only in theme-tokens.css
+          VIOLATIONS=$(grep -rn "#25D366" src/ --exclude-dir=node_modules | grep -v "theme-tokens.css" || true)
+          
+          if [ -n "$VIOLATIONS" ]; then
+            echo "❌ Hardcoded WhatsApp green (#25D366) detected outside theme-tokens.css:"
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Please use semantic tokens instead:"
+            echo "  - text-whatsapp"
+            echo "  - bg-whatsapp"
+            echo "  - var(--color-whatsapp)"
+            exit 1
+          else
+            echo "✅ No hardcoded WhatsApp colors detected"
+          fi
+      
+      - name: Check for hardcoded call amber
+        run: |
+          # Allow hardcoded #f59e0b only in theme-tokens.css
+          VIOLATIONS=$(grep -rn "#f59e0b" src/ --exclude-dir=node_modules | grep -v "theme-tokens.css" || true)
+          
+          if [ -n "$VIOLATIONS" ]; then
+            echo "❌ Hardcoded call amber (#f59e0b) detected outside theme-tokens.css:"
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Please use semantic tokens instead:"
+            echo "  - text-call"
+            echo "  - bg-call"
+            echo "  - var(--color-call)"
+            exit 1
+          else
+            echo "✅ No hardcoded call colors detected"
+          fi
