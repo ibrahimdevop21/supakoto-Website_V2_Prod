@@ -10,6 +10,7 @@ import Nav from '../components/layout/Nav.astro';
 import Preload from '../components/shared/Preload.astro';
 import SEOHead from '../components/layout/SEOHead.astro';
 import TactfulWidget from '../components/TactfulWidget.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
 
@@ -74,6 +75,22 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		<meta name="color-scheme" content="dark" />
 		<meta name="msapplication-TileColor" content="#bf1e2e" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		
+		<!-- Theme initialization - must run before render to prevent FOUC -->
+		<script is:inline>
+			(function() {
+				const STORAGE_KEY = 'supakoto-theme';
+				const DARK = 'dark';
+				const LIGHT = 'light';
+				
+				// Get stored theme or default to dark
+				const stored = localStorage.getItem(STORAGE_KEY);
+				const theme = (stored === LIGHT || stored === DARK) ? stored : DARK;
+				
+				// Apply immediately to prevent flash
+				document.documentElement.setAttribute('data-theme', theme);
+			})();
+		</script>
 		
 		<!-- Preload critical resources -->
 		<Preload />
@@ -347,6 +364,9 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		
 		<!-- Tactful Chat Widget (Disabled) -->
 		<TactfulWidget />
+		
+		<!-- Theme Toggle -->
+		<ThemeToggle />
 		
 		<!-- Vercel Analytics -->
 		<script>

@@ -3,6 +3,7 @@
 
 /* SupaKoto Design System - Theme Foundation */
 @import './theme-tokens.css';
+@import './theme-light.css';
 @import './theme-layers.css';
 @import './theme-buttons.css';
 @import './theme-layout.css';

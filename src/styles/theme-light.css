@@ -1,0 +1,81 @@
+/* ============================================
+   SUPAKOTO DESIGN SYSTEM - LIGHT THEME
+   ============================================
+   
+   Light theme token overrides.
+   Applied when [data-theme="light"] is set on <html>.
+   
+   IMPORTANT:
+   - Dark theme remains the default
+   - Only overrides existing tokens
+   - No new token names introduced
+   - Components consume these automatically
+   ============================================ */
+
+[data-theme="light"] {
+  /* ============================================
+     BACKGROUND LAYERS (LIGHT MODE)
+     ============================================ */
+  /* Base Layer - Body gradient */
+  --bg-base-start: #f8fafc;           /* slate-50 */
+  --bg-base-mid: #f1f5f9;             /* slate-100 */
+  --bg-base-end: #e2e8f0;             /* slate-200 */
+  
+  /* Surface Layer - Sections */
+  --bg-surface: transparent;
+  --bg-surface-muted: rgba(241, 245, 249, 0.8);  /* slate-100/80 */
+  
+  /* Card Layer - UI Components */
+  --bg-card: rgba(255, 255, 255, 0.9);           /* white/90 with slight transparency */
+  --bg-card-hover: rgba(248, 250, 252, 1);       /* slate-50 solid */
+  --bg-card-elevated: rgba(255, 255, 255, 1);    /* white solid for elevated cards */
+  
+  /* Input Layer - Form Elements */
+  --bg-input: rgba(241, 245, 249, 1);            /* slate-100 solid */
+  --bg-input-hover: rgba(226, 232, 240, 1);      /* slate-200 solid */
+  
+  /* Overlay Layer - Modals, Dropdowns */
+  --bg-overlay-light: rgba(0, 0, 0, 0.1);        /* Lighter overlay */
+  --bg-overlay-medium: rgba(0, 0, 0, 0.3);       /* Medium overlay */
+  --bg-overlay-heavy: rgba(0, 0, 0, 0.8);        /* Heavy overlay */
+  
+  /* ============================================
+     BORDER COLORS (LIGHT MODE)
+     ============================================ */
+  --border-default: #cbd5e1;                     /* slate-300 */
+  --border-subtle: rgba(203, 213, 225, 0.6);     /* slate-300/60 */
+  --border-muted: rgba(203, 213, 225, 0.4);      /* slate-300/40 */
+  --border-focus: rgba(191, 30, 46, 0.6);        /* primary/60 - same as dark */
+  --border-hover: rgba(191, 30, 46, 0.6);        /* primary/60 - same as dark */
+  
+  /* ============================================
+     TEXT COLORS (LIGHT MODE)
+     ============================================ */
+  --text-primary: #0f172a;                       /* slate-950 - headings */
+  --text-secondary: #1e293b;                     /* slate-900 - body */
+  --text-tertiary: #475569;                      /* slate-600 - secondary */
+  --text-muted: #64748b;                         /* slate-500 - muted */
+  --text-disabled: rgba(100, 116, 139, 0.5);     /* slate-500/50 */
+  
+  /* ============================================
+     BRAND COLORS (LIGHT MODE)
+     ============================================ */
+  /* Brand colors remain the same for consistency */
+  /* --brand-primary: #bf1e2e; */
+  /* --color-whatsapp: #25D366; */
+  /* --color-call: #f59e0b; */
+  
+  /* Adjust hover states for better contrast on light backgrounds */
+  --brand-primary-hover: #a01825;                /* Slightly darker for visibility */
+  --brand-primary-active: #8b1a1a;               /* Even darker for active state */
+  
+  /* ============================================
+     SHADOWS (LIGHT MODE)
+     ============================================ */
+  /* Shadows need to be more visible on light backgrounds */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+}
