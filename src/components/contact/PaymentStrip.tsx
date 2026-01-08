@@ -49,7 +49,7 @@ export default function PaymentStrip({
   return (
     <div className="mt-4">
       <h4 className="text-white font-semibold mb-2">{t.title}</h4>
-      <div className="rounded-2xl bg-slate-900/40 border border-slate-700/60 p-4">
+      <div className="rounded-2xl bg-card border border-slate-700/60 p-4">
         <div className="text-slate-200">{t.local}</div>
         <div className="flex flex-wrap gap-3 mt-3">
           {local.map(l => (

@@ -56,7 +56,7 @@ const matrix: Score[][] = [
 ];
 ---
 
-<section class="rounded-2xl border border-slate-700/60 bg-slate-900/40 p-4 sm:p-6 md:p-8 shadow-[0_0_60px_-30px_rgba(0,0,0,.8)]">
+<section class="rounded-2xl border border-slate-700/60 bg-card p-4 sm:p-6 md:p-8 shadow-[0_0_60px_-30px_rgba(0,0,0,.8)]">
   <header class="mb-5 md:mb-6">
     <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight">
       <span class="text-white/90">{t[lang].heading}</span>
@@ -66,9 +66,9 @@ const matrix: Score[][] = [
 
   {/* Scorecard: mobile cards, desktop grid */}
   <div class="hidden md:grid grid-cols-[220px_repeat(3,1fr)] gap-2 rounded-2xl overflow-hidden ring-1 ring-slate-700/50">
-    <div class="bg-slate-900/60 p-3 text-slate-300 text-sm">Feature</div>
+    <div class="bg-input p-3 text-slate-300 text-sm">Feature</div>
     {t[lang].brands.map((b) => (
-      <div class="bg-slate-900/60 p-3 text-slate-300 text-sm font-medium">{b}</div>
+      <div class="bg-input p-3 text-slate-300 text-sm font-medium">{b}</div>
     ))}
 
     {t[lang].criteria.map((c, rowIdx) => (
@@ -103,7 +103,7 @@ const matrix: Score[][] = [
           {t[lang].brands.map((b, colIdx) => {
             const key = matrix[rowIdx][colIdx];
             return (
-              <div class="rounded-lg bg-slate-900/40 px-2 py-2 text-center">
+              <div class="rounded-lg bg-card px-2 py-2 text-center">
                 <div class="text-[11px] text-slate-400 truncate">{b}</div>
                 <div class="mt-1 inline-flex items-center justify-center gap-1.5">
                   <span class={`h-2 w-2 rounded-full ${RATINGS[key].dot}`} aria-hidden="true"></span>
