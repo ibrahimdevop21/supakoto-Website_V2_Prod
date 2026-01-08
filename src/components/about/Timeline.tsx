@@ -71,7 +71,7 @@ function SingleRow({
       {/* center spine */}
       <span aria-hidden className="hidden md:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-[3px] rounded-full bg-gradient-to-b from-white/25 via-white/12 to-white/5" />
       {/* big centered year badge */}
-      <span className="hidden md:flex items-center justify-center z-30 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-[#bf1e2e] text-white text-base font-semibold border-2 border-white/10 shadow-[0_0_0_8px_rgba(191,30,46,0.18)]">
+      <span className="hidden md:flex items-center justify-center z-30 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-brand-primary text-white text-base font-semibold border-2 border-white/10 shadow-[0_0_0_8px_rgba(191,30,46,0.18)]">
         {ev.year}
       </span>
       {/* connector to the single card */}
@@ -88,7 +88,7 @@ function SingleRow({
       >
         {/* mobile year chip */}
         <div className="md:hidden mb-2 inline-flex items-center text-sm text-white/80">
-          <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[#bf1e2e] text-white mr-2">
+          <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-brand-primary text-white mr-2">
             {ev.year}
           </span>
           <span aria-hidden className="h-px w-8 bg-white/15" />
@@ -117,7 +117,7 @@ function PairRow({
       {/* center spine */}
       <span aria-hidden className="hidden md:block absolute inset-y-0 left-1/2 -translate-x-1/2 w-[3px] rounded-full bg-gradient-to-b from-white/25 via-white/12 to-white/5" />
       {/* single big year badge */}
-      <span className="hidden md:flex items-center justify-center z-30 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-[#bf1e2e] text-white text-base font-semibold border-2 border-white/10 shadow-[0_0_0_8px_rgba(191,30,46,0.18)]">
+      <span className="hidden md:flex items-center justify-center z-30 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-brand-primary text-white text-base font-semibold border-2 border-white/10 shadow-[0_0_0_8px_rgba(191,30,46,0.18)]">
         {left.year}
       </span>
       {/* connectors to both cards */}
@@ -134,7 +134,7 @@ function PairRow({
       >
         {/* mobile chip for first of the two */}
         <div className="md:hidden mb-2 inline-flex items-center text-sm text-white/80">
-          <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[#bf1e2e] text-white mr-2">
+          <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-brand-primary text-white mr-2">
             {left.year}
           </span>
           <span aria-hidden className="h-px w-8 bg-white/15" />
@@ -198,7 +198,7 @@ export default function TimelineAlt({
         {/* Elegant Divider — RTL aware */}
         <div className="flex items-center justify-center gap-6 my-6 md:my-8 mb-10 md:mb-12" aria-hidden="true">
           <div className="h-px w-24 sm:w-32 md:w-40 bg-gradient-to-r from-transparent via-[#bf1e2e]/50 to-transparent" />
-          <div className="w-3 h-3 rounded-full bg-[#bf1e2e]" />
+          <div className="w-3 h-3 rounded-full bg-brand-primary" />
           <div className="h-px w-24 sm:w-32 md:w-40 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
         </div>
 
