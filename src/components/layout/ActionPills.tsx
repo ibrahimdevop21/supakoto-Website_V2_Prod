@@ -50,7 +50,7 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
   const langTag = locale === "ar" ? "EN" : "ع";
 
   // Luxury glowing call button with amber/orange theme - matching WhatsApp size
-  const luxuryCallButton = "relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f59e0b] to-[#d97706] border border-[#f59e0b]/30 hover:from-[#fbbf24] hover:to-[#f59e0b] text-white transition-all duration-300 shadow-lg shadow-[#f59e0b]/25 hover:shadow-xl hover:shadow-[#f59e0b]/40 hover:scale-105 animate-pulse-ring";
+  const luxuryCallButton = "relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-call to-[#d97706] border border-call/30 hover:from-[#fbbf24] hover:to-call text-white transition-all duration-300 shadow-lg shadow-call/25 hover:shadow-xl hover:shadow-call/40 hover:scale-105 animate-pulse-ring";
   
   // Glass icon style - clean circular icons (used for WhatsApp/Language)
   const glassIcon = "inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 hover:bg-white/20 text-white transition";
@@ -68,8 +68,8 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
         }}
       >
         {/* Pulsing ring animation */}
-        <div className="absolute inset-0 rounded-full border-2 border-[#f59e0b]/40 animate-ping"></div>
-        <div className="absolute inset-0 rounded-full border border-[#f59e0b]/20 animate-pulse"></div>
+        <div className="absolute inset-0 rounded-full border-2 border-call/40 animate-ping"></div>
+        <div className="absolute inset-0 rounded-full border border-call/20 animate-pulse"></div>
         
         {/* Phone icon */}
         <svg className="relative z-10 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
