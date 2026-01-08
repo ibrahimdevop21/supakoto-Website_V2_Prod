@@ -20,20 +20,21 @@
   },
   "hero": {
     "welcome": "Welcome to",
-    "tagline": "Your premier destination for luxury automotive services and solutions",
+    "tagline": "Premium Quality at the Best Value",
     "experience": "Experience Automotive Excellence",
     "description": "Discover our range of premium automotive services designed to exceed your expectations and elevate your driving experience.",
     "services": "Our Services",
     "contact": "Contact Us",
-    "title": "Japan's Strongest Protection",
-    "subtitle": "From Cairo to Dubai, SupaKoto is the choice of luxury car owners",
+    "title": "Your Car Protection Starts Here",
+    "subtitle": "We provide premium Japanese Paint Protection Film (PPF), high-performance heat insulation for windows, and interior & exterior nano-ceramic coatings.",
     "trust": {
-      "certified": "Premium Japanese PPF — original, certified, proven",
-      "experience": "Master Installers — detail-obsessed, factory trained",
-      "warranty": "Exclusive Warranty — up to 15 years"
+      "certified": "Authentic Japanese PPF — Original & Certified",
+      "experience": "Professional Installation by Experts",
+      "warranty": "Warranty up to 15 Years"
     },
     "cta": {
       "primary": "Protect Your Car Today",
+      "whatsapp": "Order Now",
       "secondary": "See Our Work"
     }
   },
