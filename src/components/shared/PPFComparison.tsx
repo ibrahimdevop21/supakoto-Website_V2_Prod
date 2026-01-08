@@ -255,8 +255,8 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
 
   // Contact constants (localized)
   const contacts = {
-    phone: locale === 'en' ? '+971501234567' : '+966123456789',
-    whatsapp: locale === 'en' ? '971501234567' : '966123456789'
+    phone: locale === 'en' ? '+971506265404' : '+201103402446',
+    whatsapp: locale === 'en' ? '971506265404' : '201103402446'
   };
 
   // Handle scroll hint fade
