@@ -120,7 +120,20 @@ export default {
         
         // Accent colors
         accent: 'hsl(var(--accent))',
-        'accent-foreground': 'hsl(var(--accent-foreground))'
+        'accent-foreground': 'hsl(var(--accent-foreground))',
+        
+        // NEW: Semantic Design System Colors (reference CSS variables)
+        brand: {
+          primary: 'var(--brand-primary)',
+          'primary-hover': 'var(--brand-primary-hover)',
+          'primary-active': 'var(--brand-primary-active)',
+          accent: 'var(--brand-accent)',
+        },
+        whatsapp: 'var(--color-whatsapp)',
+        call: 'var(--color-call)',
+        success: 'var(--color-success)',
+        error: 'var(--color-error)',
+        warning: 'var(--color-warning)',
       },
       
       // SupaKoto brand border radius system
