@@ -49,30 +49,51 @@
   </svg>
 </button>
 
-<script>
-  import { toggleTheme, getCurrentTheme } from '../utils/theme-toggle';
-
-  function updateIcon() {
-    const current = getCurrentTheme();
-    const sunIcon = document.getElementById('theme-icon-sun');
-    const moonIcon = document.getElementById('theme-icon-moon');
+<script is:inline>
+  (function() {
+    const STORAGE_KEY = 'supakoto-theme';
+    const DARK = 'dark';
+    const LIGHT = 'light';
     
-    if (current === 'light') {
-      sunIcon?.classList.remove('hidden');
-      moonIcon?.classList.add('hidden');
-    } else {
-      sunIcon?.classList.add('hidden');
-      moonIcon?.classList.remove('hidden');
+    function getCurrentTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      return current === LIGHT ? LIGHT : DARK;
     }
-  }
+    
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(STORAGE_KEY, theme);
+    }
+    
+    function toggleTheme() {
+      const current = getCurrentTheme();
+      const next = current === DARK ? LIGHT : DARK;
+      applyTheme(next);
+      return next;
+    }
+    
+    function updateIcon() {
+      const current = getCurrentTheme();
+      const sunIcon = document.getElementById('theme-icon-sun');
+      const moonIcon = document.getElementById('theme-icon-moon');
+      
+      if (current === 'light') {
+        sunIcon?.classList.remove('hidden');
+        moonIcon?.classList.add('hidden');
+      } else {
+        sunIcon?.classList.add('hidden');
+        moonIcon?.classList.remove('hidden');
+      }
+    }
 
-  // Initialize icon state
-  updateIcon();
-
-  // Handle toggle click
-  const button = document.getElementById('theme-toggle');
-  button?.addEventListener('click', () => {
-    toggleTheme();
+    // Initialize icon state
     updateIcon();
-  });
+
+    // Handle toggle click
+    const button = document.getElementById('theme-toggle');
+    button?.addEventListener('click', () => {
+      toggleTheme();
+      updateIcon();
+    });
+  })();
 </script>
