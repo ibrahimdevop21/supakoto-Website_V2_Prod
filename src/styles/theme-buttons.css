@@ -1,0 +1,177 @@
+/* ============================================
+   SUPAKOTO DESIGN SYSTEM - BUTTON SYSTEM
+   ============================================
+   
+   Three standardized button variants:
+   - Primary: Main CTAs (brand red)
+   - Secondary: Alternative CTAs (transparent with border)
+   - WhatsApp: WhatsApp-specific CTAs (green)
+   
+   All buttons have consistent sizing and states.
+   ============================================ */
+
+/* ============================================
+   PRIMARY BUTTON - Main CTAs
+   ============================================ */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  /* Sizing - matches current implementations */
+  height: 3.5rem;              /* 56px */
+  padding: 0 2rem;             /* 32px horizontal */
+  
+  /* Visual */
+  background-color: var(--brand-primary);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: var(--radius-xl);
+  border: none;
+  
+  /* Effects */
+  box-shadow: var(--shadow-xl);
+  transition: all var(--transition-base) ease;
+  cursor: pointer;
+  
+  /* States */
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-primary-hover);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-2xl);
+}
+
+.btn-primary:active {
+  background-color: var(--brand-primary-active);
+  transform: scale(0.98);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   SECONDARY BUTTON - Alternative CTAs
+   ============================================ */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  /* Sizing */
+  height: 3.5rem;
+  padding: 0 2rem;
+  
+  /* Visual */
+  background-color: var(--bg-card-elevated);
+  backdrop-filter: blur(var(--blur-sm));
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: var(--radius-xl);
+  border: 2px solid var(--border-subtle);
+  
+  /* Effects */
+  box-shadow: var(--shadow-xl);
+  transition: all var(--transition-base) ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  border-color: var(--border-hover);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-2xl);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   WHATSAPP BUTTON - WhatsApp CTAs
+   ============================================ */
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  /* Sizing */
+  height: 3.5rem;
+  padding: 0 2rem;
+  
+  /* Visual */
+  background-color: var(--color-whatsapp);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: var(--radius-xl);
+  border: none;
+  
+  /* Effects */
+  box-shadow: var(--shadow-xl);
+  transition: all var(--transition-base) ease;
+  cursor: pointer;
+}
+
+.btn-whatsapp:hover {
+  background-color: #1da851;  /* Slightly darker green */
+  transform: scale(1.02);
+  box-shadow: var(--shadow-2xl);
+}
+
+.btn-whatsapp:active {
+  transform: scale(0.98);
+}
+
+.btn-whatsapp:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.4);
+}
+
+.btn-whatsapp:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+.btn-sm {
+  height: 2.5rem;    /* 40px */
+  padding: 0 1.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  height: 4rem;      /* 64px */
+  padding: 0 2.5rem;
+  font-size: 1.125rem;
+}

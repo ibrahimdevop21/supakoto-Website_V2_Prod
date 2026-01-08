@@ -1,0 +1,100 @@
+/* ============================================
+   SUPAKOTO DESIGN SYSTEM - BACKGROUND LAYERS
+   ============================================
+   
+   Formal background hierarchy system.
+   Each layer builds on top of the previous one.
+   
+   Layer 0: BASE (body gradient)
+   Layer 1: SURFACE (section backgrounds)
+   Layer 2: CARD (component backgrounds)
+   Layer 3: INPUT (form element backgrounds)
+   Layer 4: OVERLAY (modal/dropdown backgrounds)
+   ============================================ */
+
+/* ============================================
+   LAYER 0: BASE
+   Applied to <body> only
+   ============================================ */
+.bg-base {
+  background: linear-gradient(
+    135deg,
+    var(--bg-base-start) 0%,
+    var(--bg-base-mid) 50%,
+    var(--bg-base-end) 100%
+  );
+}
+
+/* ============================================
+   LAYER 1: SURFACE
+   Applied to <section> elements
+   ============================================ */
+.bg-surface {
+  background-color: var(--bg-surface);
+}
+
+.bg-surface-muted {
+  background-color: var(--bg-surface-muted);
+}
+
+/* ============================================
+   LAYER 2: CARD
+   Applied to cards, panels, features
+   ============================================ */
+.bg-card {
+  background-color: var(--bg-card);
+  backdrop-filter: blur(var(--blur-sm));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+}
+
+.bg-card-elevated {
+  background-color: var(--bg-card-elevated);
+  backdrop-filter: blur(var(--blur-md));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Card hover state (use as additional class or in hover:) */
+.bg-card-hover {
+  background-color: var(--bg-card-hover);
+}
+
+/* ============================================
+   LAYER 3: INPUT
+   Applied to form inputs, textareas, selects
+   ============================================ */
+.bg-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.bg-input:hover {
+  background-color: var(--bg-input-hover);
+  border-color: var(--border-hover);
+}
+
+.bg-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+/* ============================================
+   LAYER 4: OVERLAY
+   Applied to modals, dropdowns, hero overlays
+   ============================================ */
+.bg-overlay-light {
+  background-color: var(--bg-overlay-light);
+}
+
+.bg-overlay-medium {
+  background-color: var(--bg-overlay-medium);
+}
+
+.bg-overlay-heavy {
+  background-color: var(--bg-overlay-heavy);
+  backdrop-filter: blur(var(--blur-xl));
+}

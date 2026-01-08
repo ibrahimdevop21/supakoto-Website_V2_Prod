@@ -1,0 +1,92 @@
+/* ============================================
+   SUPAKOTO DESIGN SYSTEM - LAYOUT & SPACING
+   ============================================
+   
+   Standardized container and spacing utilities.
+   All values match current implementation exactly.
+   ============================================ */
+
+/* ============================================
+   CONTAINER SYSTEM
+   ============================================ */
+.container-custom {
+  width: 100%;
+  max-width: var(--container-max-width);  /* 1280px - matches max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding-mobile);   /* 16px - matches px-4 */
+  padding-right: var(--container-padding-mobile);
+}
+
+@media (min-width: 640px) {
+  .container-custom {
+    padding-left: var(--container-padding-tablet);   /* 24px - matches sm:px-6 */
+    padding-right: var(--container-padding-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-custom {
+    padding-left: var(--container-padding-desktop);  /* 32px - matches lg:px-8 */
+    padding-right: var(--container-padding-desktop);
+  }
+}
+
+/* Full-width variant (for hero, edge-to-edge content) */
+.container-full {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Narrow variant (for text-heavy content) */
+.container-narrow {
+  width: 100%;
+  max-width: 48rem;  /* 768px - matches max-w-3xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding-mobile);
+  padding-right: var(--container-padding-mobile);
+}
+
+/* ============================================
+   SECTION SPACING
+   Matches current py-12 md:py-16 pattern
+   ============================================ */
+.section-spacing {
+  padding-top: 3rem;     /* 48px - matches py-12 */
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+  .section-spacing {
+    padding-top: 4rem;   /* 64px - matches md:py-16 */
+    padding-bottom: 4rem;
+  }
+}
+
+/* Featured sections - matches py-12 sm:py-16 md:py-20 lg:py-24 */
+.section-spacing-lg {
+  padding-top: 3rem;    /* 48px */
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+  .section-spacing-lg {
+    padding-top: 4rem;   /* 64px */
+    padding-bottom: 4rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .section-spacing-lg {
+    padding-top: 5rem;   /* 80px */
+    padding-bottom: 5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-spacing-lg {
+    padding-top: 6rem;   /* 96px */
+    padding-bottom: 6rem;
+  }
+}

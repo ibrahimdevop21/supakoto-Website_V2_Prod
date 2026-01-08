@@ -1,0 +1,110 @@
+/* ============================================
+   SUPAKOTO DESIGN SYSTEM - TOKEN FOUNDATION
+   ============================================
+   
+   This file defines all design tokens as CSS variables.
+   These tokens are the single source of truth for colors,
+   spacing, effects, and other design primitives.
+   
+   DO NOT hardcode these values elsewhere.
+   Always reference via var(--token-name).
+   ============================================ */
+
+:root {
+  /* ============================================
+     BRAND COLORS
+     ============================================ */
+  --brand-primary: #bf1e2e;           /* SupaKoto Red */
+  --brand-primary-hover: #991b1b;     /* Darker red for hover */
+  --brand-primary-active: #7f1d1d;    /* Even darker for active */
+  --brand-accent: #6a343a;            /* Deep burgundy */
+  
+  /* ============================================
+     FUNCTIONAL COLORS
+     ============================================ */
+  --color-whatsapp: #25D366;          /* WhatsApp green */
+  --color-call: #f59e0b;              /* Call button amber */
+  --color-success: #10b981;           /* Success green */
+  --color-error: #ef4444;             /* Error red */
+  --color-warning: #f59e0b;           /* Warning amber */
+  
+  /* ============================================
+     BACKGROUND LAYERS
+     ============================================ */
+  /* Base Layer - Body gradient */
+  --bg-base-start: #0f172a;           /* slate-950 */
+  --bg-base-mid: #1e293b;             /* slate-900 */
+  --bg-base-end: #0f172a;             /* slate-950 */
+  
+  /* Surface Layer - Sections */
+  --bg-surface: transparent;          /* Default transparent */
+  --bg-surface-muted: rgba(15, 23, 42, 0.3);  /* Subtle overlay - matches current muted/30 */
+  
+  /* Card Layer - UI Components */
+  --bg-card: rgba(15, 23, 42, 0.4);   /* Matches current bg-slate-900/40 */
+  --bg-card-hover: rgba(30, 41, 59, 0.5);  /* Matches current bg-slate-800/50 */
+  --bg-card-elevated: rgba(15, 23, 42, 0.6);  /* Elevated cards */
+  
+  /* Input Layer - Form Elements */
+  --bg-input: rgba(15, 23, 42, 0.6);  /* Matches current bg-slate-900/60 */
+  --bg-input-hover: rgba(30, 41, 59, 0.6);  /* slate-800/60 */
+  
+  /* Overlay Layer - Modals, Dropdowns, Hero */
+  --bg-overlay-light: rgba(0, 0, 0, 0.4);   /* Matches current black/40 */
+  --bg-overlay-medium: rgba(0, 0, 0, 0.7);  /* Matches current black/70 */
+  --bg-overlay-heavy: rgba(0, 0, 0, 0.95);  /* Matches current black/95 */
+  
+  /* ============================================
+     BORDER COLORS
+     ============================================ */
+  --border-default: #334155;          /* slate-700 */
+  --border-subtle: rgba(51, 65, 85, 0.5);     /* slate-700/50 */
+  --border-muted: rgba(51, 65, 85, 0.3);      /* slate-700/30 */
+  --border-focus: rgba(191, 30, 46, 0.6);     /* primary/60 */
+  --border-hover: rgba(191, 30, 46, 0.6);     /* primary/60 */
+  
+  /* ============================================
+     TEXT COLORS
+     ============================================ */
+  --text-primary: #ffffff;            /* White - headings */
+  --text-secondary: #e5e7eb;          /* gray-200 - body */
+  --text-tertiary: #cbd5e1;           /* slate-300 - secondary */
+  --text-muted: #94a3b8;              /* slate-400 - muted */
+  --text-disabled: rgba(148, 163, 184, 0.5);  /* slate-400/50 */
+  
+  /* ============================================
+     EFFECTS
+     ============================================ */
+  --blur-sm: 4px;
+  --blur-md: 8px;
+  --blur-lg: 12px;
+  --blur-xl: 16px;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* ============================================
+     SPACING & SIZING
+     ============================================ */
+  --container-max-width: 80rem;       /* 1280px - matches current max-w-7xl */
+  --container-padding-mobile: 1rem;   /* 16px - matches current px-4 */
+  --container-padding-tablet: 1.5rem; /* 24px - matches current sm:px-6 */
+  --container-padding-desktop: 2rem;  /* 32px - matches current lg:px-8 */
+  
+  --radius-sm: 0.5rem;                /* 8px */
+  --radius-md: 0.75rem;               /* 12px */
+  --radius-lg: 1rem;                  /* 16px */
+  --radius-xl: 1.5rem;                /* 24px */
+  --radius-2xl: 2rem;                 /* 32px */
+  
+  /* ============================================
+     TRANSITIONS
+     ============================================ */
+  --transition-fast: 150ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+  --transition-slower: 500ms;
+}
