@@ -93,7 +93,7 @@ const OurPhilosophy: React.FC<OurPhilosophyProps> = ({ currentLocale, isRTL }) =
               
               <div className="relative z-10">
                 <div className="mb-6 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-red-500/20 to-orange-500/20 border border-red-500/30 group-hover:border-red-500/60 transition-all duration-500">
-                  <item.icon className="w-6 h-6 text-[#bf1e2e] group-hover:text-red-300 transition-colors duration-500" />
+                  <item.icon className="w-6 h-6 text-brand-primary group-hover:text-red-300 transition-colors duration-500" />
                 </div>
                 <h3 className={`text-2xl font-bold mb-3 text-white group-hover:text-red-100 transition-colors duration-500 ${isArabic ? 'font-arabic' : ''}`}>
                   {item.title[isArabic ? 'ar' : 'en']}

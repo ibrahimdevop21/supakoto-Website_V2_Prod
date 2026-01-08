@@ -96,7 +96,7 @@ const OurStory: React.FC<OurStoryProps> = ({ currentLocale, isRTL }) => {
 
           <div className="flex items-center justify-center gap-6 my-5 md:my-6" aria-hidden="true">
             <div className="h-px w-24 sm:w-32 md:w-40 bg-gradient-to-r from-transparent via-[#bf1e2e]/50 to-transparent" />
-            <div className="w-3 h-3 rounded-full bg-[#bf1e2e]" />
+            <div className="w-3 h-3 rounded-full bg-brand-primary" />
             <div className="h-px w-24 sm:w-32 md:w-40 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
           </div>
 

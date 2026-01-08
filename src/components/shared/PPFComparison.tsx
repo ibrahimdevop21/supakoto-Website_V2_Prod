@@ -81,7 +81,7 @@ const cellX = 'px-4 md:px-6';
 const cellY = 'py-3 md:py-4 lg:py-5';
 
 // Brand accent (SupaKoto red)
-const BRAND = '#bf1e2e';
+const BRAND = 'var(--brand-primary)';
 
 type Rating = 'best' | 'avg' | 'weak';
 
