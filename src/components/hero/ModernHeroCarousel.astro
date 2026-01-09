@@ -9,7 +9,17 @@ const rtl = currentLang === 'ar';
 <section class="hero relative min-h-screen flex items-center justify-center overflow-hidden">
   <!-- Responsive Video Background -->
   <div class="absolute inset-0 w-full h-full">
-    <!-- Mobile Video (≤768px) -->
+    <!-- Poster Image - Loads immediately for LCP -->
+    <img 
+      src="/gallery/full/supa-066.webp" 
+      alt="SupaKoto Paint Protection Film PPF services"
+      class="absolute inset-0 w-full h-full object-cover"
+      fetchpriority="high"
+      loading="eager"
+      decoding="async"
+    />
+    
+    <!-- Mobile Video (≤768px) - Loads after poster -->
     <video 
       class="absolute inset-0 w-full h-full object-cover md:hidden"
       autoplay 
@@ -17,18 +27,11 @@ const rtl = currentLang === 'ar';
       loop 
       playsinline
       preload="none"
-      poster="/gallery/full/supa-066.webp"
     >
       <source src="/videos/supakoto-hero-mobiile.webm" type="video/webm">
-      <!-- Fallback image for mobile -->
-      <img 
-        src="/gallery/full/supa-066.webp" 
-        alt="SupaKoto Paint Protection Film PPF services - Professional car protection in Egypt and UAE"
-        class="w-full h-full object-cover"
-      />
     </video>
     
-    <!-- Desktop/Tablet Video (≥769px) -->
+    <!-- Desktop/Tablet Video (≥769px) - Loads after poster -->
     <video 
       class="absolute inset-0 w-full h-full object-cover hidden md:block"
       autoplay 
@@ -36,15 +39,8 @@ const rtl = currentLang === 'ar';
       loop 
       playsinline
       preload="none"
-      poster="/gallery/full/supa-066.webp"
     >
       <source src="/videos/supakoto-hero.webm" type="video/webm">
-      <!-- Fallback image for desktop -->
-      <img 
-        src="/gallery/full/supa-066.webp" 
-        alt="SupaKoto Paint Protection Film PPF services - Premium automotive protection solutions"
-        class="w-full h-full object-cover"
-      />
     </video>
     
     <!-- Gradient Overlay -->

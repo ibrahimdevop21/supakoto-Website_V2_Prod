@@ -1,5 +1,5 @@
 /* SupaKoto 2025 Typography - Inter Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Font loaded asynchronously in Layout.astro to prevent render blocking */
 
 /* SupaKoto Design System - Theme Foundation */
 @import './theme-tokens.css';

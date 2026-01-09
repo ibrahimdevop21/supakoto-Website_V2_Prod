@@ -45,8 +45,8 @@ const activePath = pathname || '/';
 
     <!-- Right: CTAs ALWAYS visible + burger on mobile -->
     <div class="flex items-center gap-3">
-      <ActionPills client:load locale={locale} currentPath={pathname} />
-      <NavbarMobile client:load locale={locale} activePath={activePath} />
+      <ActionPills client:idle locale={locale} currentPath={pathname} />
+      <NavbarMobile client:idle locale={locale} activePath={activePath} />
     </div>
   </div>
 
