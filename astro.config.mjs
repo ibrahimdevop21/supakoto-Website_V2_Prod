@@ -40,7 +40,7 @@ export default defineConfig({
             }
           },
           Image: false,
-          JavaScript: false,
+          JavaScript: true,
           SVG: false
         })]
       : [])
@@ -60,6 +60,24 @@ export default defineConfig({
   },
 
   vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom'],
+          }
+        }
+      },
+      cssCodeSplit: true,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug']
+        }
+      }
+    },
     resolve: {
       alias: {
         '@': '/src',
