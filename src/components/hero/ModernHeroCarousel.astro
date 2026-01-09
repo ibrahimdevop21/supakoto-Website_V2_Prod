@@ -9,38 +9,42 @@ const rtl = currentLang === 'ar';
 <section class="hero relative min-h-screen flex items-center justify-center overflow-hidden">
   <!-- Responsive Video Background -->
   <div class="absolute inset-0 w-full h-full">
-    <!-- Poster Image - Loads immediately for LCP -->
-    <img 
-      src="/gallery/full/supa-066.webp" 
-      alt="SupaKoto Paint Protection Film PPF services"
-      class="absolute inset-0 w-full h-full object-cover"
-      fetchpriority="high"
-      loading="eager"
-      decoding="async"
-    />
-    
-    <!-- Mobile Video (≤768px) - Loads after poster -->
+    <!-- Mobile Video (≤768px) -->
     <video 
       class="absolute inset-0 w-full h-full object-cover md:hidden"
       autoplay 
       muted 
       loop 
       playsinline
-      preload="none"
+      preload="metadata"
+      poster="/gallery/full/supa-066.webp"
     >
       <source src="/videos/supakoto-hero-mobiile.webm" type="video/webm">
+      <img 
+        src="/gallery/full/supa-066.webp" 
+        alt="SupaKoto Paint Protection Film PPF services"
+        class="w-full h-full object-cover"
+        fetchpriority="high"
+      />
     </video>
     
-    <!-- Desktop/Tablet Video (≥769px) - Loads after poster -->
+    <!-- Desktop/Tablet Video (≥769px) -->
     <video 
       class="absolute inset-0 w-full h-full object-cover hidden md:block"
       autoplay 
       muted 
       loop 
       playsinline
-      preload="none"
+      preload="metadata"
+      poster="/gallery/full/supa-066.webp"
     >
       <source src="/videos/supakoto-hero.webm" type="video/webm">
+      <img 
+        src="/gallery/full/supa-066.webp" 
+        alt="SupaKoto Paint Protection Film PPF services"
+        class="w-full h-full object-cover"
+        fetchpriority="high"
+      />
     </video>
     
     <!-- Gradient Overlay -->
