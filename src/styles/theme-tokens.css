@@ -107,4 +107,13 @@
   --transition-base: 200ms;
   --transition-slow: 300ms;
   --transition-slower: 500ms;
+  
+  /* ============================================
+     FOOTER TOKENS (DARK MODE)
+     ============================================ */
+  --footer-bg: #0f172a;                    /* Deep navy - slate-950 */
+  --footer-text: #e5e7eb;                  /* Soft light - gray-200 */
+  --footer-muted: #9ca3af;                 /* Muted secondary - gray-400 */
+  --footer-card-bg: rgba(30, 41, 59, 0.4); /* Subtle card surface - slate-800/40 */
+  --footer-border: rgba(148, 163, 184, 0.2); /* Subtle borders - slate-400/20 */
 }

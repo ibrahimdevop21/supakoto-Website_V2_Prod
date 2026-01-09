@@ -43,7 +43,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
 
   const switchingTo: Locale = (currentLocale === "ar" ? "en" : "ar") as Locale;
   const href = switchLocalePath(currentPath, switchingTo);
-  const btnLabel = switchingTo === "en" ? "EN" : "AR";
+  const btnLabel = switchingTo === "en" ? "🇬🇧" : "🇦🇪";
   const aria = switchingTo === "en" ? "Switch to English" : "Switch to Arabic";
 
   return (
@@ -52,7 +52,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
         href={href}
         onClick={(e) => { e.preventDefault(); handleSelectLanguage(switchingTo, href); }}
         aria-label={aria}
-        className="inline-flex items-center justify-center h-9 px-3 rounded-xl border border-white/20 bg-white/10 text-white font-bold uppercase text-xs tracking-wide hover:border-[#bf1e2e] hover:bg-[#bf1e2e]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#bf1e2e]"
+        className="inline-flex items-center justify-center gap-1.5 h-9 px-3 rounded-xl border border-white/20 bg-white/10 text-white font-bold uppercase text-xs tracking-wide hover:border-[#bf1e2e] hover:bg-[#bf1e2e]/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#bf1e2e] transition-all duration-200"
       >
         {btnLabel}
       </a>

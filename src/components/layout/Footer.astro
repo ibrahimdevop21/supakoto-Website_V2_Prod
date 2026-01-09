@@ -1,7 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { t, getLocalizedUrl, isRTL, type Locale } from "../../i18n/index.ts";
-import FooterPaymentStrip from "../footer/FooterPaymentStrip.tsx";
+import { t, getLocalizedUrl, isRTL, type Locale } from "../../i18n/index";
+import FooterPaymentStrip from "../footer/FooterPaymentStrip";
 
 const currentLocale = (Astro.currentLocale || 'en') as Locale;
 const rtl = isRTL(Astro);
@@ -69,34 +69,44 @@ const contactInfo = [
 ];
 ---
 
-<footer class="bg-gradient-to-br from-background via-background/95 to-background/90 text-foreground backdrop-blur-sm border-t border-foreground/20" dir={rtl ? 'rtl' : 'ltr'}>
+<footer style="background-color: var(--footer-bg); color: var(--footer-text); border-top: 1px solid var(--footer-border);" class="backdrop-blur-sm" dir={rtl ? 'rtl' : 'ltr'}>
   <!-- Main Footer Content -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
       
       <!-- Company Info -->
       <div class={`lg:col-span-2 text-center lg:text-${rtl ? 'right' : 'left'}`}>
-        <!-- Logo Section -->
+        <!-- Logo Section with Theme Switching -->
         <div class="mb-6">
           <a href={getLocalizedUrl('/', currentLocale, Astro)} class="inline-block group">
+            <!-- Light theme logo (dark colored) - hidden in dark mode -->
+            <img 
+              src="/logo-dark.svg" 
+              alt="SupaKoto Logo" 
+              class={`logo-dark h-16 lg:h-20 w-auto group-hover:scale-105 transition-transform duration-300 mx-auto lg:m${rtl ? 'r' : 'l'}-0`}
+            />
+            <!-- Dark theme logo (light colored) - hidden in light mode -->
             <img 
               src="/logo.svg" 
-              alt="SupaKoto - Professional Paint Protection Film Services" 
-              class={`h-16 lg:h-20 w-auto group-hover:scale-105 transition-transform duration-300 mx-auto lg:m${rtl ? 'r' : 'l'}-0`}
+              alt="SupaKoto Logo" 
+              class={`logo-light h-16 lg:h-20 w-auto group-hover:scale-105 transition-transform duration-300 mx-auto lg:m${rtl ? 'r' : 'l'}-0`}
             />
           </a>
         </div>
         
         <!-- Company Description -->
         <div class="mb-6">
-          <p class={`text-muted-foreground text-base lg:text-lg leading-relaxed max-w-xl mx-auto lg:m${rtl ? 'r' : 'l'}-0`}>
-            {currentLocale === 'ar' ? 'قيادة التميز بحماية فائقة وتخصيص لا مثيل له.' : 'Driving excellence with premium protection and unparalleled customization.'}
+          <p style="color: var(--footer-text);" class={`text-base lg:text-lg font-semibold leading-relaxed max-w-xl mx-auto lg:m${rtl ? 'r' : 'l'}-0 mb-3`}>
+            {currentLocale === 'ar' ? 'مدرسة أفلام الحماية اليابانية' : 'The Japanese School of Protection Films'}
+          </p>
+          <p style="color: var(--footer-muted);" class={`text-sm lg:text-base leading-relaxed max-w-xl mx-auto lg:m${rtl ? 'r' : 'l'}-0`}>
+            {currentLocale === 'ar' ? 'الحماية. الجودة. الاعتمادية.' : 'Protection. Quality. Reliability.'}
           </p>
         </div>
         
         <!-- Social Media Section -->
         <div class="space-y-4">
-          <h3 class={`text-lg font-semibold text-foreground flex items-center justify-center lg:justify-${rtl ? 'end' : 'start'} gap-2 ${rtl ? 'flex-row-reverse' : ''}`}>
+          <h3 style="color: var(--footer-text);" class={`text-lg font-semibold flex items-center justify-center lg:justify-${rtl ? 'end' : 'start'} gap-2 ${rtl ? 'flex-row-reverse' : ''}`}>
             <div class="p-1.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
               <Icon name="mdi:share-variant" class="h-4 w-4 text-primary" />
             </div>
@@ -109,7 +119,8 @@ const contactInfo = [
                 href={item.url} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                class="group p-3 bg-gradient-to-br from-muted/30 to-muted/20 hover:from-primary/20 hover:to-primary/10 text-muted-foreground hover:text-primary rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/20 border border-muted/20 hover:border-primary/30"
+                style="background-color: var(--footer-card-bg); border-color: var(--footer-border); color: var(--footer-text);"
+                class="group p-3 hover:from-primary/20 hover:to-primary/10 hover:text-primary rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary/20 border hover:border-primary/30"
               >
                 <span class="sr-only">{item.name}</span>
                 <Icon name={item.icon} class="h-5 w-5" />
@@ -118,8 +129,8 @@ const contactInfo = [
           </div>
           
           <!-- Additional Info -->
-          <div class="pt-4 border-t border-muted/20">
-            <p class={`text-sm text-muted-foreground text-center lg:text-${rtl ? 'right' : 'left'}`}>
+          <div style="border-top: 1px solid var(--footer-border);" class="pt-4">
+            <p style="color: var(--footer-muted);" class={`text-sm text-center lg:text-${rtl ? 'right' : 'left'}`}>
               {currentLocale === 'ar' ? 'استمتع بالتميز في عالم السيارات مع سوباكوتو' : 'Experience automotive excellence with SupaKoto'}
             </p>
           </div>
@@ -130,7 +141,7 @@ const contactInfo = [
       <div class={`lg:col-span-1 ${rtl ? 'lg:order-last' : ''}`}>
         <!-- Section Header -->
         <div class="mb-6">
-          <h3 class={`text-lg font-semibold text-foreground mb-3 flex items-center justify-center lg:justify-${rtl ? 'end' : 'start'} gap-2 ${rtl ? 'flex-row-reverse' : ''}`}>
+          <h3 style="color: var(--footer-text);" class={`text-lg font-semibold mb-3 flex items-center justify-center lg:justify-${rtl ? 'end' : 'start'} gap-2 ${rtl ? 'flex-row-reverse' : ''}`}>
             <div class="p-1.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
               <Icon name="mdi:link-variant" class="h-4 w-4 text-primary" />
             </div>
@@ -143,22 +154,25 @@ const contactInfo = [
           {quickLinks.map((link) => (
             <a 
               href={link.href} 
-              class={`group flex items-center gap-3 p-3 bg-gradient-to-br from-muted/20 to-muted/10 hover:from-primary/15 hover:to-primary/5 rounded-lg border border-muted/20 hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] ${rtl ? 'flex-row-reverse' : ''}`}
+              style="background-color: var(--footer-card-bg); border-color: var(--footer-border);"
+              class={`group flex items-center gap-3 p-3 hover:from-primary/15 hover:to-primary/5 rounded-lg border hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] ${rtl ? 'flex-row-reverse' : ''}`}
             >
               <div class="p-1.5 bg-gradient-to-br from-muted/40 to-muted/20 group-hover:from-primary/25 group-hover:to-primary/15 rounded-md transition-all duration-300">
                 <Icon 
                   name={link.icon} 
-                  class="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" 
+                  style="color: var(--footer-text);"
+                  class="h-4 w-4 group-hover:text-primary transition-colors duration-300" 
                 />
               </div>
               <div class="flex-1">
-                <span class={`text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300 block text-${rtl ? 'right' : 'left'}`}>
+                <span style="color: var(--footer-text);" class={`text-sm font-medium group-hover:text-primary transition-colors duration-300 block text-${rtl ? 'right' : 'left'}`}>
                   {link.name}
                 </span>
               </div>
               <Icon 
                 name={rtl ? 'mdi:chevron-left' : 'mdi:chevron-right'} 
-                class={`h-3 w-3 text-muted-foreground group-hover:text-primary transition-all duration-300 group-hover:translate-x-${rtl ? '-0.5' : '0.5'}`} 
+                style="color: var(--footer-text);"
+                class={`h-3 w-3 group-hover:text-primary transition-all duration-300 group-hover:translate-x-${rtl ? '-0.5' : '0.5'}`} 
               />
             </a>
           ))}
@@ -169,7 +183,7 @@ const contactInfo = [
       <div class="lg:col-span-1">
         <!-- Section Header -->
         <div class="mb-6">
-          <h3 class={`text-lg font-semibold text-foreground mb-3 flex items-center justify-center lg:justify-${rtl ? 'end' : 'start'} gap-2 ${rtl ? 'flex-row-reverse' : ''}`}>
+          <h3 style="color: var(--footer-text);" class={`text-lg font-semibold mb-3 flex items-center justify-center lg:justify-${rtl ? 'end' : 'start'} gap-2 ${rtl ? 'flex-row-reverse' : ''}`}>
             <div class="p-1.5 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg">
               <Icon name="mdi:contact-mail" class="h-4 w-4 text-primary" />
             </div>
@@ -182,15 +196,17 @@ const contactInfo = [
           {contactInfo.map((contact) => (
             <a 
               href={contact.href} 
-              class={`group flex items-start gap-3 p-3 bg-gradient-to-br from-muted/20 to-muted/10 hover:from-primary/15 hover:to-primary/5 rounded-lg border border-muted/20 hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] ${rtl ? 'flex-row-reverse text-right' : ''}`}
+              style="background-color: var(--footer-card-bg); border-color: var(--footer-border);"
+              class={`group flex items-start gap-3 p-3 hover:from-primary/15 hover:to-primary/5 rounded-lg border hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] ${rtl ? 'flex-row-reverse text-right' : ''}`}
             >
               <div class="p-1.5 bg-gradient-to-br from-muted/40 to-muted/20 group-hover:from-primary/25 group-hover:to-primary/15 rounded-md transition-all duration-300 flex-shrink-0">
                 <Icon 
                   name={contact.icon} 
-                  class="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" 
+                  style="color: var(--footer-text);"
+                  class="h-4 w-4 group-hover:text-primary transition-colors duration-300" 
                 />
               </div>
-              <span class={`text-sm text-foreground group-hover:text-primary transition-colors duration-300 leading-relaxed ${rtl ? 'text-right' : 'text-left'} flex-1`}>
+              <span style="color: var(--footer-text);" class={`text-sm group-hover:text-primary transition-colors duration-300 leading-relaxed ${rtl ? 'text-right' : 'text-left'} flex-1`}>
                 {contact.text}
               </span>
             </a>
@@ -205,19 +221,19 @@ const contactInfo = [
   <FooterPaymentStrip client:load lang={currentLocale} />
 
   <!-- Bottom Bar -->
-  <div class="border-t border-foreground/10 bg-background/50">
+  <div style="border-top: 1px solid var(--footer-border); background-color: var(--footer-bg);">
     <div class="container mx-auto px-4 py-4">
       <div class={`flex flex-col sm:flex-row items-center justify-between gap-3 ${rtl ? 'sm:flex-row-reverse' : ''}`}>
-        <div class={`flex flex-col sm:flex-row items-center gap-3 text-sm text-muted-foreground ${rtl ? 'sm:flex-row-reverse text-right' : ''}`}>
-          <p class={rtl ? 'text-right' : 'text-left'}>
+        <div class={`flex flex-col sm:flex-row items-center gap-3 text-sm ${rtl ? 'sm:flex-row-reverse text-right' : ''}`}>
+          <p style="color: var(--footer-muted);" class={rtl ? 'text-right' : 'text-left'}>
             &copy; {currentYear} {currentLocale === 'ar' ? 'سوباكوتو' : 'SupaKoto'}. {currentLocale === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
           </p>
-          <div class="hidden sm:block w-px h-4 bg-foreground/20"></div>
+          <div style="background-color: var(--footer-border);" class="hidden sm:block w-px h-4"></div>
           <div class={`flex items-center gap-4 ${rtl ? 'flex-row-reverse' : ''}`}>
-            <a href={getLocalizedUrl('/privacy', currentLocale, Astro)} class="hover:text-primary transition-colors duration-300">
+            <a href={getLocalizedUrl('/privacy', currentLocale, Astro)} style="color: var(--footer-muted);" class="hover:text-primary transition-colors duration-300">
               {currentLocale === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
             </a>
-            <a href={getLocalizedUrl('/terms', currentLocale, Astro)} class="hover:text-primary transition-colors duration-300">
+            <a href={getLocalizedUrl('/terms', currentLocale, Astro)} style="color: var(--footer-muted);" class="hover:text-primary transition-colors duration-300">
               {currentLocale === 'ar' ? 'شروط الخدمة' : 'Terms of Service'}
             </a>
           </div>

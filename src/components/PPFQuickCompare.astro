@@ -1,6 +1,9 @@
 ---
 const ACCENT = 'var(--brand-primary)';
 
+const { locale = 'en' } = Astro.props as { locale?: 'en' | 'ar' };
+const isArabic = locale === 'ar';
+
 const t = {
   en: {
     heading: 'Why SupaKoto PPF is the Smart Choice',
@@ -33,8 +36,39 @@ const t = {
     ],
     note: 'Specs vary by series; ask our team for the right match to your car and climate.',
   },
+  ar: {
+    heading: 'لماذا تاكاي PPF من سوباكوتو هو الخيار الذكي',
+    sub: 'مسح سريع. فروقات واضحة. قرر في ثوانٍ.',
+    brands: ['سوباكوتو • تاكاي', 'غربي متميز (XPEL/3M)', 'منخفض التكلفة (السوق الشامل)'],
+    criteria: [
+      { k: 'المتانة', tip: 'العمر الافتراضي الفعلي قبل التآكل الملحوظ' },
+      { k: 'الاصفرار', tip: 'ثبات اللون تحت الحرارة والأشعة فوق البنفسجية' },
+      { k: 'الوضوح', tip: 'نقاء اللمعان/الساتان ورؤية الحواف' },
+      { k: 'الإصلاح الذاتي', tip: 'استعادة الخدوش الدقيقة بالحرارة' },
+      { k: 'جودة التركيب', tip: 'الملاءمة والحواف والحرفية' },
+      { k: 'الضمان', tip: 'السنوات والدعم' },
+    ],
+    legend: { best: 'الأفضل', good: 'جيد', weak: 'ضعيف' },
+    chipsTitle: 'ما تحصل عليه فعلياً',
+    chips: [
+      'ضمان مدعوم حتى 15 سنة',
+      'راتنج فائق الثبات = لون مقاوم للصحراء',
+      'لمسة نهائية شفافة، حواف غير مرئية',
+      'استعادة نانو متقدمة بالحرارة',
+      'تركيب معتمد، قص دقيق',
+      'إمكانية تتبع كاملة وشهادة',
+    ],
+    detailsTitle: 'التفاصيل (للفضوليين)',
+    details: [
+      { q: 'قابلية التمدد', a: '≈350-400٪ (مواصفات تاكاي الداخلية) للمنحنيات النظيفة دون تبييض الإجهاد.' },
+      { q: 'المنشأ', a: '100٪ مواد يابانية ومراقبة العملية، فحص جودة صارم.' },
+      { q: 'العناية', a: 'اغسل كالمعتاد. تجنب المواد الكاشطة القاسية. مانع التسرب العرضي يحافظ على اللمعان الواضح.' },
+      { q: 'الحواف واللوحات', a: 'الأنماط المقطوعة مسبقاً تقلل من القص على الطلاء؛ حواف مخفية حيثما كان آمناً.' },
+    ],
+    note: 'تختلف المواصفات حسب السلسلة؛ اسأل فريقنا عن المطابقة المناسبة لسيارتك ومناخك.',
+  },
 };
-const lang = 'en';
+const lang = isArabic ? 'ar' : 'en';
 
 // ✓/△/✗ map (semantic + color)
 type Score = 'best' | 'good' | 'weak';
@@ -56,32 +90,32 @@ const matrix: Score[][] = [
 ];
 ---
 
-<section class="rounded-2xl border border-slate-700/60 bg-card p-4 sm:p-6 md:p-8 shadow-[0_0_60px_-30px_rgba(0,0,0,.8)]">
+<section class="rounded-2xl p-4 sm:p-6 md:p-8" style="background-color: var(--bg-card); border: 1px solid var(--border-default); box-shadow: var(--shadow-card);" dir={isArabic ? 'rtl' : 'ltr'}>
   <header class="mb-5 md:mb-6">
-    <h2 class="text-xl md:text-2xl font-semibold text-white tracking-tight">
-      <span class="text-white/90">{t[lang].heading}</span>
+    <h2 class={`text-xl md:text-2xl font-semibold tracking-tight ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-primary);">
+      <span>{t[lang].heading}</span>
     </h2>
-    <p class="text-slate-400 text-sm md:text-base mt-1">{t[lang].sub}</p>
+    <p class={`text-sm md:text-base mt-1 ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-muted);">{t[lang].sub}</p>
   </header>
 
   {/* Scorecard: mobile cards, desktop grid */}
-  <div class="hidden md:grid grid-cols-[220px_repeat(3,1fr)] gap-2 rounded-2xl overflow-hidden ring-1 ring-slate-700/50">
-    <div class="bg-input p-3 text-slate-300 text-sm">Feature</div>
+  <div class="hidden md:grid grid-cols-[220px_repeat(3,1fr)] gap-2 rounded-2xl overflow-hidden" style="border: 1px solid var(--border-default);">
+    <div class={`p-3 text-sm font-semibold ${isArabic ? 'font-arabic text-right' : 'text-left'}`} style="background-color: var(--bg-section); color: var(--text-primary);">{isArabic ? 'الميزة' : 'Feature'}</div>
     {t[lang].brands.map((b) => (
-      <div class="bg-input p-3 text-slate-300 text-sm font-medium">{b}</div>
+      <div class={`p-3 text-sm font-semibold ${isArabic ? 'font-arabic text-right' : 'text-left'}`} style="background-color: var(--bg-section); color: var(--text-primary);">{b}</div>
     ))}
 
     {t[lang].criteria.map((c, rowIdx) => (
       <>
-        <div class={`p-3 bg-slate-900/30 text-slate-200 text-sm ${rowIdx % 2 ? 'bg-slate-900/20' : ''}`}>
-          <div class="font-medium">{c.k}</div>
-          <div class="text-xs text-slate-400">{c.tip}</div>
+        <div class={`p-3 text-sm ${isArabic ? 'font-arabic text-right' : 'text-left'}`} style={`background-color: ${rowIdx % 2 ? '#FAFAF9' : 'var(--bg-card)'}; color: var(--text-primary);`}>
+          <div class="font-semibold">{c.k}</div>
+          <div class="text-xs" style="color: var(--text-muted);">{c.tip}</div>
         </div>
         {matrix[rowIdx].map((key) => (
-          <div class={`p-3 ${rowIdx % 2 ? 'bg-slate-900/10' : 'bg-slate-900/5'}`}>
-            <span class="inline-flex items-center gap-2 text-sm text-slate-200">
+          <div class={`p-3 ${isArabic ? 'text-right' : 'text-left'}`} style={`background-color: ${rowIdx % 2 ? '#FAFAF9' : 'var(--bg-card)'};`}>
+            <span class={`inline-flex items-center gap-2 text-sm ${isArabic ? 'font-arabic flex-row-reverse' : ''}`} style="color: var(--text-primary);">
               <span class={`h-2.5 w-2.5 rounded-full ${RATINGS[key].dot}`} aria-label={RATINGS[key].aria}></span>
-              <span>{RATINGS[key].label}</span>
+              <span class="font-medium">{RATINGS[key].label}</span>
             </span>
           </div>
         ))}
@@ -92,22 +126,22 @@ const matrix: Score[][] = [
   {/* Mobile: stacked comparison cards */}
   <div class="md:hidden space-y-3">
     {t[lang].criteria.map((c, rowIdx) => (
-      <div class="rounded-xl border border-slate-700/50 bg-slate-900/30 p-3">
-        <div class="flex items-start justify-between">
-          <div>
-            <div class="text-slate-200 text-sm font-medium">{c.k}</div>
-            <div class="text-xs text-slate-400">{c.tip}</div>
+      <div class="rounded-xl p-3" style="border: 1px solid var(--border-default); background-color: var(--bg-card);">
+        <div class={`flex items-start ${isArabic ? 'justify-end' : 'justify-start'}`}>
+          <div class={isArabic ? 'text-right' : 'text-left'}>
+            <div class={`text-sm font-semibold ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-primary);">{c.k}</div>
+            <div class={`text-xs ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-muted);">{c.tip}</div>
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2 mt-2">
           {t[lang].brands.map((b, colIdx) => {
             const key = matrix[rowIdx][colIdx];
             return (
-              <div class="rounded-lg bg-card px-2 py-2 text-center">
-                <div class="text-[11px] text-slate-400 truncate">{b}</div>
-                <div class="mt-1 inline-flex items-center justify-center gap-1.5">
+              <div class="rounded-lg px-2 py-2 text-center" style="background-color: var(--bg-section);">
+                <div class={`text-[11px] truncate ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-muted);">{b}</div>
+                <div class={`mt-1 inline-flex items-center justify-center gap-1.5 ${isArabic ? 'flex-row-reverse font-arabic' : ''}`}>
                   <span class={`h-2 w-2 rounded-full ${RATINGS[key].dot}`} aria-hidden="true"></span>
-                  <span class="text-xs text-slate-200">{RATINGS[key].label}</span>
+                  <span class="text-xs font-medium" style="color: var(--text-primary);">{RATINGS[key].label}</span>
                 </div>
               </div>
             );
@@ -119,10 +153,10 @@ const matrix: Score[][] = [
 
   {/* Chips: tangible benefits */}
   <div class="mt-6">
-    <div class="text-slate-300 text-sm mb-2">{t[lang].chipsTitle}</div>
-    <div class="flex flex-wrap gap-2">
+    <div class={`text-sm font-semibold mb-2 ${isArabic ? 'font-arabic text-right' : 'text-left'}`} style="color: var(--text-primary);">{t[lang].chipsTitle}</div>
+    <div class={`flex flex-wrap gap-2 ${isArabic ? 'justify-end' : 'justify-start'}`}>
       {t[lang].chips.map((c) => (
-        <span class="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-800/40 px-3 py-1.5 text-xs text-slate-100">
+        <span class={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs ${isArabic ? 'flex-row-reverse font-arabic' : ''}`} style="border: 1px solid var(--border-default); background-color: var(--bg-section); color: var(--text-primary);">
           <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill={ACCENT}><path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-6.5 6.5a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.42l2.293 2.293 5.793-5.793a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
           {c}
         </span>
@@ -132,20 +166,20 @@ const matrix: Score[][] = [
 
   {/* Progressive details */}
   <div class="mt-6">
-    <details class="group rounded-xl border border-slate-700/60 bg-slate-900/30">
-      <summary class="cursor-pointer list-none p-3 flex items-center justify-between">
-        <span class="text-slate-200 text-sm font-medium">{t[lang].detailsTitle}</span>
-        <svg class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+    <details class="group rounded-xl" style="border: 1px solid var(--border-default); background-color: var(--bg-card);">
+      <summary class={`cursor-pointer list-none p-3 flex items-center justify-between ${isArabic ? 'flex-row-reverse' : ''}`}>
+        <span class={`text-sm font-semibold ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-primary);">{t[lang].detailsTitle}</span>
+        <svg class="h-4 w-4 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" style="color: var(--text-muted);"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
       </summary>
-      <div class="divide-y divide-slate-800/60">
+      <div style="border-top: 1px solid var(--border-default);">
         {t[lang].details.map((it) => (
-          <div class="p-3">
-            <div class="text-slate-300 text-sm font-medium">{it.q}</div>
-            <div class="text-slate-400 text-sm mt-1">{it.a}</div>
+          <div class={`p-3 ${isArabic ? 'text-right' : 'text-left'}`} style="border-bottom: 1px solid var(--border-default);">
+            <div class={`text-sm font-semibold ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-primary);">{it.q}</div>
+            <div class={`text-sm mt-1 ${isArabic ? 'font-arabic' : ''}`} style="color: var(--text-secondary);">{it.a}</div>
           </div>
         ))}
       </div>
     </details>
-    <p class="text-xs text-slate-500 mt-2">{t[lang].note}</p>
+    <p class={`text-xs mt-2 ${isArabic ? 'font-arabic text-right' : 'text-left'}`} style="color: var(--text-muted);">{t[lang].note}</p>
   </div>
 </section>

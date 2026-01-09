@@ -32,6 +32,25 @@
   }
 }
 
+/* Testimonials carousel animations */
+@keyframes testimonial-scroll-ltr {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+@keyframes testimonial-scroll-rtl {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(25%);
+  }
+}
+
 
 
 /* SupaKoto Comparison Table Utilities */

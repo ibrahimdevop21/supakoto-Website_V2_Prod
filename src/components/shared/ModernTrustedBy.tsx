@@ -31,6 +31,7 @@ const DEFAULT_PARTNERS: ServicedBrand[] = [
     slug: "avatar-technology",
     name: "Avatar Technology",
     logoSrc: "/partners/Avatr_Technology_logo.svg",
+    darkLogoSrc: "/partners/avatar-dark-logo.svg",
     url: "https://www.avatr.com",
     alt: { en: "Avatar Technology", ar: "أفاتار تكنولوجي" },
   },
@@ -45,6 +46,7 @@ const DEFAULT_PARTNERS: ServicedBrand[] = [
     slug: "citroen",
     name: "Citroën",
     logoSrc: "/partners/citroen.svg",
+    darkLogoSrc: "/partners/citroen-dark-logo.svg",
     url: "https://www.citroen.com",
     alt: { en: "Citroën", ar: "ستروين" },
   },
@@ -59,6 +61,7 @@ const DEFAULT_PARTNERS: ServicedBrand[] = [
     slug: "jetour",
     name: "Jetour",
     logoSrc: "/partners/jetour.svg",
+    darkLogoSrc: "/partners/jetour-dark-logo.svg",
     url: "https://www.jetour.com",
     alt: { en: "Jetour", ar: "جيتور" },
   },
@@ -84,16 +87,37 @@ export default function ServicedBrandStrip({
   // Start true to avoid hydration mismatch flashes
   const [isVisible, setIsVisible] = useState(true);
   const [startAnimation, setStartAnimation] = useState(true);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    
+    // Detect initial theme
+    const currentTheme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' || 'dark';
+    setTheme(currentTheme);
+    
+    // Watch for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-theme') {
+          const newTheme = document.documentElement.getAttribute('data-theme') as 'light' | 'dark' || 'dark';
+          setTheme(newTheme);
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+    
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches) {
       setStartAnimation(false);
-      return;
+      return () => observer.disconnect();
     }
 
-    const observer = new IntersectionObserver(
+    const visibilityObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           const running = entry.isIntersecting ? "running" : "paused";
@@ -107,8 +131,11 @@ export default function ServicedBrandStrip({
       { threshold: 0.1, rootMargin: "50px" }
     );
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    if (sectionRef.current) visibilityObserver.observe(sectionRef.current);
+    return () => {
+      observer.disconnect();
+      visibilityObserver.disconnect();
+    };
   }, []);
 
   const hasAnimated = !!items?.length;
@@ -212,7 +239,7 @@ export default function ServicedBrandStrip({
                   aria-label={brand.alt?.[locale] || `${brand.name}`}
                 >
                   <img
-                    src={brand.logoSrc}
+                    src={theme === 'light' && brand.darkLogoSrc ? brand.darkLogoSrc : brand.logoSrc}
                     alt={brand.alt?.[locale] || `${brand.name}`}
                     width={240}
                     height={140}
@@ -272,7 +299,7 @@ export default function ServicedBrandStrip({
                   aria-label={brand.alt?.[locale] || `${brand.name}`}
                 >
                   <img
-                    src={brand.logoSrc}
+                    src={theme === 'light' && brand.darkLogoSrc ? brand.darkLogoSrc : brand.logoSrc}
                     alt={brand.alt?.[locale] || `${brand.name}`}
                     width={240}
                     height={140}

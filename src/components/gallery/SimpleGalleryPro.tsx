@@ -145,6 +145,22 @@ export default function SimpleGalleryPro({
   const startX = useRef<number | null>(null);
   const deltaX = useRef(0);
   const loadedRef = useRef<Set<string>>(new Set());
+  
+  // Track theme for navigation button styling
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  useEffect(() => {
+    const stored = localStorage.getItem('supakoto-theme');
+    const current = document.documentElement.getAttribute('data-theme');
+    setTheme((current === 'light' || stored === 'light') ? 'light' : 'dark');
+    
+    // Listen for theme changes
+    const observer = new MutationObserver(() => {
+      const newTheme = document.documentElement.getAttribute('data-theme');
+      setTheme(newTheme === 'light' ? 'light' : 'dark');
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
 
   // Track mobile breakpoint to only apply aspect ratio on mobile without SSR mismatch
   const [isMobile, setIsMobile] = useState(false);
@@ -269,24 +285,31 @@ export default function SimpleGalleryPro({
           }}
         >
           <ProgressiveImage img={current} eager ratio={current.width && current.height ? current.width / current.height : fallbackRatio} fillParent />
-          <div className="absolute inset-0 flex items-center justify-between p-2 md:p-4">
-            <Button type="button" variant="outline" size="icon" onClick={isRTL ? next : prev} aria-label={t.prev} className="h-10 w-10 md:h-12 md:w-12 bg-black/35 hover:bg-black/55 border-white/25 hover:border-white/40 text-white">
+          <div className="absolute inset-0 flex items-center justify-between p-2 md:p-4 pointer-events-none">
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="icon" 
+              onClick={isRTL ? next : prev} 
+              aria-label={t.prev}
+              data-theme={theme}
+              className="pointer-events-auto h-10 w-10 md:h-12 md:w-12 rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent data-[theme=light]:bg-white/90 data-[theme=light]:border-white data-[theme=light]:text-[#0E1626] data-[theme=light]:hover:bg-white data-[theme=light]:hover:scale-110 data-[theme=light]:focus:ring-[#BF1E2E]/30 data-[theme=dark]:bg-black/40 data-[theme=dark]:border-white/30 data-[theme=dark]:text-white data-[theme=dark]:hover:bg-black/60 data-[theme=dark]:hover:border-white/50 data-[theme=dark]:hover:scale-110 data-[theme=dark]:focus:ring-white/30"
+            >
               <ChevronLeft className={cn("h-5 w-5 md:h-6 md:w-6", isRTL && "rotate-180")} />
             </Button>
-            <Button type="button" variant="outline" size="icon" onClick={isRTL ? prev : next} aria-label={t.next} className="h-10 w-10 md:h-12 md:w-12 bg-black/35 hover:bg-black/55 border-white/25 hover:border-white/40 text-white">
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="icon" 
+              onClick={isRTL ? prev : next} 
+              aria-label={t.next}
+              data-theme={theme}
+              className="pointer-events-auto h-10 w-10 md:h-12 md:w-12 rounded-full border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent data-[theme=light]:bg-white/90 data-[theme=light]:border-white data-[theme=light]:text-[#0E1626] data-[theme=light]:hover:bg-white data-[theme=light]:hover:scale-110 data-[theme=light]:focus:ring-[#BF1E2E]/30 data-[theme=dark]:bg-black/40 data-[theme=dark]:border-white/30 data-[theme=dark]:text-white data-[theme=dark]:hover:bg-black/60 data-[theme=dark]:hover:border-white/50 data-[theme=dark]:hover:scale-110 data-[theme=dark]:focus:ring-white/30"
+            >
               <ChevronRight className={cn("h-5 w-5 md:h-6 md:w-6", isRTL && "rotate-180")} />
             </Button>
           </div>
-          <div className="sm:hidden absolute bottom-3 left-1/2 -translate-x-1/2">
-            <div className="text-[11px] text-white/95 px-3 py-1.5 rounded-full bg-black/65 border border-white/20">{isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}</div>
-          </div>
         </div>
-        {(showCaptions || showCounter) && (
-          <div className="flex items-center justify-between gap-3 px-2 py-2 sm:py-3">
-            {showCaptions ? <div className="text-xs sm:text-sm text-neutral-300/90 line-clamp-2">{current.caption || current.alt || ""}</div> : <span />}
-            {showCounter && <div className="hidden sm:block text-xs text-neutral-400">{isRTL ? `الصورة ${index + 1} من ${images.length}` : `Image ${index + 1} of ${images.length}`}</div>}
-          </div>
-        )}
       </div>
       <div className="mt-4 rounded-2xl bg-white/5 supports-[backdrop-filter]:backdrop-blur-md border border-white/10">
         <div ref={stripRef} className={cn(

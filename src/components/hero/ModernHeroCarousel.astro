@@ -16,12 +16,13 @@ const rtl = currentLang === 'ar';
       muted 
       loop 
       playsinline
-      preload="metadata"
+      preload="none"
+      poster="/gallery/full/supa-066.webp"
     >
       <source src="/videos/supakoto-hero-mobiile.webm" type="video/webm">
       <!-- Fallback image for mobile -->
       <img 
-        src="/images/optimized/hero-mobile.webp" 
+        src="/gallery/full/supa-066.webp" 
         alt="SupaKoto Paint Protection Film PPF services - Professional car protection in Egypt and UAE"
         class="w-full h-full object-cover"
       />
@@ -34,12 +35,13 @@ const rtl = currentLang === 'ar';
       muted 
       loop 
       playsinline
-      preload="metadata"
+      preload="none"
+      poster="/gallery/full/supa-066.webp"
     >
       <source src="/videos/supakoto-hero.webm" type="video/webm">
       <!-- Fallback image for desktop -->
       <img 
-        src="/images/optimized/hero-desktop.webp" 
+        src="/gallery/full/supa-066.webp" 
         alt="SupaKoto Paint Protection Film PPF services - Premium automotive protection solutions"
         class="w-full h-full object-cover"
       />
@@ -228,7 +230,7 @@ const rtl = currentLang === 'ar';
   document.addEventListener('DOMContentLoaded', () => {
     const cc = countryFromTimezone();
     const wa = COUNTRY_DEFAULTS[cc].wa;
-    const whatsappBtn = document.getElementById('hero-whatsapp-cta');
+    const whatsappBtn = document.getElementById('hero-whatsapp-cta') as HTMLAnchorElement | null;
     if (whatsappBtn) {
       whatsappBtn.href = `https://wa.me/${wa}`;
     }

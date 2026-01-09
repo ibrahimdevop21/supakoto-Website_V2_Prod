@@ -2,7 +2,6 @@
 import Layout from '../layouts/Layout.astro';
 import OurServices from '@services/OurServices.astro';
 import ServiceTiers from '@services/ServiceTiers';
-import FinishOptions from '@services/FinishOptions';
 import TechCraftsmanship from '@services/TechCraftsmanship';
 import PPFComparison from '@shared/PPFComparison';
 
@@ -57,15 +56,6 @@ const combinedSchema = [breadcrumbSchema, serviceSchema];
 				<TechCraftsmanship client:visible currentLocale={currentLang} isRTL={rtl} />
 			</div>
 		</section>
-
-		<!-- Finish Options Section -->
-		<section class="py-12 md:py-16">
-			<div class="container mx-auto px-4">
-				<FinishOptions client:visible currentLocale={currentLang} isRTL={rtl} />
-			</div>
-		</section>
-
-
 
 		<!-- Lifestyle Use Cases Section -->
 		<section class="py-12 md:py-16">

@@ -76,3 +76,64 @@
 [dir="rtl"] .text-right {
   text-align: left;
 }
+
+/* ============================================
+   RTL TABLE ALIGNMENT - COMPARISON TABLES
+   ============================================ */
+/* RTL: All table headers and cells align right */
+[dir="rtl"] table th,
+[dir="rtl"] table td {
+  text-align: right !important;
+}
+
+/* RTL: Icon + text containers in tables - reverse and align right */
+[dir="rtl"] table .inline-flex.items-center,
+[dir="rtl"] table td .inline-flex,
+[dir="rtl"] table th .inline-flex {
+  flex-direction: row-reverse !important;
+  justify-content: flex-end !important;
+  text-align: right !important;
+}
+
+/* RTL: Maintain gap spacing in reversed flex containers */
+[dir="rtl"] table .inline-flex.gap-2 {
+  gap: 0.5rem !important;
+}
+
+/* RTL: Table cell content wrappers */
+[dir="rtl"] table .sk-row {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* RTL: Direct children of table cells */
+[dir="rtl"] table td > div,
+[dir="rtl"] table td > span,
+[dir="rtl"] table th > div,
+[dir="rtl"] table th > span {
+  text-align: right !important;
+  direction: rtl !important;
+}
+
+/* RTL: All nested content in table cells */
+[dir="rtl"] table td div,
+[dir="rtl"] table td span,
+[dir="rtl"] table th div,
+[dir="rtl"] table th span {
+  text-align: right !important;
+}
+
+/* RTL: Specific fix for relative z-10 wrappers in table cells */
+[dir="rtl"] table td .relative.z-10,
+[dir="rtl"] table td .relative {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+/* RTL: Ensure sticky columns align properly */
+[dir="rtl"] table th[scope="row"],
+[dir="rtl"] table .sticky {
+  text-align: right !important;
+}

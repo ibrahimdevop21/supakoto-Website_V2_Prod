@@ -9,7 +9,7 @@
    SAFE IMPLEMENTATION:
    - No component coupling
    - No page reload required
-   - Defaults to dark theme
+   - Defaults to light theme
    - Respects user preference
    ============================================ */
 
@@ -22,7 +22,7 @@ export type Theme = typeof DARK | typeof LIGHT;
 
 /**
  * Get current theme from localStorage or system preference
- * Defaults to dark if no preference exists
+ * Defaults to light if no preference exists
  */
 export function getInitialTheme(): Theme {
   // Check localStorage first
@@ -44,8 +44,8 @@ export function getInitialTheme(): Theme {
     }
   }
   
-  // Default to dark
-  return DARK;
+  // Default to light
+  return LIGHT;
 }
 
 /**
@@ -72,10 +72,10 @@ export function toggleTheme(): Theme {
  * Get currently active theme
  */
 export function getCurrentTheme(): Theme {
-  if (typeof document === 'undefined') return DARK;
+  if (typeof document === 'undefined') return LIGHT;
   
   const current = document.documentElement.getAttribute(THEME_ATTR);
-  return current === LIGHT ? LIGHT : DARK;
+  return current === DARK ? DARK : LIGHT;
 }
 
 /**

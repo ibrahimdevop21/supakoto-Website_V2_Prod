@@ -10,7 +10,7 @@ import Nav from '../components/layout/Nav.astro';
 import Preload from '../components/shared/Preload.astro';
 import SEOHead from '../components/layout/SEOHead.astro';
 import TactfulWidget from '../components/TactfulWidget.astro';
-import ThemeToggle from '../components/ThemeToggle.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
 
@@ -365,8 +365,8 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		<!-- Tactful Chat Widget (Disabled) -->
 		<TactfulWidget />
 		
-		<!-- Theme Toggle -->
-		<ThemeToggle />
+		<!-- WhatsApp Float (Right Corner) -->
+		<WhatsAppFloat />
 		
 		<!-- Vercel Analytics -->
 		<script>

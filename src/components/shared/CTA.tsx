@@ -27,26 +27,21 @@ const CTA: React.FC<CTAProps> = ({ currentLocale, isRTL, contactUrl }) => {
   return (
     <div className={`py-16 md:py-24 my-16 ${isArabic ? 'rtl font-arabic' : 'ltr'} relative overflow-hidden`}>
       <div className="container mx-auto px-4">
-        <div className="relative rounded-3xl p-10 md:p-16 text-center shadow-2xl animate-fadeInUp bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 backdrop-blur-sm border border-slate-700/50 overflow-hidden">
-          {/* Glowing background effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-red-500/15 to-orange-500/20 opacity-80"></div>
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-red-500/30 to-orange-500/30 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-orange-500/25 to-red-500/25 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="relative rounded-3xl p-10 md:p-16 text-center shadow-2xl animate-fadeInUp overflow-hidden" style={{backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-default)', borderWidth: '1px', borderStyle: 'solid', boxShadow: 'var(--shadow-card)'}}>
           
           <div className="relative z-10">
             <div className="relative">
-              <h2 className={`text-3xl md:text-5xl font-bold mb-6 text-white tracking-tight bg-gradient-to-r from-red-400 via-red-300 to-orange-300 bg-clip-text text-transparent ${isArabic ? 'font-arabic' : ''}`}>
+              <h2 className={`text-3xl md:text-5xl font-bold mb-6 tracking-tight ${isArabic ? 'font-arabic' : ''}`} style={{color: 'var(--text-primary)'}}>
                 {headline[isArabic ? 'ar' : 'en']}
               </h2>
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
             </div>
             
-            <p className={`text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-4 leading-relaxed ${isArabic ? 'font-arabic' : ''}`}>
+            <p className={`text-lg md:text-xl max-w-2xl mx-auto mb-4 leading-relaxed ${isArabic ? 'font-arabic' : ''}`} style={{color: 'var(--text-secondary)'}}>
               {subheadline[isArabic ? 'ar' : 'en']}
             </p>
             
             {/* Warranty note */}
-            <p className={`text-sm text-gray-300 max-w-xl mx-auto mb-8 ${isArabic ? 'font-arabic' : ''}`}>
+            <p className={`text-sm max-w-xl mx-auto mb-8 ${isArabic ? 'font-arabic' : ''}`} style={{color: 'var(--text-secondary)'}}>
               {isArabic ? 'جميع الأفلام تشمل تغطية الضمان.' : 'All films include warranty coverage.'}
             </p>
             

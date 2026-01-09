@@ -21,7 +21,7 @@
 >
   <svg
     id="theme-icon-sun"
-    class="w-5 h-5 text-yellow-400 hidden"
+    class="w-5 h-5 text-orange-400 hidden"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -35,7 +35,7 @@
   </svg>
   <svg
     id="theme-icon-moon"
-    class="w-5 h-5 text-slate-300"
+    class="w-5 h-5"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -48,6 +48,23 @@
     />
   </svg>
 </button>
+
+<style>
+  /* Sun icon - light orange */
+  #theme-icon-sun {
+    color: #fb923c; /* orange-400 */
+  }
+  
+  /* Moon icon - changes based on theme */
+  #theme-icon-moon {
+    color: #cbd5e1; /* slate-300 - default for dark mode */
+  }
+  
+  /* Moon icon in light mode - black */
+  [data-theme="light"] #theme-icon-moon {
+    color: #0f172a; /* slate-900 - black in light mode */
+  }
+</style>
 
 <script is:inline>
   (function() {

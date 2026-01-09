@@ -73,8 +73,8 @@ const SwipeNudgeButton: React.FC<{
 const mobileFirstColW = 'w-[44vw] min-w-[44vw]';
 const mobileDataColW  = 'w-[56vw] min-w-[56vw]';
 
-// Solid background for sticky cells to avoid iOS translucent banding
-const cardBgSolid = 'bg-[#0b1220]'; // very dark blue/black
+// Theme-aware background for sticky cells
+const cardBgSolid = 'bg-card'; // uses CSS variable for theme support
 
 // Spacing rhythm
 const cellX = 'px-4 md:px-6';
@@ -286,60 +286,53 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
     const short = shortenCopy(String(text || ''), { locale, maxLen: 56 });
     if (rating === 'best') {
       return (
-        <div className="inline-flex items-center gap-2">
+        <div className={`inline-flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <CheckIcon className="w-4 h-4 text-emerald-400" />
-          <span className="text-slate-200">{short}</span>
+          <span style={{color: 'var(--text-primary)'}}>{short}</span>
         </div>
       );
     }
     if (rating === 'avg') {
       return (
-        <div className="inline-flex items-center gap-2">
+        <div className={`inline-flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <TriangleIcon className="w-3.5 h-3.5 text-amber-400" />
-          <span className="text-slate-300">{short}</span>
+          <span style={{color: 'var(--text-secondary)'}}>{short}</span>
         </div>
       );
     }
     return (
-      <div className="inline-flex items-center gap-2">
+      <div className={`inline-flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         <XIcon className="w-4 h-4 text-rose-400" />
-        <span className="text-slate-300">{short}</span>
+        <span style={{color: 'var(--text-secondary)'}}>{short}</span>
       </div>
     );
   };
 
   // Cell class helpers (emerald highlight + solid sticky bgs + spacing)
   const headCellClass = (index: number) => clsx(
-    cellX, cellY, 'font-semibold border-b border-white/10',
+    cellX, cellY, 'font-bold',
     'sticky top-0 z-30',
-    cardBgSolid,                                   // SOLID to prevent iOS banding
     index === 0 && clsx(
-      'sticky z-40',                                // sticky first col on ALL breakpoints
+      'sticky z-40',
       isRTL ? 'right-0' : 'left-0'
     ),
-    index === supaColIndex ? 'text-slate-100' : 'text-gray-200',
     isRTL ? 'text-right' : 'text-left',
-    index === 0 ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`,
-    "after:content_[''] after:absolute after:left-0 after:right-0 after:bottom-[-1px] after:h-px after:bg-white/10"
+    index === 0 ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`
   );
 
   const rowCellClass = (index: number, isFirstCol = false) => clsx(
-    cellX, cellY, 'border-b border-white/5 transition-colors leading-snug md:leading-normal',
-    'motion-safe:hover:bg-white/5',
+    cellX, cellY, 'transition-colors leading-snug md:leading-normal',
     isFirstCol && clsx(
       'sticky z-20',
-      cardBgSolid,                                 // SOLID sticky bg
       isRTL ? 'right-0' : 'left-0',
-      'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]'
+      'font-semibold'
     ),
-    // No glow here; Supa column elevation handled by sk-col-accent
-    index !== supaColIndex && !isFirstCol && 'text-gray-300',
     isRTL ? 'text-right' : 'text-left',
     isFirstCol ? `${mobileFirstColW} sm:w-auto sm:min-w-0` : `${mobileDataColW} sm:w-auto sm:min-w-0`
   );
 
   const stickyFirstColClass = clsx(
-    'sticky z-30 backdrop-blur-md bg-slate-900/95 shadow-lg',
+    'sticky z-30 backdrop-blur-md shadow-lg',
     isRTL ? 'right-0' : 'left-0'
   );
 
@@ -350,12 +343,6 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
       label: locale === 'en' ? 'Takai PPF (Premium)' : 'تاكاي PPF (مميز)',
       color: 'bg-[\#bf1e2e]',
       textColor: 'text-red-200'
-    },
-    { 
-      key: 'xpel3m', 
-      label: locale === 'en' ? 'XPEL / 3M (Western)' : 'XPEL / 3M (غربي)',
-      color: 'bg-slate-500',
-      textColor: 'text-slate-200'
     },
     { 
       key: 'china', 
@@ -373,15 +360,15 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Premium Header Block */}
         <div className="text-center mb-10 md:mb-14">
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-600/20 to-emerald-400/20 border border-emerald-500/30 backdrop-blur-sm mb-4">
-            <span className="text-xs font-semibold text-emerald-200 tracking-wider">
+          <div className="inline-flex items-center px-3 py-1.5 rounded-full backdrop-blur-sm mb-4" style={{backgroundColor: 'var(--bg-section)', border: '1px solid var(--border-default)'}}>
+            <span className="text-xs font-semibold tracking-wider" style={{color: 'var(--text-primary)'}}>
               {locale === 'en' ? 'COMPARISON' : 'مقارنة'}
             </span>
           </div>
-          <h1 className="text-2xl md:text-4xl font-bold mb-3 text-white">
+          <h1 className={`text-2xl md:text-4xl font-bold mb-3 ${isRTL ? 'font-arabic' : ''}`} style={{color: 'var(--text-primary)'}}>
             {locale === 'en' ? 'Takai PPF vs Other Options' : 'تاكاي PPF مقابل الخيارات الأخرى'}
           </h1>
-          <p className="text-gray-300 text-xs md:text-sm mb-6 md:mb-8">
+          <p className={`text-xs md:text-sm mb-6 md:mb-8 ${isRTL ? 'font-arabic' : ''}`} style={{color: 'var(--text-secondary)'}}>
             {locale === 'en' ? 'Swipe horizontally on mobile to compare.' : 'اسحب أفقيًا على الجوال للمقارنة.'}
           </p>
           <div className={clsx('flex flex-wrap gap-3 justify-center', isRTL && 'flex-row-reverse')}>
@@ -404,10 +391,9 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
         {/* Premium Table Wrapper */}
         <div className="relative">
           {/* Outer Card with Depth */}
-          <div className="relative rounded-2xl border border-white/10 bg-slate-900/80 shadow-[0_18px_60px_-20px_rgba(0,0,0,0.7)] overflow-hidden">
-            <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
-            {/* Inner Gradient Layer */}
-            <div className="bg-gradient-to-br from-white/5 to-white/0 relative">
+          <div className="relative rounded-2xl overflow-hidden" style={{backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-card)'}}>
+            {/* Inner Layer */}
+            <div className="relative">
               
               {/* Table Scroller with WebKit Mask Edge Fades */}
               <div
@@ -434,13 +420,12 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                   <div
                     className={clsx(
                       'sm:hidden absolute z-20 pointer-events-none',
-                      isRTL ? 'top-2 left-2' : 'top-2 right-2' // TOP-end position
+                      isRTL ? 'top-2 left-2' : 'top-2 right-2'
                     )}
                     aria-hidden="true"
                   >
-                    <div className="pointer-events-auto px-3 py-1.5 rounded-full text-[11px] font-medium
-                                    text-white bg-black/60 backdrop-blur-md border border-white/15
-                                    shadow-[0_6px_20px_rgba(0,0,0,0.35)]">
+                    <div className={`pointer-events-auto px-3 py-1.5 rounded-full text-[11px] font-medium backdrop-blur-md ${isRTL ? 'font-arabic' : ''}`}
+                         style={{color: 'var(--text-primary)', backgroundColor: 'var(--bg-section)', border: '1px solid var(--border-default)'}}>
                       {locale === 'en' ? 'Swipe to compare →' : 'اسحب للمقارنة ←'}
                     </div>
                   </div>
@@ -470,8 +455,13 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                           key={column.key}
                           scope="col"
                           className={headCellClass(index)}
+                          style={{
+                            backgroundColor: index === 0 ? 'var(--bg-section)' : 'var(--bg-section)',
+                            color: 'var(--text-primary)',
+                            borderBottom: '1px solid var(--border-default)'
+                          }}
                         >
-                          {column[locale]}
+                          <span className={isRTL ? 'font-arabic' : ''}>{column[locale]}</span>
                         </th>
                       ))}
                     </tr>
@@ -488,8 +478,13 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                         <th 
                           scope="row"
                           className={clsx(rowCellClass(0, true), 'sk-row')}
+                          style={{
+                            backgroundColor: 'var(--bg-section)',
+                            color: 'var(--text-primary)',
+                            borderBottom: '1px solid var(--border-default)'
+                          }}
                         >
-                          {row.feature[locale]}
+                          <span className={isRTL ? 'font-arabic' : ''}>{row.feature[locale]}</span>
                         </th>
                         
                         {/* Data Columns */}
@@ -497,16 +492,28 @@ const PPFComparison: React.FC<PPFComparisonProps> = ({
                           const ratings = RATING_MATRIX[rowIndex] || ['best','avg','weak'];
                           return (
                             <>
-                              <td className={clsx(rowCellClass(1), 'sk-row', 'sk-col-accent')}>
-                                <div className="relative z-10">
+                              <td className={clsx(rowCellClass(1), 'sk-row', 'sk-col-accent')}
+                                  style={{
+                                    backgroundColor: rowIndex % 2 ? 'var(--bg-section)' : 'var(--bg-card)',
+                                    borderBottom: '1px solid var(--border-default)'
+                                  }}>
+                                <div className={`relative z-10 ${isRTL ? 'font-arabic' : ''}`}>
                                   {renderRated(ratings[0], row.supa[locale])}
                                 </div>
                               </td>
-                              <td className={clsx(rowCellClass(2), 'sk-row')}>
-                                {renderRated(ratings[1], row.xpel3m[locale])}
+                              <td className={clsx(rowCellClass(2), 'sk-row')}
+                                  style={{
+                                    backgroundColor: rowIndex % 2 ? 'var(--bg-section)' : 'var(--bg-card)',
+                                    borderBottom: '1px solid var(--border-default)'
+                                  }}>
+                                <span className={isRTL ? 'font-arabic' : ''}>{renderRated(ratings[1], row.xpel3m[locale])}</span>
                               </td>
-                              <td className={clsx(rowCellClass(3), 'sk-row')}>
-                                {renderRated(ratings[2], row.china[locale])}
+                              <td className={clsx(rowCellClass(3), 'sk-row')}
+                                  style={{
+                                    backgroundColor: rowIndex % 2 ? 'var(--bg-section)' : 'var(--bg-card)',
+                                    borderBottom: '1px solid var(--border-default)'
+                                  }}>
+                                <span className={isRTL ? 'font-arabic' : ''}>{renderRated(ratings[2], row.china[locale])}</span>
                               </td>
                             </>
                           );

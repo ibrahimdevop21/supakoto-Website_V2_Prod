@@ -74,7 +74,7 @@ const { selectedBranch, currentLang } = Astro.props;
             aria-expanded="false"
             aria-haspopup="listbox"
           >
-            <span id="country-label-text" class="truncate">🇦🇪 United Arab Emirates (+971)</span>
+            <span id="country-label-text" class="truncate">🇦🇪 United Emirates (+971)</span>
             <svg class="pointer-events-none absolute top-1/2 -translate-y-1/2 end-3 h-4 w-4 text-slate-300"
                  viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -122,7 +122,6 @@ const { selectedBranch, currentLang } = Astro.props;
         { v: 'ceramic', tEn: 'Ceramic Coating', tAr: 'نانو سيراميك' },
         { v: 'heat_uv_isolation', tEn: 'Heat/UV Isolation', tAr: 'عزل الحرارة والأشعة فوق البنفسجية' },
         { v: 'window_tinting', tEn: 'Window Tinting', tAr: 'تظليل النوافذ' },
-        { v: 'building_heat_uv_isolation', tEn: 'Building Heat/UV Isolation', tAr: 'عزل الحرارة/الأشعة للمباني' },
       ].map(opt => (
         <label class="w-full flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/50
                        hover:border-[#bf1e2e]/60 transition cursor-pointer">
@@ -147,19 +146,6 @@ const { selectedBranch, currentLang } = Astro.props;
         {currentLang === 'ar' ? 'أفضل التواصل عبر واتساب' : 'Prefer WhatsApp'}
       </span>
     </label>
-  </div>
-
-  <!-- Payment & Installments -->
-  <div class="space-y-3">
-    <label id="payments-label" class="sk-label">{currentLang === 'ar' ? 'الدفع والتقسيط (اختياري)' : 'Payment & Installments (Optional)'}</label>
-    <!-- Auto-fit columns -->
-    <div
-      id="payments-grid"
-      data-lang={currentLang}
-      role="group"
-      aria-labelledby="payments-label"
-      class="grid grid-cols-1 md:grid-cols-3 gap-3"
-    ></div>
   </div>
 
   <!-- Optional Car Details -->
@@ -285,7 +271,8 @@ const { selectedBranch, currentLang } = Astro.props;
 
 
   .sk-btn {
-    @apply rounded-xl bg-[#bf1e2e] px-5 py-3 text-white font-medium shadow hover:brightness-110 focus:ring-2 focus:ring-[#bf1e2e] disabled:opacity-60 transition;
+    @apply rounded-xl bg-[#bf1e2e] px-5 py-3 font-medium shadow hover:brightness-110 focus:ring-2 focus:ring-[#bf1e2e] disabled:opacity-60 transition;
+    color: white !important;
   }
   
   .sk-label {
@@ -337,7 +324,6 @@ const { selectedBranch, currentLang } = Astro.props;
   const errorText = document.getElementById('error-text');
   const loadTimeInput = document.getElementById('load-time');
   const dryRunBanner = document.getElementById('dry-run-banner');
-  const paymentsGrid = document.getElementById('payments-grid');
   const utmSource = document.getElementById('utm_source') as HTMLInputElement | null;
   const utmMedium = document.getElementById('utm_medium') as HTMLInputElement | null;
   const utmCampaign = document.getElementById('utm_campaign') as HTMLInputElement | null;
@@ -365,7 +351,7 @@ const { selectedBranch, currentLang } = Astro.props;
   // Preferred countries pinned and minimal list for fallback validation/placeholders
   const PREFERRED = ['AE', 'EG'] as const;
   const COUNTRIES: Array<{iso2:string; name:string; dial:string; flag:string; example?:string}> = [
-    { iso2:'AE', name:'United Arab Emirates', dial:'971', flag:'🇦🇪', example:'5XXXXXXXX' },
+    { iso2:'AE', name:'United Emirates', dial:'971', flag:'🇦🇪', example:'5XXXXXXXX' },
     { iso2:'EG', name:'Egypt',                 dial:'20',  flag:'🇪🇬', example:'01XXXXXXXXX' },
     { iso2:'SA', name:'Saudi Arabia',  dial:'966', flag:'🇸🇦', example:'5XXXXXXXX' },
     { iso2:'QA', name:'Qatar',         dial:'974', flag:'🇶🇦' },
@@ -499,7 +485,6 @@ const { selectedBranch, currentLang } = Astro.props;
     if (updateUI) countryLabelText.textContent = `${c.flag} ${c.name} (+${c.dial})`;
     updatePhonePlaceholder();
     updatePhonePreview();
-    renderPayments();
   }
 
 
@@ -537,85 +522,10 @@ const { selectedBranch, currentLang } = Astro.props;
     return { valid:true, formatted };
   }
 
-  // Dynamic Payment & Installments by country (module scope)
-  const paymentOptions = {
-    EG: [
-      { v: 'valu', src: '/payment/eg/valu.webp', alt: 'Valu' },
-      { v: 'nbe', src: '/payment/eg/NBE-logo.svg', alt: 'NBE' },
-      { v: 'banque_misr', src: '/payment/eg/bmp-logo.png', alt: 'Banque Misr' }
-      // Note: Keeping EG to installment providers only per earlier UX; can add Visa/MasterCard if desired
-    ],
-    AE: [
-      { v: 'tabby', src: '/payment/ae/tabby-logo-1.png', alt: 'Tabby' }
-    ]
-  } as const;
-
-  function renderPayments() {
-    if (!paymentsGrid) return;
-
-    // Preserve current selections
-    const selected = new Set<string>();
-    paymentsGrid.querySelectorAll('input[name="payments[]"]:checked')
-      ?.forEach(el => selected.add((el as HTMLInputElement).value));
-
-    const country = getCountry();
-    const list = paymentOptions[country as keyof typeof paymentOptions] || [];
-    const isAR = (paymentsGrid as HTMLElement).dataset.lang === 'ar';
-
-    paymentsGrid.innerHTML = '';
-
-    list.forEach(p => {
-      const label = document.createElement('label');
-      // Match exact styling from Services section
-      label.className = 'w-full flex items-center gap-3 p-3 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-[#bf1e2e]/60 transition cursor-pointer';
-      label.title = p.alt;
-
-      // native checkbox (identical to Services)
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.name = 'payments[]';
-      input.value = p.v;
-      input.className = 'h-4 w-4 rounded-sm accent-[#bf1e2e] focus:outline-none';
-      input.setAttribute('aria-label', p.alt);
-      if (selected.has(p.v)) input.checked = true;
-
-      // logo container with consistent spacing
-      const logoContainer = document.createElement('span');
-      logoContainer.className = 'flex items-center text-sm text-slate-200';
-      
-      const img = document.createElement('img');
-      img.src = p.src;
-      img.alt = p.alt;
-      img.className = 'h-5 w-auto max-w-[120px] object-contain';
-      img.decoding = 'async';
-      img.loading = 'lazy';
-      
-      // Optional per-brand micro-tuning for optical parity
-      if (p.v === 'banque_misr') img.classList.add('scale-[1.08]');
-      if (p.v === 'nbe')         img.classList.add('scale-[1.04]');
-      
-      logoContainer.appendChild(img);
-
-      // Order identical to Services: [checkbox, content]
-      label.appendChild(input);
-      label.appendChild(logoContainer);
-
-      paymentsGrid.appendChild(label);
-    });
-  }
-
   // Init custom listbox and placeholders
   initCountryListbox('AE');
   updatePhonePlaceholder();
   updatePhonePreview();
-
-  // Render immediately in case DOMContentLoaded already fired
-  renderPayments();
-
-  // Initialize payments on load
-  document.addEventListener('DOMContentLoaded', () => {
-    renderPayments();
-  });
 
   // ARIA helpers for invalid state (script scope)
   function setInvalid(el: HTMLElement | null, msgId?: string) {

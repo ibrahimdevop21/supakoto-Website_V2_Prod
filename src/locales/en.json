@@ -270,35 +270,59 @@
       "cta": "Explore Our Protection Solutions"
     },
     "tiers": {
-      "title": "Protection Tiers",
-      "subtitle": "Choose the perfect level of protection for your vehicle",
-      "ultimate": {
-        "title": "Ultimate Protection",
-        "description": "Full exterior PPF coverage, interior film, nano coatings, longest warranty, and premium finish options.",
-        "feature1": "Complete vehicle coverage with premium PPF",
-        "feature2": "Interior protection and nano-ceramic coatings",
-        "feature3": "15-year manufacturer warranty"
+      "title": "TAKAI PPF Protection Packages",
+      "subtitle": "Authentic Japanese protection engineered for excellence",
+      "gold": {
+        "title": "TAKAI GOLD",
+        "subtitle": "Premium Entry Protection",
+        "description": "Balanced protection with strong self-healing, high clarity, and long-term durability.",
+        "warranty": "10-Year Warranty",
+        "spec1": "Total Thickness: 210 µm",
+        "spec2": "Gloss Level: 92.4",
+        "spec3": "Tensile Strength: 32 MPa",
+        "spec4": "Elongation: ≥400%",
+        "spec5": "Anti-Yellowing: ΔE < 1",
+        "spec6": "Hydrophobic: R9–R10",
+        "useCase": "Ideal for daily drivers seeking reliable protection with excellent clarity and self-healing properties."
       },
-      "premium": {
-        "title": "Premium Protection",
-        "description": "Full-body PPF, interior add-ons, self-healing & anti-yellowing properties, expert manual installation.",
-        "feature1": "Full-body paint protection film",
-        "feature2": "Self-healing and anti-yellowing technology",
-        "feature3": "Professional manual installation"
+      "goldPlus": {
+        "title": "TAKAI GOLD PLUS",
+        "subtitle": "Enhanced Gloss & Strength",
+        "description": "Higher gloss and improved impact resistance while maintaining flexibility.",
+        "warranty": "10-Year Warranty",
+        "spec1": "Total Thickness: 250 µm",
+        "spec2": "Gloss Level: 93.8",
+        "spec3": "Tensile Strength: 35 MPa",
+        "spec4": "Elongation: ≥400%",
+        "spec5": "Anti-Yellowing: ΔE < 1",
+        "spec6": "Hydrophobic: R9–R10",
+        "useCase": "Perfect for owners who want enhanced gloss and superior impact resistance for their vehicles."
       },
-      "standard": {
-        "title": "Standard Protection",
-        "description": "Exterior coverage with premium PPF, optional glass/interior protection — balanced cost & durability.",
-        "feature1": "Key area exterior coverage",
-        "feature2": "Optional glass and interior protection",
-        "feature3": "Balanced cost and durability"
+      "steel": {
+        "title": "TAKAI STEEL",
+        "subtitle": "Heavy-Duty Premium Protection",
+        "description": "Maximum durability, high gloss, and long-term resistance for premium vehicles.",
+        "warranty": "15-Year Warranty",
+        "spec1": "Total Thickness: 270 µm",
+        "spec2": "Gloss Level: 95.2",
+        "spec3": "Tensile Strength: 40 MPa",
+        "spec4": "Elongation: ≥400%",
+        "spec5": "Anti-Yellowing: ΔE < 1",
+        "spec6": "Hydrophobic: R9–R10",
+        "useCase": "Designed for premium vehicles requiring maximum durability and exceptional gloss retention."
       },
-      "essential": {
-        "title": "Essential Protection",
-        "description": "Key area coverage for scratch and chip resistance — perfect entry-level choice.",
-        "feature1": "High-impact area protection",
-        "feature2": "Scratch and chip resistance",
-        "feature3": "Entry-level pricing"
+      "steelPlus": {
+        "title": "TAKAI STEEL PLUS",
+        "subtitle": "Ultimate Flagship Protection",
+        "description": "Top-tier protection with the highest tensile strength and gloss—designed for flagship cars.",
+        "warranty": "15-Year Warranty",
+        "spec1": "Total Thickness: 270 µm",
+        "spec2": "Gloss Level: 96.2",
+        "spec3": "Tensile Strength: 45 MPa",
+        "spec4": "Elongation: ≥350%",
+        "spec5": "Anti-Yellowing: ΔE < 1",
+        "spec6": "Hydrophobic: R9–R10",
+        "useCase": "The ultimate choice for flagship and luxury vehicles demanding the absolute best in protection."
       },
       "learnMore": "Learn More",
       "showLess": "Show Less",

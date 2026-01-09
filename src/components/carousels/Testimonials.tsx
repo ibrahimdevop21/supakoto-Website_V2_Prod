@@ -106,8 +106,8 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
   };
 
 
-  // Duplicate for seamless loop
-  const duplicateTestimonials = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
+  // Duplicate for seamless loop - need enough copies for continuous scroll
+  const duplicateTestimonials = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
 
   const TestimonialCard = ({
     testimonial,
@@ -200,8 +200,19 @@ const Testimonials = ({ currentLocale = 'en' }: TestimonialsProps): JSX.Element 
         >
           <div
             ref={scrollTrackRef}
-            className={`testimonials-track flex ${startAnimation ? 'animate-scroll' : ''}`}
-            style={{ minWidth: 'max-content' }}
+            className={`testimonials-track flex ${startAnimation ? 'is-animating' : ''}`}
+            style={{
+              minWidth: 'max-content',
+              '--testimonial-duration': '120s',
+              animationDuration: '120s',
+              animationTimingFunction: 'linear',
+              animationIterationCount: 'infinite',
+              animationPlayState: startAnimation ? 'running' : 'paused',
+              animationName: isArabic ? 'testimonial-scroll-rtl' : 'testimonial-scroll-ltr',
+              willChange: 'transform',
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(0)'
+            } as React.CSSProperties}
           >
             {duplicateTestimonials.map((testimonial, index) => (
               <TestimonialCard key={`t-${testimonial.id}-${index}`} testimonial={testimonial} index={index} />

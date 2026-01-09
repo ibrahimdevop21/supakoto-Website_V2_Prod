@@ -2,80 +2,853 @@
    SUPAKOTO DESIGN SYSTEM - LIGHT THEME
    ============================================
    
-   Light theme token overrides.
-   Applied when [data-theme="light"] is set on <html>.
+   LUXURY AUTOMOTIVE BRAND - JAPANESE-INSPIRED
    
-   IMPORTANT:
-   - Dark theme remains the default
-   - Only overrides existing tokens
-   - No new token names introduced
-   - Components consume these automatically
+   Philosophy:
+   - Ceramic/porcelain studio walls
+   - Soft daylight on premium surfaces
+   - Clean, calm, confident
+   - Deep navy text (not grey)
+   - Shadows for depth (not grey fills)
+   
+   Applied when [data-theme="light"] is set on <html>.
    ============================================ */
 
 [data-theme="light"] {
   /* ============================================
-     BACKGROUND LAYERS (LIGHT MODE)
+     BASE SURFACES - WARM PORCELAIN
      ============================================ */
-  /* Base Layer - Body gradient */
-  --bg-base-start: #f8fafc;           /* slate-50 */
-  --bg-base-mid: #f1f5f9;             /* slate-100 */
-  --bg-base-end: #e2e8f0;             /* slate-200 */
+  --bg-page: #F6F4F1;           /* Warm porcelain */
+  --bg-section: #F1EFEA;        /* Section background */
+  --bg-card: #FFFFFF;           /* Pure white cards */
+  --bg-input: #FFFFFF;          /* White inputs */
+  --bg-elevated: #FFFFFF;       /* Elevated surfaces */
   
-  /* Surface Layer - Sections */
-  --bg-surface: transparent;
-  --bg-surface-muted: rgba(241, 245, 249, 0.8);  /* slate-100/80 */
-  
-  /* Card Layer - UI Components */
-  --bg-card: rgba(255, 255, 255, 0.9);           /* white/90 with slight transparency */
-  --bg-card-hover: rgba(248, 250, 252, 1);       /* slate-50 solid */
-  --bg-card-elevated: rgba(255, 255, 255, 1);    /* white solid for elevated cards */
-  
-  /* Input Layer - Form Elements */
-  --bg-input: rgba(241, 245, 249, 1);            /* slate-100 solid */
-  --bg-input-hover: rgba(226, 232, 240, 1);      /* slate-200 solid */
-  
-  /* Overlay Layer - Modals, Dropdowns */
-  --bg-overlay-light: rgba(0, 0, 0, 0.1);        /* Lighter overlay */
-  --bg-overlay-medium: rgba(0, 0, 0, 0.3);       /* Medium overlay */
-  --bg-overlay-heavy: rgba(0, 0, 0, 0.8);        /* Heavy overlay */
+  /* Compatibility tokens */
+  --bg-base-start: #F6F4F1;
+  --bg-base-mid: #F1EFEA;
+  --bg-base-end: #F1EFEA;
+  --bg-surface: #FFFFFF;
+  --bg-surface-muted: #F1EFEA;
+  --bg-card-hover: #F6F4F1;
+  --bg-card-elevated: #FFFFFF;
+  --bg-input-hover: #F6F4F1;
+  --bg-overlay-light: rgba(0, 0, 0, 0.1);
+  --bg-overlay-medium: rgba(0, 0, 0, 0.3);
+  --bg-overlay-heavy: rgba(0, 0, 0, 0.8);
   
   /* ============================================
-     BORDER COLORS (LIGHT MODE)
+     TEXT - DEEP NAVY (NOT GREY)
      ============================================ */
-  --border-default: #cbd5e1;                     /* slate-300 */
-  --border-subtle: rgba(203, 213, 225, 0.6);     /* slate-300/60 */
-  --border-muted: rgba(203, 213, 225, 0.4);      /* slate-300/40 */
-  --border-focus: rgba(191, 30, 46, 0.6);        /* primary/60 - same as dark */
-  --border-hover: rgba(191, 30, 46, 0.6);        /* primary/60 - same as dark */
+  --text-primary: #0E1626;      /* Deep navy - headings */
+  --text-secondary: #2A3346;    /* Navy - body text */
+  --text-tertiary: #3E4A5E;     /* Medium navy */
+  --text-muted: #5E6778;        /* Muted navy */
+  --text-disabled: #9CA3AF;     /* Disabled state */
+  --text-inverse: #FFFFFF;      /* White on dark */
   
   /* ============================================
-     TEXT COLORS (LIGHT MODE)
+     BORDERS & DIVIDERS - WARM NEUTRALS
      ============================================ */
-  --text-primary: #0f172a;                       /* slate-950 - headings */
-  --text-secondary: #1e293b;                     /* slate-900 - body */
-  --text-tertiary: #475569;                      /* slate-600 - secondary */
-  --text-muted: #64748b;                         /* slate-500 - muted */
-  --text-disabled: rgba(100, 116, 139, 0.5);     /* slate-500/50 */
+  --border-default: #E2DFD8;    /* Default border */
+  --border-subtle: #DDD9CF;     /* Divider */
+  --border-muted: #E8E5DE;      /* Subtle border */
+  --border-focus: #BF1E2E;      /* Brand red focus */
+  --border-hover: #BF1E2E;      /* Brand red hover */
   
   /* ============================================
-     BRAND COLORS (LIGHT MODE)
+     BRAND (UNCHANGED)
      ============================================ */
-  /* Brand colors remain the same for consistency */
-  /* --brand-primary: #bf1e2e; */
-  /* --color-whatsapp: #25D366; */
-  /* --color-call: #f59e0b; */
-  
-  /* Adjust hover states for better contrast on light backgrounds */
-  --brand-primary-hover: #a01825;                /* Slightly darker for visibility */
-  --brand-primary-active: #8b1a1a;               /* Even darker for active state */
+  --brand-primary: #BF1E2E;     /* SupaKoto Red */
+  --brand-on-primary: #FFFFFF;  /* Text on red */
+  --brand-primary-hover: #A01825;
+  --brand-primary-active: #8B1A1A;
   
   /* ============================================
-     SHADOWS (LIGHT MODE)
+     BUTTONS
      ============================================ */
-  /* Shadows need to be more visible on light backgrounds */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
-  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  --btn-primary-bg: #BF1E2E;
+  --btn-primary-text: #FFFFFF;
+  
+  --btn-secondary-bg: #FFFFFF;
+  --btn-secondary-text: #0E1626;
+  --btn-secondary-border: #E2DFD8;
+  
+  /* ============================================
+     NAVBAR - LIGHT SURFACE
+     ============================================ */
+  --nav-bg: rgba(246, 244, 241, 0.90);  /* Warm porcelain glass */
+  --nav-text: #0E1626;                   /* Deep navy */
+  
+  /* ============================================
+     FOOTER - LIGHT SURFACE (VISUALLY CHANGES)
+     ============================================ */
+  --footer-bg: #F6F4F1;                  /* Light surface - NOT dark */
+  --footer-text: #0E1626;                /* Deep navy */
+  --footer-muted: #5E6778;               /* Muted navy */
+  --footer-card-bg: #FFFFFF;             /* White cards */
+  --footer-border: #E2DFD8;              /* Warm border */
+  
+  /* ============================================
+     SHADOWS - PREMIUM DEPTH
+     ============================================ */
+  --shadow-sm: 0 4px 14px rgba(14, 22, 38, 0.06);
+  --shadow-md: 0 10px 30px rgba(14, 22, 38, 0.08);
+  --shadow-lg: 0 16px 40px rgba(14, 22, 38, 0.10);
+  --shadow-xl: 0 24px 50px rgba(14, 22, 38, 0.12);
+  --shadow-2xl: 0 32px 64px rgba(14, 22, 38, 0.14);
+  
+  /* Card-specific shadow */
+  --shadow-card: 0 8px 24px rgba(14, 22, 38, 0.08);
+  --shadow-soft: 0 4px 14px rgba(14, 22, 38, 0.06);
+}
+
+/* ============================================
+   RED BUTTONS & ELEMENTS - FORCE WHITE TEXT
+   ============================================ */
+/* Ensure all red buttons and elements have white text in light mode */
+[data-theme="light"] .bg-\[\#bf1e2e\],
+[data-theme="light"] .bg-red-600,
+[data-theme="light"] .bg-red-500,
+[data-theme="light"] button.bg-\[\#bf1e2e\],
+[data-theme="light"] a.bg-red-600,
+[data-theme="light"] a.bg-red-500,
+[data-theme="light"] .sk-btn {
+  color: white !important;
+}
+
+/* Force white text on red button children */
+[data-theme="light"] .bg-\[\#bf1e2e\] *,
+[data-theme="light"] .bg-red-600 *,
+[data-theme="light"] .bg-red-500 *,
+[data-theme="light"] .sk-btn * {
+  color: white !important;
+}
+
+/* Red badges and tags */
+[data-theme="light"] span.bg-red-600,
+[data-theme="light"] .bg-red-600\/90 {
+  color: white !important;
+}
+
+/* Contact wizard steps */
+[data-theme="light"] .bg-\[\#bf1e2e\].text-white {
+  color: white !important;
+}
+
+/* Branch picker selected state */
+[data-theme="light"] .border-\[\#bf1e2e\].bg-\[\#bf1e2e\] {
+  color: white !important;
+}
+
+/* Map toggle buttons */
+[data-theme="light"] button.bg-red-600,
+[data-theme="light"] button.bg-supakoto-red {
+  color: white !important;
+}
+
+/* Red gradient buttons (locations, HQ badges) */
+[data-theme="light"] .bg-gradient-to-r.from-red-600,
+[data-theme="light"] .from-red-600.to-red-700,
+[data-theme="light"] a.from-red-600,
+[data-theme="light"] span.from-red-600 {
+  color: white !important;
+}
+
+/* Force white text on gradient button children */
+[data-theme="light"] .bg-gradient-to-r.from-red-600 *,
+[data-theme="light"] .from-red-600.to-red-700 * {
+  color: white !important;
+}
+
+/* ============================================
+   BODY BACKGROUND - WARM PORCELAIN
+   ============================================ */
+[data-theme="light"] body {
+  background: linear-gradient(135deg, #F6F4F1 0%, #F1EFEA 50%, #F1EFEA 100%) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   TEXT CONTRAST - DEEP NAVY (NOT GREY)
+   ============================================ */
+/* Exclude hero section from all text overrides */
+[data-theme="light"] h1:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] h2:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] h3:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] h4:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] h5:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] h6:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *) {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] p:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] li:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] label:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *),
+[data-theme="light"] span:not(.text-whatsapp):not(.text-call):not(.text-brand-primary):not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *) {
+  color: var(--text-secondary);
+}
+
+/* Override all grey classes with deep navy */
+[data-theme="light"] .text-white:not(.hero-carousel-wrapper *):not([class*="hero"] *):not(footer *) {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .text-gray-200,
+[data-theme="light"] .text-gray-300,
+[data-theme="light"] .text-gray-400,
+[data-theme="light"] .text-gray-500,
+[data-theme="light"] .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .text-slate-200,
+[data-theme="light"] .text-slate-300,
+[data-theme="light"] .text-slate-400,
+[data-theme="light"] .text-slate-500,
+[data-theme="light"] .text-slate-600 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .text-muted-foreground:not(footer *) {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .text-foreground:not(footer *) {
+  color: var(--text-primary) !important;
+}
+
+/* ============================================
+   CARDS - WHITE WITH SHADOWS (NO GREY FILLS)
+   ============================================ */
+[data-theme="light"] .bg-slate-900\/40,
+[data-theme="light"] .bg-slate-900\/60,
+[data-theme="light"] .bg-slate-900\/30,
+[data-theme="light"] .bg-slate-900\/20,
+[data-theme="light"] .bg-slate-800\/40,
+[data-theme="light"] .bg-slate-800\/50,
+[data-theme="light"] .bg-slate-800\/60 {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-theme="light"] .bg-card {
+  background-color: var(--bg-card) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+[data-theme="light"] .bg-background {
+  background-color: var(--bg-page) !important;
+}
+
+[data-theme="light"] .bg-muted {
+  background-color: var(--bg-section) !important;
+}
+
+/* Remove all mid-grey panels */
+[data-theme="light"] .bg-gray-100,
+[data-theme="light"] .bg-gray-200,
+[data-theme="light"] .bg-slate-100,
+[data-theme="light"] .bg-slate-200 {
+  background-color: var(--bg-card) !important;
+}
+
+/* ============================================
+   FORMS - WHITE INPUTS WITH BORDERS
+   ============================================ */
+[data-theme="light"] .bg-input,
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1;
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] textarea:focus,
+[data-theme="light"] select:focus {
+  border-color: var(--border-focus) !important;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(191, 30, 46, 0.1) !important;
+}
+
+/* ============================================
+   NAVBAR TEXT FIXES
+   ============================================ */
+[data-theme="light"] header,
+[data-theme="light"] nav {
+  color: var(--nav-text) !important;
+}
+
+[data-theme="light"] header a,
+[data-theme="light"] nav a {
+  color: var(--nav-text);
+}
+
+/* ============================================
+   BUTTONS - BRAND RED PRIMARY
+   ============================================ */
+[data-theme="light"] button,
+[data-theme="light"] .btn,
+[data-theme="light"] [role="button"] {
+  border-color: var(--border-default);
+}
+
+[data-theme="light"] .btn-primary,
+[data-theme="light"] button[type="submit"] {
+  background-color: var(--btn-primary-bg) !important;
+  color: var(--btn-primary-text) !important;
+  border-color: var(--btn-primary-bg) !important;
+}
+
+[data-theme="light"] .btn-secondary {
+  background-color: var(--btn-secondary-bg) !important;
+  color: var(--btn-secondary-text) !important;
+  border-color: var(--btn-secondary-border) !important;
+}
+
+/* ============================================
+   BORDERS - WARM NEUTRALS
+   ============================================ */
+[data-theme="light"] .border,
+[data-theme="light"] .border-t,
+[data-theme="light"] .border-b,
+[data-theme="light"] .border-l,
+[data-theme="light"] .border-r {
+  border-color: var(--border-default) !important;
+}
+
+[data-theme="light"] .border-muted\/20,
+[data-theme="light"] .border-foreground\/10,
+[data-theme="light"] .border-foreground\/20 {
+  border-color: var(--border-subtle) !important;
+}
+
+/* ============================================
+   FOOTER - LIGHT SURFACE (VISUALLY CHANGES)
+   ============================================ */
+[data-theme="light"] footer {
+  background-color: var(--footer-bg) !important;
+  color: var(--footer-text) !important;
+}
+
+[data-theme="light"] footer h3,
+[data-theme="light"] footer h4,
+[data-theme="light"] footer h5 {
+  color: var(--footer-text) !important;
+}
+
+[data-theme="light"] footer p,
+[data-theme="light"] footer a,
+[data-theme="light"] footer li,
+[data-theme="light"] footer span {
+  color: var(--footer-text) !important;
+}
+
+[data-theme="light"] footer .text-muted-foreground {
+  color: var(--footer-muted) !important;
+}
+
+/* Footer cards in light mode */
+[data-theme="light"] footer .bg-gradient-to-br {
+  background: var(--footer-card-bg) !important;
+}
+
+/* ============================================
+   PPF COMPARISON TABLE - WHITE CARDS
+   ============================================ */
+[data-theme="light"] .bg-slate-900\/30,
+[data-theme="light"] .bg-slate-900\/20 {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+[data-theme="light"] .text-slate-200 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .text-slate-300 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .text-slate-500,
+[data-theme="light"] .text-slate-600 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="light"] .ring-slate-700\/50,
+[data-theme="light"] .border-slate-700\/60,
+[data-theme="light"] .border-slate-700\/50 {
+  border-color: var(--border-default) !important;
+}
+
+/* ============================================
+   DROPDOWNS & SELECTS - PREMIUM LIGHT THEME
+   ============================================ */
+/* All dropdown containers */
+[data-theme="light"] select,
+[data-theme="light"] [role="listbox"],
+[data-theme="light"] [role="combobox"],
+[data-theme="light"] .dropdown,
+[data-theme="light"] .select-dropdown,
+[data-theme="light"] [class*="dropdown"],
+[data-theme="light"] [class*="select"],
+[data-theme="light"] [class*="menu"],
+[data-theme="light"] [class*="popover"],
+[data-theme="light"] [data-headlessui-state] {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* Dropdown panels and menus */
+[data-theme="light"] [role="menu"],
+[data-theme="light"] [role="listbox"],
+[data-theme="light"] .dropdown-menu,
+[data-theme="light"] .select-menu,
+[data-theme="light"] [class*="MenuItems"],
+[data-theme="light"] [class*="Popover"],
+[data-theme="light"] [class*="dropdown-panel"] {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+  border-radius: 0.75rem !important;
+}
+
+/* Dropdown items */
+[data-theme="light"] [role="option"],
+[data-theme="light"] [role="menuitem"],
+[data-theme="light"] .dropdown-item,
+[data-theme="light"] .select-item,
+[data-theme="light"] [class*="MenuItem"],
+[data-theme="light"] [class*="option"] {
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+}
+
+/* Hover states */
+[data-theme="light"] [role="option"]:hover,
+[data-theme="light"] [role="menuitem"]:hover,
+[data-theme="light"] .dropdown-item:hover,
+[data-theme="light"] [class*="MenuItem"]:hover,
+[data-theme="light"] [data-headlessui-state~="active"] {
+  background-color: var(--bg-section) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Selected/active states */
+[data-theme="light"] [role="option"][aria-selected="true"],
+[data-theme="light"] [role="menuitem"][data-active="true"],
+[data-theme="light"] .dropdown-item.selected,
+[data-theme="light"] [class*="selected"] {
+  background-color: var(--bg-section) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Phone input country selectors */
+[data-theme="light"] .country-selector,
+[data-theme="light"] .phone-input-country,
+[data-theme="light"] [class*="country-dropdown"],
+[data-theme="light"] [class*="CountrySelect"],
+[data-theme="light"] [class*="PhoneInput"] {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* Country list items */
+[data-theme="light"] .country-list-item,
+[data-theme="light"] [class*="country-item"],
+[data-theme="light"] [class*="CountryListItem"] {
+  color: var(--text-secondary) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="light"] .country-list-item:hover,
+[data-theme="light"] [class*="country-item"]:hover {
+  background-color: var(--bg-section) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Search input inside dropdowns */
+[data-theme="light"] .dropdown-search,
+[data-theme="light"] [class*="search-input"],
+[data-theme="light"] [role="searchbox"] {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+[data-theme="light"] .dropdown-search::placeholder,
+[data-theme="light"] [class*="search-input"]::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Scrollbar in dropdowns */
+[data-theme="light"] .dropdown-menu::-webkit-scrollbar,
+[data-theme="light"] [role="listbox"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="light"] .dropdown-menu::-webkit-scrollbar-track,
+[data-theme="light"] [role="listbox"]::-webkit-scrollbar-track {
+  background: var(--bg-section);
+  border-radius: 4px;
+}
+
+[data-theme="light"] .dropdown-menu::-webkit-scrollbar-thumb,
+[data-theme="light"] [role="listbox"]::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+[data-theme="light"] .dropdown-menu::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] [role="listbox"]::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Radix UI specific overrides */
+[data-theme="light"] [data-radix-dropdown-menu-content],
+[data-theme="light"] [data-radix-select-content],
+[data-theme="light"] [data-radix-popover-content] {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-theme="light"] [data-radix-dropdown-menu-item],
+[data-theme="light"] [data-radix-select-item] {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] [data-radix-dropdown-menu-item][data-highlighted],
+[data-theme="light"] [data-radix-select-item][data-highlighted] {
+  background-color: var(--bg-section) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Headless UI specific overrides */
+[data-theme="light"] [data-headlessui-state~="open"] {
+  background-color: var(--bg-card) !important;
+}
+
+/* ============================================
+   TESTIMONIALS - PREMIUM LIGHT THEME
+   ============================================ */
+/* Testimonial cards */
+[data-theme="light"] .testimonial-card > div {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-theme="light"] .testimonial-card .group {
+  background: var(--bg-card) !important;
+}
+
+/* Remove dark gradients in light mode */
+[data-theme="light"] .testimonial-card .absolute.inset-0.bg-gradient-to-br,
+[data-theme="light"] .testimonial-card .absolute.inset-0.rounded-2xl.bg-gradient-to-r {
+  opacity: 0 !important;
+}
+
+[data-theme="light"] .testimonial-card .relative.h-full.bg-gradient-to-br {
+  background: var(--bg-card) !important;
+}
+
+/* Testimonial text */
+[data-theme="light"] .testimonial-card p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .testimonial-card h4 {
+  color: var(--text-primary) !important;
+}
+
+/* Stars */
+[data-theme="light"] .testimonial-card svg.text-yellow-500 {
+  color: #F59E0B !important;
+}
+
+[data-theme="light"] .testimonial-card svg.text-neutral-600 {
+  color: var(--text-muted) !important;
+}
+
+/* Quote icon */
+[data-theme="light"] .testimonial-card .text-red-500.opacity-20 {
+  color: #BF1E2E !important;
+  opacity: 0.1 !important;
+}
+
+/* Branch location */
+[data-theme="light"] .testimonial-card .text-red-400 {
+  color: #BF1E2E !important;
+}
+
+[data-theme="light"] .testimonial-card .text-neutral-300 {
+  color: var(--text-muted) !important;
+}
+
+/* Read more/less button */
+[data-theme="light"] .testimonial-card .text-primary {
+  color: #BF1E2E !important;
+}
+
+/* Hover state */
+[data-theme="light"] .testimonial-card .group:hover {
+  border-color: #BF1E2E !important;
+  box-shadow: 0 20px 40px rgba(14,22,38,0.12) !important;
+}
+
+/* ============================================
+   GLOBAL SLATE OVERRIDES - ALL DARK SECTIONS
+   ============================================ */
+/* Override ALL slate backgrounds to light theme */
+[data-theme="light"] .bg-slate-900,
+[data-theme="light"] .bg-slate-800,
+[data-theme="light"] .from-slate-900,
+[data-theme="light"] .via-slate-800,
+[data-theme="light"] .to-slate-900,
+[data-theme="light"] .from-slate-900\/95,
+[data-theme="light"] .via-slate-800\/90,
+[data-theme="light"] .to-slate-900\/95,
+[data-theme="light"] .from-slate-800\/50,
+[data-theme="light"] .to-slate-900\/50,
+[data-theme="light"] .bg-slate-900\/30,
+[data-theme="light"] .bg-slate-800\/40,
+[data-theme="light"] .bg-slate-800\/50,
+[data-theme="light"] .bg-slate-800\/60 {
+  background: var(--bg-card) !important;
+  background-color: var(--bg-card) !important;
+}
+
+/* Override ALL slate borders */
+[data-theme="light"] .border-slate-700,
+[data-theme="light"] .border-slate-700\/50,
+[data-theme="light"] .border-slate-600,
+[data-theme="light"] .border-slate-600\/50,
+[data-theme="light"] .ring-slate-700\/50 {
+  border-color: var(--border-default) !important;
+}
+
+/* Override ALL slate text colors */
+[data-theme="light"] .text-slate-200,
+[data-theme="light"] .text-slate-300,
+[data-theme="light"] .text-slate-300\/90 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+/* Override ALL gray text colors */
+[data-theme="light"] .text-gray-200,
+[data-theme="light"] .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+/* Force white text to dark in light mode (except hero) */
+[data-theme="light"] .text-white:not(.hero-carousel-wrapper .text-white):not([class*="hero"] .text-white) {
+  color: var(--text-primary) !important;
+}
+
+/* Remove ALL dark gradient overlays */
+[data-theme="light"] .bg-gradient-to-br.from-red-600\/20,
+[data-theme="light"] .bg-gradient-to-br.from-red-600\/10,
+[data-theme="light"] .bg-gradient-to-r.from-red-500\/20,
+[data-theme="light"] .bg-gradient-to-r.from-red-500\/30,
+[data-theme="light"] .bg-gradient-to-r.from-orange-500\/20,
+[data-theme="light"] .bg-gradient-to-r.from-orange-500\/25,
+[data-theme="light"] .bg-gradient-to-r.from-orange-500\/30 {
+  display: none !important;
+}
+
+/* CTA specific - remove glowing effects */
+[data-theme="light"] .bg-gradient-to-r.from-red-500\/30.to-orange-500\/30,
+[data-theme="light"] .bg-gradient-to-r.from-orange-500\/25.to-red-500\/25 {
+  display: none !important;
+}
+
+/* Lifestyle use cases - remove background patterns */
+[data-theme="light"] .bg-green-500\/10,
+[data-theme="light"] .bg-orange-500\/10,
+[data-theme="light"] .bg-blue-500\/10,
+[data-theme="light"] .bg-purple-500\/10 {
+  opacity: 0.05 !important;
+}
+
+/* Icons and accents */
+[data-theme="light"] .text-green-400,
+[data-theme="light"] .text-emerald-400 {
+  color: #10B981 !important;
+}
+
+[data-theme="light"] .text-red-400 {
+  color: #BF1E2E !important;
+}
+
+/* Gradient text - make it solid in light mode */
+[data-theme="light"] .bg-gradient-to-r.from-red-400.via-red-300.to-orange-300.bg-clip-text.text-transparent {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+/* ============================================
+   CTA SECTION - ULTRA SPECIFIC OVERRIDES
+   ============================================ */
+/* Target CTA container by structure - any div with these combined gradient classes */
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="from-slate-900"][class*="via-slate-800"][class*="to-slate-900"] {
+  background: var(--bg-card) !important;
+  background-image: none !important;
+  border-color: var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* All absolute positioned elements inside CTA that have gradient backgrounds */
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] .absolute[class*="bg-gradient"],
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] .absolute[class*="inset-0"],
+[data-theme="light"] div[class*="rounded-3xl"] .absolute[class*="bg-gradient"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* All text inside CTA sections */
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] h2,
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] p,
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] span {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] .text-gray-200,
+[data-theme="light"] div[class*="bg-gradient-to-br"][class*="slate"] .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   PPF COMPARISON TABLE - ULTRA SPECIFIC OVERRIDES
+   ============================================ */
+/* Main section container - target by structure */
+[data-theme="light"] section[class*="rounded-2xl"][class*="border"][class*="slate"] {
+  background: var(--bg-card) !important;
+  background-color: var(--bg-card) !important;
+  background-image: none !important;
+  border-color: var(--border-default) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* All divs with slate backgrounds inside sections */
+[data-theme="light"] section div[class*="bg-slate"],
+[data-theme="light"] section div[class*="bg-input"] {
+  background: var(--bg-card) !important;
+  background-color: var(--bg-card) !important;
+  background-image: none !important;
+}
+
+/* Specific background overrides */
+[data-theme="light"] section div[class*="bg-input"] {
+  background-color: var(--bg-section) !important;
+}
+
+/* All text colors in PPF section */
+[data-theme="light"] section[class*="rounded-2xl"] h2,
+[data-theme="light"] section[class*="rounded-2xl"] h3,
+[data-theme="light"] section[class*="rounded-2xl"] h4,
+[data-theme="light"] section[class*="rounded-2xl"] p,
+[data-theme="light"] section[class*="rounded-2xl"] span,
+[data-theme="light"] section[class*="rounded-2xl"] div {
+  color: var(--text-primary) !important;
+}
+
+/* Override specific slate text classes */
+[data-theme="light"] section [class*="text-slate-200"],
+[data-theme="light"] section [class*="text-slate-100"] {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] section [class*="text-slate-300"] {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="light"] section [class*="text-slate-400"],
+[data-theme="light"] section [class*="text-slate-500"] {
+  color: var(--text-muted) !important;
+}
+
+/* Borders */
+[data-theme="light"] section [class*="border-slate"],
+[data-theme="light"] section [class*="ring-slate"] {
+  border-color: var(--border-default) !important;
+}
+
+[data-theme="light"] section [class*="ring-1"] {
+  box-shadow: 0 0 0 1px var(--border-default) !important;
+}
+
+/* Details and accordions */
+[data-theme="light"] section details {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-default) !important;
+}
+
+[data-theme="light"] section [class*="divide-slate"] > * {
+  border-color: var(--border-default) !important;
+}
+
+/* ============================================
+   HERO SECTION - KEEP WHITE TEXT
+   ============================================ */
+/* Hero has dark video background, text stays white in both themes */
+/* Protect hero section and all its descendants from color overrides */
+[data-theme="light"] .hero-carousel-wrapper,
+[data-theme="light"] .hero-carousel-wrapper *,
+[data-theme="light"] [class*="hero"],
+[data-theme="light"] [class*="hero"] *,
+[data-theme="light"] .hero-container,
+[data-theme="light"] .hero-container * {
+  color: inherit !important;
+}
+
+/* Ensure hero headings stay white */
+[data-theme="light"] .hero-carousel-wrapper h1,
+[data-theme="light"] .hero-carousel-wrapper h2,
+[data-theme="light"] .hero-carousel-wrapper h3,
+[data-theme="light"] .hero-carousel-wrapper p,
+[data-theme="light"] .hero-carousel-wrapper span,
+[data-theme="light"] .hero-carousel-wrapper li,
+[data-theme="light"] [class*="hero"] h1,
+[data-theme="light"] [class*="hero"] h2,
+[data-theme="light"] [class*="hero"] h3,
+[data-theme="light"] [class*="hero"] p,
+[data-theme="light"] [class*="hero"] span,
+[data-theme="light"] [class*="hero"] li {
+  color: white !important;
+}
+
+/* ============================================
+   LOGO SWITCHING (CSS ONLY)
+   ============================================ */
+[data-theme="dark"] .logo-dark {
+  display: none;
+}
+
+[data-theme="light"] .logo-light {
+  display: none;
 }

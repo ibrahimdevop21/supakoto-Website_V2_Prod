@@ -4,6 +4,7 @@ export type ServicedBrand = {
   name: string;
   slug: string;
   logoSrc: string;
+  darkLogoSrc?: string;
   url?: string;
   alt?: { en: string; ar: string };
 };
@@ -25,6 +26,7 @@ export const SERVICED_BRANDS: ServicedBrand[] = [
     name: 'Citroën',
     slug: 'citroen',
     logoSrc: '/partners/citroen.svg',
+    darkLogoSrc: '/partners/citroen-dark-logo.svg',
     alt: { en: 'Citroën — vehicle serviced by SupaKoto', ar: 'سيتروين — تم خدمتها لدى سوباكوتو' }
   },
   {
@@ -43,6 +45,7 @@ export const SERVICED_BRANDS: ServicedBrand[] = [
     name: 'Jetour',
     slug: 'jetour',
     logoSrc: '/partners/jetour.svg',
+    darkLogoSrc: '/partners/jetour-dark-logo.svg',
     alt: { en: 'Jetour — vehicle serviced by SupaKoto', ar: 'جيتور — تم خدمتها لدى سوباكوتو' }
   },
   {

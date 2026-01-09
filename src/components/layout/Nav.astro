@@ -10,29 +10,33 @@ const locale = isArabic ? 'ar' : 'en';
 const rtl = locale === 'ar';
 const activePath = pathname || '/';
 
-// Canonical logo path
-const logoPath = '/logo.svg';
 ---
 
 <!-- Glass/Frosted Header -->
 <header
   class={`fixed top-0 inset-x-0 z-[9999] h-16 pointer-events-auto
-    backdrop-blur-md supports-[backdrop-filter]:bg-white/8 bg-white/10
-    border-b border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.25)]
-    transition-colors duration-300 ${rtl ? 'rtl' : ''}`}
+    backdrop-blur-md transition-colors duration-300 ${rtl ? 'rtl' : ''}`}
+  style="background-color: var(--nav-bg); border-bottom: 1px solid var(--border-subtle); box-shadow: var(--shadow-md);"
   role="banner"
 >
   <div class="mx-auto max-w-7xl px-4 md:px-6 h-full flex items-center justify-between">
-    <!-- Left: Brand -->
+    <!-- Left: Brand with Logo Switching -->
     <a 
       href={locale === 'ar' ? '/ar' : '/'} 
       class="flex items-center gap-2"
       aria-label={locale === 'ar' ? 'سوباكوتو - الصفحة الرئيسية' : 'SupaKoto - Home'}
     >
+      <!-- Light theme logo (dark colored) - hidden in dark mode -->
       <img 
-        src={logoPath} 
-        alt="SupaKoto - Paint Protection Film PPF Services Logo" 
-        class="h-8 w-auto md:h-8 sm:h-7"
+        src="/logo-dark.svg" 
+        alt="SupaKoto Logo" 
+        class="logo-dark h-8 w-auto md:h-8 sm:h-7"
+      />
+      <!-- Dark theme logo (light colored) - hidden in light mode -->
+      <img 
+        src="/logo.svg" 
+        alt="SupaKoto Logo" 
+        class="logo-light h-8 w-auto md:h-8 sm:h-7"
       />
     </a>
 
