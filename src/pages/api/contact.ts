@@ -1,6 +1,7 @@
 // src/pages/api/contact.ts
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { track } from '@vercel/analytics/server';
 
 export const prerender = false; // must be dynamic
 
@@ -134,6 +135,17 @@ export const POST: APIRoute = async ({ request }) => {
         html,
       });
     }
+
+    // Track successful form submission with Vercel Analytics
+    await track('form_submit', {
+      form_type: 'contact',
+      services: servicesRaw.join(','),
+      country: country || 'unknown',
+      branch: branchId || 'none',
+      has_car_info: carMake ? 'yes' : 'no',
+      whatsapp_only: whatsappOnly,
+      payment_options: selectedPayments.length > 0 ? 'yes' : 'no'
+    });
 
     return new Response(JSON.stringify({ 
       ok: true, 

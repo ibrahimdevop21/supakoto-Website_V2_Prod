@@ -1,6 +1,7 @@
 // src/pages/api/business-contact.ts
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { track } from '@vercel/analytics/server';
 
 export const prerender = false; // must be dynamic
 
@@ -134,6 +135,13 @@ export const POST: APIRoute = async ({ request }) => {
       cc: [adminEmail],
       subject,
       html,
+    });
+
+    // Track successful business inquiry with Vercel Analytics
+    await track('business_contact_submit', {
+      inquiry_type: inquiryType,
+      country: country || 'unknown',
+      has_company: company ? 'yes' : 'no'
     });
 
     return new Response(JSON.stringify({ 
