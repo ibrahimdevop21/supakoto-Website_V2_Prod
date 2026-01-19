@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Globe } from 'lucide-react';
 import { track } from '@vercel/analytics';
-import { COUNTRY_DEFAULTS, type CountryCode } from "../../data/countryContacts";
-import { countryFromTimezone } from "../../utils/tzToCountry";
+import { getPhoneNumbers } from "../../utils/phoneRouting";
+import type { CountryCode } from "../../data/countryContacts";
 
 // No-op function for TikTok tracking while disabled
 function trackTikTok(_event: string, _props: Record<string, unknown> = {}) {
@@ -35,10 +35,18 @@ const WhatsApp = ({ size = 16 }: { size?: number }) => (
 );
 
 export default function ActionPills({ locale = "en", currentPath, onToggleLang }: Props) {
-  const [cc, setCc] = useState<CountryCode>("AE");
-  useEffect(() => setCc(countryFromTimezone()), []);
+  const [phoneNumbers, setPhoneNumbers] = useState<{ tel: string; wa: string; country: CountryCode }>({ 
+    tel: '+971506265404', 
+    wa: '971506265404', 
+    country: 'AE' 
+  });
+  
+  useEffect(() => {
+    // Get phone numbers from centralized routing
+    setPhoneNumbers(getPhoneNumbers());
+  }, []);
 
-  const { tel, wa } = COUNTRY_DEFAULTS[cc];
+  const { tel, wa, country: cc } = phoneNumbers;
   
   // Build the next href using the current path
   const [path, setPath] = useState<string>("/");

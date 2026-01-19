@@ -208,33 +208,28 @@ const rtl = currentLang === 'ar';
 
 <script>
   import { track } from '@vercel/analytics';
-  
-  // Country detection and WhatsApp number routing
-  const COUNTRY_DEFAULTS = {
-    AE: { wa: '971506265404' },
-    EG: { wa: '201103402446' }
-  };
-
-  function countryFromTimezone() {
-    try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      // All Africa timezones (including Cairo) go to Egypt
-      if (tz && tz.startsWith('Africa/')) {
-        return 'EG';
-      }
-    } catch {}
-    return 'AE'; // fallback: Dubai/UAE for rest of world
-  }
+  import { initPhoneRouting, getPhoneNumbers } from '../../utils/phoneRouting';
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Detect country and update WhatsApp button href
-    const cc = countryFromTimezone();
-    const wa = COUNTRY_DEFAULTS[cc].wa;
-    
-    // Update WhatsApp CTA href
+    // Initialize WhatsApp routing - single source of truth
     const whatsappBtn = document.getElementById('hero-whatsapp-cta') as HTMLAnchorElement | null;
     if (whatsappBtn) {
-      whatsappBtn.href = `https://wa.me/${wa}`;
+      const country = initPhoneRouting(whatsappBtn, 'whatsapp');
+      const { wa } = getPhoneNumbers();
+      
+      // Track WhatsApp CTA click
+      whatsappBtn.addEventListener('click', () => {
+        try {
+          track('whatsapp_hero_click', {
+            location: 'hero',
+            phone: wa,
+            country,
+            cta_position: 'hero'
+          });
+        } catch (error) {
+          console.error('Tracking error:', error);
+        }
+      });
     }
 
     // Track primary CTA click
@@ -248,22 +243,6 @@ const rtl = currentLang === 'ar';
             cta_text: 'protect_your_car',
             location: 'hero',
             lang
-          });
-        } catch (error) {
-          console.error('Tracking error:', error);
-        }
-      });
-    }
-
-    // Track WhatsApp CTA click
-    if (whatsappBtn) {
-      whatsappBtn.addEventListener('click', () => {
-        try {
-          track('whatsapp_hero_click', {
-            location: 'hero',
-            phone: wa,
-            country: cc,
-            cta_position: 'hero'
           });
         } catch (error) {
           console.error('Tracking error:', error);
