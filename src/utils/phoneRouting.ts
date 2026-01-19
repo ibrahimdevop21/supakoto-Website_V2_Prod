@@ -85,7 +85,12 @@ function resolveFromTimezone(): CountryCode | null {
 
 /**
  * Get resolved country with source tracking
- * Follows tiered priority: override > edge > locale > timezone > default
+ * Follows tiered priority: override > timezone > edge > locale > default
+ * 
+ * NOTE: Timezone is checked before Edge geo because:
+ * - Edge geo doesn't work in local development
+ * - Timezone is more reliable for Egypt detection
+ * - In production, both should agree (Egypt users have Africa/Cairo timezone)
  */
 export function getResolvedCountry(): { country: CountryCode; source: RoutingSource } {
   // Debug logging
@@ -99,7 +104,15 @@ export function getResolvedCountry(): { country: CountryCode; source: RoutingSou
     return { country: override, source: 'override' };
   }
 
-  // 2. Edge geo (primary signal)
+  // 2. Timezone (primary signal - works in dev and production)
+  const timezone = resolveFromTimezone();
+  console.log('[Phone Routing] Timezone detection:', timezone);
+  if (timezone) {
+    console.log('[Phone Routing] ✅ Using timezone:', timezone);
+    return { country: timezone, source: 'timezone' };
+  }
+
+  // 3. Edge geo (fallback - only works in production)
   const edgeGeo = getEdgeGeo();
   console.log('[Phone Routing] Edge geo:', edgeGeo);
   if (edgeGeo) {
@@ -107,20 +120,12 @@ export function getResolvedCountry(): { country: CountryCode; source: RoutingSou
     return { country: edgeGeo, source: 'edge' };
   }
 
-  // 3. Browser locale (fallback)
+  // 4. Browser locale (fallback)
   const locale = resolveFromLocale();
   console.log('[Phone Routing] Browser locale:', locale);
   if (locale) {
     console.log('[Phone Routing] ✅ Using locale:', locale);
     return { country: locale, source: 'locale' };
-  }
-
-  // 4. Timezone (last resort)
-  const timezone = resolveFromTimezone();
-  console.log('[Phone Routing] Timezone detection:', timezone);
-  if (timezone) {
-    console.log('[Phone Routing] ✅ Using timezone:', timezone);
-    return { country: timezone, source: 'timezone' };
   }
 
   // 5. Default (UAE)
