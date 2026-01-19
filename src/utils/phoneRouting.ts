@@ -72,10 +72,14 @@ function resolveFromLocale(): CountryCode | null {
 function resolveFromTimezone(): CountryCode | null {
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    console.log('[Phone Routing] Detected timezone:', tz);
     if (tz === 'Africa/Cairo' || tz === 'Egypt') {
+      console.log('[Phone Routing] Timezone matches Egypt!');
       return 'EG';
     }
-  } catch {}
+  } catch (error) {
+    console.error('[Phone Routing] Timezone detection error:', error);
+  }
   return null;
 }
 
@@ -84,31 +88,43 @@ function resolveFromTimezone(): CountryCode | null {
  * Follows tiered priority: override > edge > locale > timezone > default
  */
 export function getResolvedCountry(): { country: CountryCode; source: RoutingSource } {
+  // Debug logging
+  console.log('[Phone Routing] Starting country detection...');
+  
   // 1. User override (highest priority)
   const override = getUserOverride();
+  console.log('[Phone Routing] User override:', override);
   if (override) {
+    console.log('[Phone Routing] ✅ Using override:', override);
     return { country: override, source: 'override' };
   }
 
   // 2. Edge geo (primary signal)
   const edgeGeo = getEdgeGeo();
+  console.log('[Phone Routing] Edge geo:', edgeGeo);
   if (edgeGeo) {
+    console.log('[Phone Routing] ✅ Using edge geo:', edgeGeo);
     return { country: edgeGeo, source: 'edge' };
   }
 
   // 3. Browser locale (fallback)
   const locale = resolveFromLocale();
+  console.log('[Phone Routing] Browser locale:', locale);
   if (locale) {
+    console.log('[Phone Routing] ✅ Using locale:', locale);
     return { country: locale, source: 'locale' };
   }
 
   // 4. Timezone (last resort)
   const timezone = resolveFromTimezone();
+  console.log('[Phone Routing] Timezone detection:', timezone);
   if (timezone) {
+    console.log('[Phone Routing] ✅ Using timezone:', timezone);
     return { country: timezone, source: 'timezone' };
   }
 
   // 5. Default (UAE)
+  console.log('[Phone Routing] ⚠️ Using default: AE');
   return { country: 'AE', source: 'default' };
 }
 
