@@ -102,8 +102,9 @@ const rtl = currentLang === 'ar';
           <!-- Red Primary CTA - Protect Your Car Today -->
           <a 
             href={rtl ? '/ar/contact' : '/contact'}
-            class={`group relative overflow-hidden flex-1 inline-flex items-center justify-center px-6 md:px-8 lg:px-10 py-4 md:py-5 bg-gradient-to-r from-supakoto-red to-supakoto-deep-burgundy hover:from-supakoto-deep-burgundy hover:to-supakoto-red text-white font-brand font-bold text-base md:text-lg rounded-xl md:rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-supakoto-red/50 ${rtl ? 'flex-row-reverse' : ''}`}
+            class={`hero-primary-cta group relative overflow-hidden flex-1 inline-flex items-center justify-center px-6 md:px-8 lg:px-10 py-4 md:py-5 bg-gradient-to-r from-supakoto-red to-supakoto-deep-burgundy hover:from-supakoto-deep-burgundy hover:to-supakoto-red text-white font-brand font-bold text-base md:text-lg rounded-xl md:rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-supakoto-red/50 ${rtl ? 'flex-row-reverse' : ''}`}
             aria-label={t('hero.cta.primary', {}, Astro)}
+            data-lang={currentLang}
           >
             <!-- Shimmer effect -->
             <div class="absolute inset-0 -top-10 -left-10 w-20 h-20 bg-white/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 group-hover:animate-brand-pulse transition-opacity duration-300"></div>
@@ -138,8 +139,9 @@ const rtl = currentLang === 'ar';
         <!-- Secondary CTA - See Our Work (Full Width Below) -->
         <a 
           href={rtl ? '/ar/gallery' : '/gallery'}
-          class={`group w-full inline-flex items-center justify-center px-6 md:px-8 lg:px-10 py-4 md:py-5 bg-transparent border-2 border-white/80 hover:border-white text-white hover:bg-white hover:text-supakoto-dark-gray font-brand font-semibold text-base md:text-lg rounded-xl md:rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm hover:backdrop-blur-none focus:outline-none focus:ring-4 focus:ring-white/30 shadow-lg hover:shadow-xl ${rtl ? 'flex-row-reverse' : ''}`}
+          class={`hero-secondary-cta group w-full inline-flex items-center justify-center px-6 md:px-8 lg:px-10 py-4 md:py-5 bg-transparent border-2 border-white/80 hover:border-white text-white hover:bg-white hover:text-supakoto-dark-gray font-brand font-semibold text-base md:text-lg rounded-xl md:rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm hover:backdrop-blur-none focus:outline-none focus:ring-4 focus:ring-white/30 shadow-lg hover:shadow-xl ${rtl ? 'flex-row-reverse' : ''}`}
           aria-label={t('hero.cta.secondary', {}, Astro)}
+          data-lang={currentLang}
         >
           <span class="relative z-10 font-brand font-semibold tracking-wide transition-colors duration-300">{t('hero.cta.secondary', {}, Astro)}</span>
         </a>
@@ -233,6 +235,65 @@ const rtl = currentLang === 'ar';
     const whatsappBtn = document.getElementById('hero-whatsapp-cta') as HTMLAnchorElement | null;
     if (whatsappBtn) {
       whatsappBtn.href = `https://wa.me/${wa}`;
+    }
+  });
+</script>
+
+<script>
+  import { track } from '@vercel/analytics';
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    // Track primary CTA click
+    const primaryCTA = document.querySelector('.hero-primary-cta');
+    if (primaryCTA) {
+      primaryCTA.addEventListener('click', () => {
+        try {
+          const lang = primaryCTA.getAttribute('data-lang') || 'en';
+          track('hero_cta_click', {
+            cta_type: 'primary',
+            cta_text: 'protect_your_car',
+            location: 'hero',
+            lang
+          });
+        } catch (error) {
+          console.error('Tracking error:', error);
+        }
+      });
+    }
+
+    // Track WhatsApp CTA click
+    const whatsappCTA = document.getElementById('hero-whatsapp-cta');
+    if (whatsappCTA) {
+      whatsappCTA.addEventListener('click', () => {
+        try {
+          const phone = whatsappCTA.getAttribute('href')?.replace('https://wa.me/', '') || '';
+          track('whatsapp_hero_click', {
+            location: 'hero',
+            phone,
+            cta_position: 'hero'
+          });
+        } catch (error) {
+          console.error('Tracking error:', error);
+        }
+      });
+    }
+
+    // Track secondary CTA click
+    const secondaryCTA = document.querySelector('.hero-secondary-cta');
+    if (secondaryCTA) {
+      secondaryCTA.addEventListener('click', () => {
+        try {
+          const lang = secondaryCTA.getAttribute('data-lang') || 'en';
+          track('secondary_cta_click', {
+            cta_type: 'gallery',
+            cta_text: 'see_our_work',
+            location: 'hero',
+            lang
+          });
+        } catch (error) {
+          console.error('Tracking error:', error);
+        }
+      });
     }
   });
 </script>
