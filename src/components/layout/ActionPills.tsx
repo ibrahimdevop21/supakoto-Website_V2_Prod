@@ -62,9 +62,9 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
   const luxuryCallButton = "relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-call to-[#d97706] border border-call/30 hover:from-[#fbbf24] hover:to-call text-white transition-all duration-200 shadow-lg shadow-call/25 hover:shadow-xl hover:shadow-call/40 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-call/50 focus:ring-offset-2 focus:ring-offset-transparent";
   
   // Premium utility button style - clearly interactive with subtle borders and hover states
-  const utilityButton = "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent " +
-    "data-[theme=light]:bg-white data-[theme=light]:border-[#E2DFD8] data-[theme=light]:text-[#0E1626] data-[theme=light]:hover:bg-[#F6F4F1] data-[theme=light]:hover:border-[#D6D4CF] data-[theme=light]:focus:ring-[#BF1E2E]/30 " +
-    "data-[theme=dark]:bg-slate-800/60 data-[theme=dark]:border-slate-700/60 data-[theme=dark]:text-slate-200 data-[theme=dark]:hover:bg-slate-700/60 data-[theme=dark]:hover:border-slate-600/60 data-[theme=dark]:focus:ring-slate-500/30";
+  const utilityButton = "inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-200 focus:outline-none " +
+    "data-[theme=light]:bg-white data-[theme=light]:border-[#E2DFD8] data-[theme=light]:text-[#0E1626] data-[theme=light]:hover:bg-[#F6F4F1] data-[theme=light]:hover:border-[#D6D4CF] " +
+    "data-[theme=dark]:bg-slate-800/60 data-[theme=dark]:border-slate-700/60 data-[theme=dark]:text-slate-200 data-[theme=dark]:hover:bg-slate-700/60 data-[theme=dark]:hover:border-slate-600/60";
 
   // Theme toggle state - initialize to 'dark' to match SSR default
   const [theme, setTheme] = React.useState<'dark' | 'light'>('dark');
