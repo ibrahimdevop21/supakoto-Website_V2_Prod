@@ -5,22 +5,18 @@
    
    Fixed position WhatsApp button.
    Positioned on left corner to complement theme toggle on right.
+   Number is dynamically set based on user's timezone/country.
    ============================================ */
 
-import { COUNTRY_DEFAULTS } from "../data/countryContacts";
-
-// Default to UAE WhatsApp
-const { wa } = COUNTRY_DEFAULTS['AE'];
 const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 ---
 
 <a
-  href={`https://wa.me/${wa}`}
+  href="https://wa.me/971506265404"
   target="_blank"
   rel="noopener noreferrer"
-  aria-label="Contact us on WhatsApp"
+  aria-label="Chat on WhatsApp"
   class="whatsapp-float-btn fixed bottom-6 right-6 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-whatsapp hover:bg-[#1da851] text-white transition-all duration-200 hover:scale-105 shadow-lg"
-  data-phone={wa}
   data-lang={currentLang}
 >
   <svg class="h-6 w-6" viewBox="0 0 16 16" fill="currentColor">
@@ -31,18 +27,41 @@ const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 <script>
   import { track } from '@vercel/analytics';
   
+  // Country detection based on timezone
+  const COUNTRY_DEFAULTS = {
+    AE: { wa: '971506265404' },
+    EG: { wa: '201103402446' }
+  };
+
+  function countryFromTimezone() {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // All Africa timezones (including Cairo) go to Egypt
+      if (tz && tz.startsWith('Africa/')) {
+        return 'EG';
+      }
+    } catch {}
+    return 'AE'; // fallback: Dubai/UAE for rest of world
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.querySelector('.whatsapp-float-btn');
+    const btn = document.querySelector('.whatsapp-float-btn') as HTMLAnchorElement;
     if (btn) {
+      // Update href based on country detection
+      const cc = countryFromTimezone();
+      const wa = COUNTRY_DEFAULTS[cc].wa;
+      btn.href = `https://wa.me/${wa}`;
+      
+      // Track clicks
       btn.addEventListener('click', () => {
-        const phone = btn.getAttribute('data-phone') || '';
         const lang = btn.getAttribute('data-lang') || 'en';
         
         // Track with Vercel Analytics
         try {
           track('whatsapp_float_click', {
             location: 'floating_button',
-            phone,
+            phone: wa,
+            country: cc,
             lang,
             cta_position: 'float'
           });
@@ -57,7 +76,8 @@ const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
             (window as any).dataLayer.push({
               event: 'whatsapp_click',
               location: 'floating_button',
-              phone,
+              phone: wa,
+              country: cc,
               lang,
               page_location: location.href
             });

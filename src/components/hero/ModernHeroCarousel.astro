@@ -207,14 +207,12 @@ const rtl = currentLang === 'ar';
 </style>
 
 <script>
-  // Country detection and WhatsApp number routing (matches ActionPills logic)
+  import { track } from '@vercel/analytics';
+  
+  // Country detection and WhatsApp number routing
   const COUNTRY_DEFAULTS = {
-    AE: {
-      wa: '971506265404',
-    },
-    EG: {
-      wa: '201103402446',
-    },
+    AE: { wa: '971506265404' },
+    EG: { wa: '201103402446' }
   };
 
   function countryFromTimezone() {
@@ -228,21 +226,17 @@ const rtl = currentLang === 'ar';
     return 'AE'; // fallback: Dubai/UAE for rest of world
   }
 
-  // Update WhatsApp CTA href on page load
   document.addEventListener('DOMContentLoaded', () => {
+    // Detect country and update WhatsApp button href
     const cc = countryFromTimezone();
     const wa = COUNTRY_DEFAULTS[cc].wa;
+    
+    // Update WhatsApp CTA href
     const whatsappBtn = document.getElementById('hero-whatsapp-cta') as HTMLAnchorElement | null;
     if (whatsappBtn) {
       whatsappBtn.href = `https://wa.me/${wa}`;
     }
-  });
-</script>
 
-<script>
-  import { track } from '@vercel/analytics';
-  
-  document.addEventListener('DOMContentLoaded', () => {
     // Track primary CTA click
     const primaryCTA = document.querySelector('.hero-primary-cta');
     if (primaryCTA) {
@@ -262,14 +256,13 @@ const rtl = currentLang === 'ar';
     }
 
     // Track WhatsApp CTA click
-    const whatsappCTA = document.getElementById('hero-whatsapp-cta');
-    if (whatsappCTA) {
-      whatsappCTA.addEventListener('click', () => {
+    if (whatsappBtn) {
+      whatsappBtn.addEventListener('click', () => {
         try {
-          const phone = whatsappCTA.getAttribute('href')?.replace('https://wa.me/', '') || '';
           track('whatsapp_hero_click', {
             location: 'hero',
-            phone,
+            phone: wa,
+            country: cc,
             cta_position: 'hero'
           });
         } catch (error) {
