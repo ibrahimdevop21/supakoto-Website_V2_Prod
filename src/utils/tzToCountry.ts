@@ -1,18 +1,22 @@
 import type { CountryCode } from '../data/countryContacts';
 
-const TZ_TO_COUNTRY: Record<string, CountryCode> = {
-  'Africa/Cairo': 'EG',
-};
-
+/**
+ * Detect user's country based on timezone
+ * Simple logic: Egypt timezone → EG, everything else → UAE
+ */
 export function countryFromTimezone(): CountryCode {
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // Check if timezone is in Africa (Egypt and other African countries)
-    if (tz && tz.startsWith('Africa/')) {
+    
+    // Check if Egypt timezone
+    if (tz === 'Africa/Cairo' || tz === 'Egypt') {
       return 'EG';
     }
-    // Specific timezone mapping
-    if (tz && TZ_TO_COUNTRY[tz]) return TZ_TO_COUNTRY[tz];
-  } catch {}
-  return 'AE'; // fallback: Dubai/UAE for rest of world
+    
+  } catch (error) {
+    console.error('Timezone detection error:', error);
+  }
+  
+  // Default: UAE for rest of world
+  return 'AE';
 }

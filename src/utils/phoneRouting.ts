@@ -1,0 +1,200 @@
+/**
+ * Centralized Phone Number Routing - Tiered Priority System
+ * Single source of truth for all WhatsApp and call buttons
+ * 
+ * Priority Order:
+ * 1. User Override (localStorage) - highest priority
+ * 2. Edge Geo (Vercel request.geo.country via cookie)
+ * 3. Browser Locale (navigator.language)
+ * 4. Timezone (Intl.DateTimeFormat)
+ * 5. Default (UAE)
+ */
+
+import { track } from '@vercel/analytics';
+import { COUNTRY_DEFAULTS } from '../data/countryContacts';
+import type { CountryCode } from '../data/countryContacts';
+
+export type RoutingSource = 'override' | 'edge' | 'locale' | 'timezone' | 'default';
+
+const STORAGE_KEY = 'sk-user-country';
+const GEO_COOKIE_NAME = 'x-user-country';
+
+// Track if we've already fired the routing event this session
+let routingEventFired = false;
+
+/**
+ * Get user's country override from localStorage
+ */
+function getUserOverride(): CountryCode | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'EG' || stored === 'AE') return stored;
+  } catch {}
+  return null;
+}
+
+/**
+ * Get country from Edge geo cookie (set by middleware)
+ */
+function getEdgeGeo(): CountryCode | null {
+  if (typeof document === 'undefined') return null;
+  try {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === GEO_COOKIE_NAME) {
+        if (value === 'EG' || value === 'AE') return value;
+      }
+    }
+  } catch {}
+  return null;
+}
+
+/**
+ * Resolve country from browser locale
+ */
+function resolveFromLocale(): CountryCode | null {
+  if (typeof navigator === 'undefined') return null;
+  try {
+    const lang = navigator.language || (navigator as any).userLanguage;
+    // Only Egypt locale (ar-EG) routes to Egypt
+    if (lang && lang.toLowerCase().startsWith('ar-eg')) {
+      return 'EG';
+    }
+  } catch {}
+  return null;
+}
+
+/**
+ * Resolve country from timezone (last resort)
+ */
+function resolveFromTimezone(): CountryCode | null {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz === 'Africa/Cairo' || tz === 'Egypt') {
+      return 'EG';
+    }
+  } catch {}
+  return null;
+}
+
+/**
+ * Get resolved country with source tracking
+ * Follows tiered priority: override > edge > locale > timezone > default
+ */
+export function getResolvedCountry(): { country: CountryCode; source: RoutingSource } {
+  // 1. User override (highest priority)
+  const override = getUserOverride();
+  if (override) {
+    return { country: override, source: 'override' };
+  }
+
+  // 2. Edge geo (primary signal)
+  const edgeGeo = getEdgeGeo();
+  if (edgeGeo) {
+    return { country: edgeGeo, source: 'edge' };
+  }
+
+  // 3. Browser locale (fallback)
+  const locale = resolveFromLocale();
+  if (locale) {
+    return { country: locale, source: 'locale' };
+  }
+
+  // 4. Timezone (last resort)
+  const timezone = resolveFromTimezone();
+  if (timezone) {
+    return { country: timezone, source: 'timezone' };
+  }
+
+  // 5. Default (UAE)
+  return { country: 'AE', source: 'default' };
+}
+
+/**
+ * Fire routing analytics event (once per session)
+ */
+function fireRoutingAnalytics(country: CountryCode, source: RoutingSource): void {
+  if (routingEventFired) return;
+  
+  try {
+    track('phone_routing_resolved', {
+      country,
+      source
+    });
+    routingEventFired = true;
+  } catch (error) {
+    console.error('Routing analytics error:', error);
+  }
+}
+
+/**
+ * Get the appropriate phone numbers based on tiered routing
+ * @returns Object with tel, wa, and country
+ */
+export function getPhoneNumbers(): { tel: string; wa: string; country: CountryCode } {
+  const { country, source } = getResolvedCountry();
+  const numbers = COUNTRY_DEFAULTS[country];
+  
+  // Fire analytics event on first call
+  fireRoutingAnalytics(country, source);
+  
+  return {
+    tel: numbers.tel,
+    wa: numbers.wa,
+    country
+  };
+}
+
+/**
+ * Initialize phone routing for a button element
+ * Updates href dynamically based on tiered routing
+ * 
+ * @param element - The anchor element to update
+ * @param type - 'whatsapp' or 'call'
+ * @returns The resolved country code
+ */
+export function initPhoneRouting(element: HTMLAnchorElement, type: 'whatsapp' | 'call'): CountryCode {
+  const { tel, wa, country } = getPhoneNumbers();
+  
+  if (type === 'whatsapp') {
+    element.href = `https://wa.me/${wa}`;
+  } else if (type === 'call') {
+    element.href = `tel:${tel}`;
+  }
+  
+  return country;
+}
+
+/**
+ * Set user country override (persists in localStorage)
+ * This will take precedence over all other routing signals
+ * 
+ * @param country - The country code to set
+ */
+export function setUserCountryOverride(country: CountryCode): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEY, country);
+    // Reset analytics flag so new routing is tracked
+    routingEventFired = false;
+  } catch (error) {
+    console.error('Failed to set country override:', error);
+  }
+}
+
+/**
+ * Clear user country override
+ * Routing will fall back to edge/locale/timezone detection
+ */
+export function clearUserCountryOverride(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    // Reset analytics flag so new routing is tracked
+    routingEventFired = false;
+  } catch (error) {
+    console.error('Failed to clear country override:', error);
+  }
+}

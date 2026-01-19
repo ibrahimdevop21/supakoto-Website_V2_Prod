@@ -207,42 +207,31 @@ const rtl = currentLang === 'ar';
 </style>
 
 <script>
-  // Country detection and WhatsApp number routing (matches ActionPills logic)
-  const COUNTRY_DEFAULTS = {
-    AE: {
-      wa: '971506265404',
-    },
-    EG: {
-      wa: '201103402446',
-    },
-  };
+  import { track } from '@vercel/analytics';
+  import { initPhoneRouting, getPhoneNumbers } from '../../utils/phoneRouting';
 
-  function countryFromTimezone() {
-    try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      // All Africa timezones (including Cairo) go to Egypt
-      if (tz && tz.startsWith('Africa/')) {
-        return 'EG';
-      }
-    } catch {}
-    return 'AE'; // fallback: Dubai/UAE for rest of world
-  }
-
-  // Update WhatsApp CTA href on page load
   document.addEventListener('DOMContentLoaded', () => {
-    const cc = countryFromTimezone();
-    const wa = COUNTRY_DEFAULTS[cc].wa;
+    // Initialize WhatsApp routing - single source of truth
     const whatsappBtn = document.getElementById('hero-whatsapp-cta') as HTMLAnchorElement | null;
     if (whatsappBtn) {
-      whatsappBtn.href = `https://wa.me/${wa}`;
+      const country = initPhoneRouting(whatsappBtn, 'whatsapp');
+      const { wa } = getPhoneNumbers();
+      
+      // Track WhatsApp CTA click
+      whatsappBtn.addEventListener('click', () => {
+        try {
+          track('whatsapp_hero_click', {
+            location: 'hero',
+            phone: wa,
+            country,
+            cta_position: 'hero'
+          });
+        } catch (error) {
+          console.error('Tracking error:', error);
+        }
+      });
     }
-  });
-</script>
 
-<script>
-  import { track } from '@vercel/analytics';
-  
-  document.addEventListener('DOMContentLoaded', () => {
     // Track primary CTA click
     const primaryCTA = document.querySelector('.hero-primary-cta');
     if (primaryCTA) {
@@ -254,23 +243,6 @@ const rtl = currentLang === 'ar';
             cta_text: 'protect_your_car',
             location: 'hero',
             lang
-          });
-        } catch (error) {
-          console.error('Tracking error:', error);
-        }
-      });
-    }
-
-    // Track WhatsApp CTA click
-    const whatsappCTA = document.getElementById('hero-whatsapp-cta');
-    if (whatsappCTA) {
-      whatsappCTA.addEventListener('click', () => {
-        try {
-          const phone = whatsappCTA.getAttribute('href')?.replace('https://wa.me/', '') || '';
-          track('whatsapp_hero_click', {
-            location: 'hero',
-            phone,
-            cta_position: 'hero'
           });
         } catch (error) {
           console.error('Tracking error:', error);
