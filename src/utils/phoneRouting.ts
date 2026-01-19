@@ -172,14 +172,22 @@ export function getPhoneNumbers(): { tel: string; wa: string; country: CountryCo
  * @returns The resolved country code
  */
 export function initPhoneRouting(element: HTMLAnchorElement, type: 'whatsapp' | 'call'): CountryCode {
+  console.log('[Phone Routing] initPhoneRouting called for:', type);
   const { tel, wa, country } = getPhoneNumbers();
   
+  console.log('[Phone Routing] Got numbers - tel:', tel, 'wa:', wa, 'country:', country);
+  
   if (type === 'whatsapp') {
-    element.href = `https://wa.me/${wa}`;
+    const newHref = `https://wa.me/${wa}`;
+    console.log('[Phone Routing] Setting WhatsApp href from', element.href, 'to', newHref);
+    element.href = newHref;
   } else if (type === 'call') {
-    element.href = `tel:${tel}`;
+    const newHref = `tel:${tel}`;
+    console.log('[Phone Routing] Setting call href from', element.href, 'to', newHref);
+    element.href = newHref;
   }
   
+  console.log('[Phone Routing] Final href:', element.href);
   return country;
 }
 
