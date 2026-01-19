@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Globe } from 'lucide-react';
+import { track } from '@vercel/analytics';
 import { COUNTRY_DEFAULTS, type CountryCode } from "../../data/countryContacts";
 import { countryFromTimezone } from "../../utils/tzToCountry";
 
@@ -57,32 +58,15 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
     "data-[theme=light]:bg-white data-[theme=light]:border-[#E2DFD8] data-[theme=light]:text-[#0E1626] data-[theme=light]:hover:bg-[#F6F4F1] data-[theme=light]:hover:border-[#D6D4CF] data-[theme=light]:focus:ring-[#BF1E2E]/30 " +
     "data-[theme=dark]:bg-slate-800/60 data-[theme=dark]:border-slate-700/60 data-[theme=dark]:text-slate-200 data-[theme=dark]:hover:bg-slate-700/60 data-[theme=dark]:hover:border-slate-600/60 data-[theme=dark]:focus:ring-slate-500/30";
 
-  // Theme toggle state - initialize to null to prevent hydration mismatch
-  const [theme, setTheme] = React.useState<'dark' | 'light' | null>(null);
-  const [mounted, setMounted] = React.useState(false);
+  // Theme toggle state - initialize to 'dark' to match SSR default
+  const [theme, setTheme] = React.useState<'dark' | 'light'>('dark');
   
   React.useEffect(() => {
-    setMounted(true);
-    // Get initial theme
+    // Get initial theme after mount
     const stored = localStorage.getItem('supakoto-theme');
     const current = document.documentElement.getAttribute('data-theme');
     setTheme((current === 'light' || stored === 'light') ? 'light' : 'dark');
   }, []);
-  
-  // Prevent hydration mismatch by not rendering theme-dependent content until mounted
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-2">
-        <a href="tel:+971506265404" aria-label="Call Now" className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-call to-[#d97706] border border-call/30 text-white">
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.77.66 2.6a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.48-1.18a2 2 0 0 1 2.11-.45c.83.32 1.7.54 2.6.66A2 2 0 0 1 22 16.92z"/>
-          </svg>
-        </a>
-        <div className="h-9 w-9 rounded-full border border-slate-700/60 bg-slate-800/60"></div>
-        <div className="h-9 w-9 rounded-full border border-slate-700/60 bg-slate-800/60"></div>
-      </div>
-    );
-  }
   
   const toggleTheme = () => {
     if (!theme) return;
@@ -102,6 +86,18 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
         onClick={() => {
           // Fire tracking as NO-OP for now (kept for future parity)
           trackTikTok('ClickButton', { button: 'Call', region: 'UAE' });
+          
+          // Track with Vercel Analytics
+          try {
+            track('call_navbar_click', {
+              phone: tel,
+              location: 'navbar',
+              country: cc,
+              lang: locale
+            });
+          } catch (error) {
+            console.error('Tracking error:', error);
+          }
         }}
       >
         {/* Pulsing ring animation */}
