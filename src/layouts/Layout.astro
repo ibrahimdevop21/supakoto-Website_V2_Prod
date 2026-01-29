@@ -364,12 +364,18 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		</script>
 		<!-- End Google Tag Manager -->
 		
-		<!-- Google Ads Conversion Tracking - ID: AW-17767525580 -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17767525580" is:inline></script>
+		<!-- Google Ads Conversion Tracking (gtag.js) -->
+		<!-- Egypt Account: AW-17767525580 | UAE Account: AW-17913343586 -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17913343586"></script>
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
+			
+			// Configure UAE Google Ads account (primary)
+			gtag('config', 'AW-17913343586');
+			
+			// Configure Egypt Google Ads account
 			gtag('config', 'AW-17767525580');
 		</script>
 		<!-- End Google Ads Conversion Tracking -->
