@@ -113,9 +113,29 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                       rel="noopener noreferrer"
                       className="block text-white hover:text-green-400 transition-colors font-medium"
                       dir="ltr"
+                      data-gtm-type="whatsapp"
+                      data-button-text={`WhatsApp ${branch.name}`}
                       onClick={() => {
-                        // Fire tracking as NO-OP for now (kept for future parity)
+                        // TikTok tracking
                         trackTikTok('ClickButton', { button: 'WhatsApp', region: 'UAE' });
+                        
+                        // GTM dataLayer tracking - includes parameters for GA4_WhatsApp_click tag
+                        try {
+                          if (typeof window !== 'undefined') {
+                            (window as any).dataLayer = (window as any).dataLayer || [];
+                            (window as any).dataLayer.push({
+                              event: 'whatsapp_click',
+                              phone_number: branch.whatsapp,
+                              button_class: 'branch-card-whatsapp',
+                              button_text: `WhatsApp ${branch.name}`,
+                              location: 'branch_card',
+                              branch: branch.id,
+                              page_location: window.location.href
+                            });
+                          }
+                        } catch (error) {
+                          console.error('GTM tracking error:', error);
+                        }
                       }}
                     >
                       +{branch.whatsapp.replace(/(\d{1,3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}
