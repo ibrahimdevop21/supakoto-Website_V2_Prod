@@ -136,6 +136,19 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                         } catch (error) {
                           console.error('GTM tracking error:', error);
                         }
+                        
+                        // Google Ads Conversion Tracking
+                        try {
+                          if (typeof (window as any).gtag !== 'undefined') {
+                            (window as any).gtag('event', 'conversion', {
+                              'send_to': 'AW-17913343586/V9zgCMCf4-4bEOLc491C',
+                              'value': 1.0,
+                              'currency': 'AED'
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Google Ads conversion tracking error:', error);
+                        }
                       }}
                     >
                       +{branch.whatsapp.replace(/(\d{1,3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}
