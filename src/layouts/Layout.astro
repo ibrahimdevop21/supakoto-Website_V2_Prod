@@ -364,31 +364,19 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		</script>
 		<!-- End Google Tag Manager -->
 		
-		<!-- Google Ads Conversion Tracking - Defensive Implementation -->
+		<!-- Google Ads Conversion Tracking (gtag.js) -->
 		<!-- Egypt Account: AW-17767525580 | UAE Account: AW-17913343586 -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17913343586"></script>
 		<script is:inline>
-			// Defensive gtag initialization - coexists with GTM
 			window.dataLayer = window.dataLayer || [];
-			
-			// Only define gtag if it doesn't already exist (GTM may have defined it)
-			if (typeof window.gtag === 'undefined') {
-				window.gtag = function() {
-					dataLayer.push(arguments);
-				};
-			}
-			
-			// Initialize timestamp
+			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
 			
-			// Configure Egypt Google Ads account - disable automatic pageview
-			gtag('config', 'AW-17767525580', {
-				'send_page_view': false
-			});
+			// Configure UAE Google Ads account (primary)
+			gtag('config', 'AW-17913343586');
 			
-			// Configure UAE Google Ads account - disable automatic pageview
-			gtag('config', 'AW-17913343586', {
-				'send_page_view': false
-			});
+			// Configure Egypt Google Ads account
+			gtag('config', 'AW-17767525580');
 		</script>
 		<!-- End Google Ads Conversion Tracking -->
 	</head>
