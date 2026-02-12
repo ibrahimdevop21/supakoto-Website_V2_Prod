@@ -11,11 +11,16 @@ import LifestyleUseCases from '@services/LifestyleUseCases';
 import { t } from '../i18n/index';
 import { getSEOData } from '../utils/seo-content';
 import { generateBreadcrumbSchema } from '../utils/seo-schemas';
+import { getCountryFromCookie, getPhoneNumbers } from '../utils/serverRouting';
 
 // We can now use Astro's built-in i18n system
 const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 // English is LTR, so rtl is false
 const rtl = currentLang === 'ar';
+
+// Server-authoritative phone routing
+const country = getCountryFromCookie(Astro);
+const phoneNumbers = getPhoneNumbers(country);
 
 // Get SEO-optimized content
 const seoData = getSEOData('home', currentLang);
@@ -33,7 +38,7 @@ const breadcrumbSchema = generateBreadcrumbSchema([
 	type="website"
 	schema={breadcrumbSchema}
 >
-	<ModernHeroCarousel slot="hero" />
+	<ModernHeroCarousel slot="hero" country={country} wa={phoneNumbers.wa} />
 	
 	<!-- Main content with responsive container and consistent spacing -->
 	<main class="w-full">

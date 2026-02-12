@@ -13,6 +13,7 @@ import TactfulWidget from '../components/TactfulWidget.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
+import { getCountryFromCookie, getPhoneNumbers } from '../utils/serverRouting';
 
 
 
@@ -42,6 +43,10 @@ const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 const rtl = isRTL(Astro);
 const siteTitle = t('site.title');
 const siteDescription = description || t('site.description');
+
+// Server-authoritative phone routing - single source of truth
+const country = getCountryFromCookie(Astro);
+const phoneNumbers = getPhoneNumbers(country);
 
 // Generate structured data
 const organizationSchema = generateOrganizationSchema(currentLang);
@@ -363,22 +368,6 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		})(window,document,'script','dataLayer','GTM-PKSH2C5K');
 		</script>
 		<!-- End Google Tag Manager -->
-		
-		<!-- Google Ads Conversion Tracking (gtag.js) -->
-		<!-- Egypt Account: AW-17767525580 | UAE Account: AW-17913343586 -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17913343586"></script>
-		<script is:inline>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			
-			// Configure UAE Google Ads account (primary)
-			gtag('config', 'AW-17913343586');
-			
-			// Configure Egypt Google Ads account
-			gtag('config', 'AW-17767525580');
-		</script>
-		<!-- End Google Ads Conversion Tracking -->
 	</head>
 	<body class="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-foreground font-sans antialiased" class:list={[rtl && 'font-arabic']}>
 		<!-- Google Tag Manager (noscript) - Container ID: GTM-PKSH2C5K -->
@@ -386,7 +375,7 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		<!-- End Google Tag Manager (noscript) -->
 		
-		<Nav />
+		<Nav country={country} tel={phoneNumbers.tel} wa={phoneNumbers.wa} />
 		
 		<!-- Full-width slot for hero sections and other full-width components -->
 		<slot name="hero" />
@@ -401,7 +390,7 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		<TactfulWidget />
 		
 		<!-- WhatsApp Float (Right Corner) -->
-		<WhatsAppFloat />
+		<WhatsAppFloat country={country} wa={phoneNumbers.wa} />
 		
 		<!-- Vercel Analytics -->
 		<script>

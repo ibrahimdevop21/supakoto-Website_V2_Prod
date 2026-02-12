@@ -11,12 +11,13 @@ const USE_COMPRESS = process.env.ASTRO_COMPRESS !== 'false';
 
 export default defineConfig({
   site: 'https://supakoto.com',
-  output: 'server',          // needed so /api/* runs on Vercel
+  output: 'server',          // Server-side rendering for dynamic phone routing
   adapter: vercel(),
   trailingSlash: 'ignore',
 
-  // Make ALL pages static by default (no SSR page cost).
-  prerender: { default: true },
+  // Disable prerender - pages must render per-request for country-specific routing
+  // Static generation would serve same HTML to all users (revenue leak)
+  prerender: false,
 
   integrations: [
     sitemap({ i18n: { defaultLocale: 'en', locales: { en: 'en', ar: 'ar' } } }),

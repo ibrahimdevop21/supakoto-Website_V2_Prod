@@ -4,20 +4,31 @@
    ============================================
    
    Fixed position WhatsApp button.
-   Positioned on left corner to complement theme toggle on right.
-   Number is dynamically set based on user's timezone/country.
+   Server-rendered with deterministic phone number.
+   No client-side routing or dynamic rewriting.
    ============================================ */
 
+import type { CountryCode } from '../data/countryContacts';
+
+export interface Props {
+  country: CountryCode;
+  wa: string;
+}
+
+const { country, wa } = Astro.props;
 const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
+const whatsappLink = `https://wa.me/${wa}`;
 ---
 
 <a
-  href="https://wa.me/971506265404"
+  href={whatsappLink}
   target="_blank"
   rel="noopener noreferrer"
   aria-label="Chat on WhatsApp"
   class="whatsapp-float-btn fixed bottom-6 right-6 z-50 flex items-center justify-center w-12 h-12 rounded-full bg-whatsapp hover:bg-[#1da851] text-white transition-all duration-200 hover:scale-105 shadow-lg"
   data-lang={currentLang}
+  data-country={country}
+  data-phone={wa}
   data-gtm-type="whatsapp"
   data-button-text="Chat on WhatsApp"
 >
@@ -28,64 +39,51 @@ const currentLang = (Astro.currentLocale || 'en') as 'en' | 'ar';
 
 <script>
   import { track } from '@vercel/analytics';
-  import { initPhoneRouting, getPhoneNumbers } from '../utils/phoneRouting';
 
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.querySelector('.whatsapp-float-btn') as HTMLAnchorElement;
-    if (btn) {
-      // Initialize phone routing - single source of truth
-      const country = initPhoneRouting(btn, 'whatsapp');
-      const { wa } = getPhoneNumbers();
+    if (!btn) return;
+    
+    // Get server-rendered values from data attributes
+    const country = btn.getAttribute('data-country') || 'AE';
+    const phone = btn.getAttribute('data-phone') || '';
+    const lang = btn.getAttribute('data-lang') || 'en';
+    
+    // Track clicks - NO routing logic, only analytics
+    btn.addEventListener('click', () => {
+      // Vercel Analytics
+      try {
+        track('whatsapp_float_click', {
+          location: 'floating_button',
+          phone_number: phone,
+          country,
+          lang,
+          cta_position: 'float',
+          source: 'server_authoritative'
+        });
+      } catch (error) {
+        console.error('Vercel Analytics tracking error:', error);
+      }
       
-      // Track clicks
-      btn.addEventListener('click', () => {
-        const lang = btn.getAttribute('data-lang') || 'en';
-        
-        // Track with Vercel Analytics
-        try {
-          track('whatsapp_float_click', {
+      // GTM dataLayer
+      try {
+        if (typeof window !== 'undefined') {
+          (window as any).dataLayer = (window as any).dataLayer || [];
+          (window as any).dataLayer.push({
+            event: 'whatsapp_click',
+            phone_number: phone,
+            button_class: 'whatsapp-float-btn',
+            button_text: 'Chat on WhatsApp',
             location: 'floating_button',
-            phone: wa,
             country,
             lang,
-            cta_position: 'float'
+            source: 'server_authoritative',
+            page_location: location.href
           });
-        } catch (error) {
-          console.error('Vercel Analytics tracking error:', error);
         }
-        
-        // Track with GTM dataLayer - includes parameters for GA4_WhatsApp_click tag
-        try {
-          if (typeof window !== 'undefined') {
-            (window as any).dataLayer = (window as any).dataLayer || [];
-            (window as any).dataLayer.push({
-              event: 'whatsapp_click',
-              phone_number: wa,
-              button_class: 'whatsapp-float-btn',
-              button_text: 'Chat on WhatsApp',
-              location: 'floating_button',
-              country,
-              lang,
-              page_location: location.href
-            });
-          }
-        } catch (error) {
-          console.error('GTM tracking error:', error);
-        }
-        
-        // Google Ads Conversion Tracking
-        try {
-          if (typeof (window as any).gtag !== 'undefined') {
-            (window as any).gtag('event', 'conversion', {
-              'send_to': 'AW-17913343586/V9zgCMCf4-4bEOLc491C',
-              'value': 1.0,
-              'currency': 'AED'
-            });
-          }
-        } catch (error) {
-          console.error('Google Ads conversion tracking error:', error);
-        }
-      });
-    }
+      } catch (error) {
+        console.error('GTM tracking error:', error);
+      }
+    });
   });
 </script>

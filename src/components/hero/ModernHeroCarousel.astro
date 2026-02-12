@@ -1,9 +1,18 @@
 ---
 import { t } from '../../i18n/index';
+import type { CountryCode } from '../../data/countryContacts';
+
+export interface Props {
+  country: CountryCode;
+  wa: string;
+}
+
+const { country, wa } = Astro.props;
 
 // Get current locale from Astro context
 const currentLang = Astro.currentLocale || 'en';
 const rtl = currentLang === 'ar';
+const whatsappLink = `https://wa.me/${wa}`;
 ---
 
 <section class="hero relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -118,13 +127,15 @@ const rtl = currentLang === 'ar';
           <!-- WhatsApp CTA - Chat on WhatsApp -->
           <a 
             id="hero-whatsapp-cta"
-            href="https://wa.me/971506265404"
+            href={whatsappLink}
             target="_blank"
             rel="noopener noreferrer"
             class={`group relative overflow-hidden flex-1 inline-flex items-center justify-center gap-2 px-6 md:px-8 lg:px-10 py-4 md:py-5 bg-[#25D366] hover:bg-[#1da851] text-white font-brand font-bold text-base md:text-lg rounded-xl md:rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-[#25D366]/50 ${rtl ? 'flex-row-reverse' : ''}`}
             aria-label={t('hero.cta.whatsapp', {}, Astro)}
             data-gtm-type="whatsapp"
             data-button-text={t('hero.cta.whatsapp', {}, Astro)}
+            data-country={country}
+            data-phone={wa}
           >
             <!-- Shimmer effect -->
             <div class="absolute inset-0 -top-10 -left-10 w-20 h-20 bg-white/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 group-hover:animate-brand-pulse transition-opacity duration-300"></div>
@@ -210,14 +221,14 @@ const rtl = currentLang === 'ar';
 
 <script>
   import { track } from '@vercel/analytics';
-  import { initPhoneRouting, getPhoneNumbers } from '../../utils/phoneRouting';
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Initialize WhatsApp routing - single source of truth
+    // Get WhatsApp button - NO routing logic, only analytics
     const whatsappBtn = document.getElementById('hero-whatsapp-cta') as HTMLAnchorElement | null;
     if (whatsappBtn) {
-      const country = initPhoneRouting(whatsappBtn, 'whatsapp');
-      const { wa } = getPhoneNumbers();
+      // Get server-rendered values from data attributes
+      const country = whatsappBtn.getAttribute('data-country') || 'AE';
+      const phone = whatsappBtn.getAttribute('data-phone') || '';
       
       // Track WhatsApp CTA click
       whatsappBtn.addEventListener('click', () => {
@@ -225,43 +236,32 @@ const rtl = currentLang === 'ar';
         try {
           track('whatsapp_hero_click', {
             location: 'hero',
-            phone: wa,
+            phone_number: phone,
             country,
-            cta_position: 'hero'
+            cta_position: 'hero',
+            source: 'server_authoritative'
           });
         } catch (error) {
           console.error('Vercel Analytics tracking error:', error);
         }
         
-        // GTM dataLayer - includes parameters for GA4_WhatsApp_click tag
+        // GTM dataLayer
         try {
           if (typeof window !== 'undefined') {
             (window as any).dataLayer = (window as any).dataLayer || [];
             (window as any).dataLayer.push({
               event: 'whatsapp_click',
-              phone_number: wa,
+              phone_number: phone,
               button_class: 'hero-whatsapp-cta',
               button_text: whatsappBtn.textContent?.trim() || 'Chat on WhatsApp',
               location: 'hero',
               country,
+              source: 'server_authoritative',
               page_location: location.href
             });
           }
         } catch (error) {
           console.error('GTM tracking error:', error);
-        }
-        
-        // Google Ads Conversion Tracking
-        try {
-          if (typeof (window as any).gtag !== 'undefined') {
-            (window as any).gtag('event', 'conversion', {
-              'send_to': 'AW-17913343586/V9zgCMCf4-4bEOLc491C',
-              'value': 1.0,
-              'currency': 'AED'
-            });
-          }
-        } catch (error) {
-          console.error('Google Ads conversion tracking error:', error);
         }
       });
     }
