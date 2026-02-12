@@ -2,6 +2,15 @@
 import NavbarDesktop from './NavbarDesktop';
 import NavbarMobile from './NavbarMobile';
 import ActionPills from './ActionPills';
+import type { CountryCode } from '../../data/countryContacts';
+
+export interface Props {
+  country: CountryCode;
+  tel: string;
+  wa: string;
+}
+
+const { country, tel, wa } = Astro.props;
 
 // Get current path and locale
 const pathname = Astro.url.pathname;
@@ -45,7 +54,7 @@ const activePath = pathname || '/';
 
     <!-- Right: CTAs ALWAYS visible + burger on mobile -->
     <div class="flex items-center gap-3">
-      <ActionPills client:idle locale={locale} currentPath={pathname} />
+      <ActionPills client:idle locale={locale} currentPath={pathname} country={country} tel={tel} wa={wa} />
       <NavbarMobile client:idle locale={locale} activePath={activePath} />
     </div>
   </div>

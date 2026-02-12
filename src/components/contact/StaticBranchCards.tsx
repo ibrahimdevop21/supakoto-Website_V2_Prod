@@ -126,28 +126,15 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                             (window as any).dataLayer.push({
                               event: 'whatsapp_click',
                               phone_number: branch.whatsapp,
-                              button_class: 'branch-card-whatsapp',
-                              button_text: `WhatsApp ${branch.name}`,
+                              button_class: 'branch-whatsapp-btn',
+                              button_text: 'WhatsApp',
                               location: 'branch_card',
-                              branch: branch.id,
-                              page_location: window.location.href
+                              branch_name: branch.name,
+                              page_location: location.href
                             });
                           }
                         } catch (error) {
                           console.error('GTM tracking error:', error);
-                        }
-                        
-                        // Google Ads Conversion Tracking
-                        try {
-                          if (typeof (window as any).gtag !== 'undefined') {
-                            (window as any).gtag('event', 'conversion', {
-                              'send_to': 'AW-17913343586/V9zgCMCf4-4bEOLc491C',
-                              'value': 1.0,
-                              'currency': 'AED'
-                            });
-                          }
-                        } catch (error) {
-                          console.error('Google Ads conversion tracking error:', error);
                         }
                       }}
                     >

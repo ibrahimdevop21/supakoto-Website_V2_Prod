@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Globe } from 'lucide-react';
 import { track } from '@vercel/analytics';
-import { getPhoneNumbers } from "../../utils/phoneRouting";
 import type { CountryCode } from "../../data/countryContacts";
 
 // No-op function for TikTok tracking while disabled
@@ -23,8 +22,11 @@ function swapLocalePath(path: string, target: "en" | "ar") {
 
 type Props = {
   locale?: "en" | "ar";
-  currentPath?: string;          // NEW
+  currentPath?: string;
   onToggleLang?: () => void;
+  country: CountryCode;
+  tel: string;
+  wa: string;
 };
 
 // WhatsApp icon component with green color
@@ -34,19 +36,8 @@ const WhatsApp = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-export default function ActionPills({ locale = "en", currentPath, onToggleLang }: Props) {
-  const [phoneNumbers, setPhoneNumbers] = useState<{ tel: string; wa: string; country: CountryCode }>({ 
-    tel: '+971506265404', 
-    wa: '971506265404', 
-    country: 'AE' 
-  });
-  
-  useEffect(() => {
-    // Get phone numbers from centralized routing
-    setPhoneNumbers(getPhoneNumbers());
-  }, []);
-
-  const { tel, wa, country: cc } = phoneNumbers;
+export default function ActionPills({ locale = "en", currentPath, onToggleLang, country, tel, wa }: Props) {
+  // Server-rendered phone numbers - no client-side detection
   
   // Build the next href using the current path
   const [path, setPath] = useState<string>("/");
@@ -98,10 +89,11 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang }
           // Track with Vercel Analytics
           try {
             track('call_navbar_click', {
-              phone: tel,
+              phone_number: tel,
               location: 'navbar',
-              country: cc,
-              lang: locale
+              country: country,
+              lang: locale,
+              source: 'server_authoritative'
             });
           } catch (error) {
             console.error('Tracking error:', error);

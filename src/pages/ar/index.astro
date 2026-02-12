@@ -11,11 +11,16 @@ import LifestyleUseCases from '@services/LifestyleUseCases';
 import { t } from '../../i18n/index';
 import { getSEOData } from '../../utils/seo-content';
 import { generateBreadcrumbSchema } from '../../utils/seo-schemas';
+import { getCountryFromCookie, getPhoneNumbers } from '../../utils/serverRouting';
 
 // For locale-specific pages, we know the locale from the folder structure
 const currentLang = (Astro.currentLocale || 'ar') as 'en' | 'ar';
 // Arabic is RTL, so rtl is true
 const rtl = currentLang === 'ar';
+
+// Server-authoritative phone routing
+const country = getCountryFromCookie(Astro);
+const phoneNumbers = getPhoneNumbers(country);
 
 // Get SEO-optimized content for Arabic
 const seoData = getSEOData('home', currentLang);
@@ -33,7 +38,7 @@ const breadcrumbSchema = generateBreadcrumbSchema([
 	type="website"
 	schema={breadcrumbSchema}
 >
-	<ModernHeroCarousel slot="hero" />
+	<ModernHeroCarousel slot="hero" country={country} wa={phoneNumbers.wa} />
 	
 	<!-- Main content with responsive container and consistent spacing -->
 	<main class="w-full">
