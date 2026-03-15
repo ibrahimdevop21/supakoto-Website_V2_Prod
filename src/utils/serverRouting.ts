@@ -1,41 +1,22 @@
 /**
  * Server-Side Phone Routing Utilities
  * Deterministic, server-authoritative phone number resolution
- * 
- * NO client-side detection
- * NO timezone/locale fallbacks
- * NO dynamic rewriting
+ *
+ * The middleware resolves the country and writes it to context.locals.country
+ * before the page renders. Pages read from locals — no race condition.
  */
 
 import type { AstroGlobal } from 'astro';
 import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 import type { CountryCode } from '../data/countryContacts';
 
-const COOKIE_NAME = 'sk_country';
-const VALID_COUNTRIES: CountryCode[] = ['EG', 'AE'];
-
 /**
- * Get country from cookie (server-side only)
- * This is the ONLY source of truth for routing
+ * Get the resolved country for this request.
+ * Reads from Astro.locals (set by middleware before page renders).
+ * Falls back to 'AE' only if middleware somehow didn't run.
  */
 export function getCountryFromCookie(astro: AstroGlobal): CountryCode {
-  const cookieHeader = astro.request.headers.get('cookie');
-  
-  if (!cookieHeader) return 'AE'; // Fallback
-  
-  const cookies = cookieHeader.split(';');
-  for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=');
-    if (name === COOKIE_NAME) {
-      const country = value as CountryCode;
-      // Centralized validation - matches middleware logic
-      if (VALID_COUNTRIES.includes(country)) {
-        return country;
-      }
-    }
-  }
-  
-  return 'AE'; // Fallback
+  return (astro.locals as App.Locals).country ?? 'AE';
 }
 
 /**

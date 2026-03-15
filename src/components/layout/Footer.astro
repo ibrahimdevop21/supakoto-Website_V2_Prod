@@ -3,6 +3,12 @@ import { Icon } from 'astro-icon/components';
 import { t, getLocalizedUrl, isRTL, type Locale } from "../../i18n/index";
 import FooterPaymentStrip from "../footer/FooterPaymentStrip";
 
+export interface Props {
+  tel: string;
+  wa: string;
+}
+
+const { tel, wa } = Astro.props;
 const currentLocale = (Astro.currentLocale || 'en') as Locale;
 const rtl = isRTL(Astro);
 const currentYear = new Date().getFullYear();
@@ -49,10 +55,10 @@ const quickLinks = [
 ];
 
 const contactInfo = [
-  { 
-    icon: 'mdi:phone', 
-    text: '+201224464637', 
-    href: 'tel:+201224464637' 
+  {
+    icon: 'mdi:phone',
+    text: tel,
+    href: `tel:${tel}`
   },
   { 
     icon: 'mdi:email', 

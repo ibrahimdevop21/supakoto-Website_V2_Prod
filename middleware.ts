@@ -1,17 +1,20 @@
 /**
  * SupaKoto Deterministic Phone Routing Middleware
  * Server-Authoritative Architecture - Single Source of Truth
- * 
+ *
  * Priority Order:
  * 1. Query param override (?c=EG or ?c=AE)
  * 2. Existing cookie (sk_country)
- * 3. Vercel Edge geo detection (request.geo.country)
+ * 3. Vercel geo header (x-vercel-ip-country)
  * 4. Fallback to AE (UAE)
- * 
+ *
+ * The resolved country is written to context.locals.country BEFORE next()
+ * so pages can read it directly — no race condition.
+ *
  * Cookie: sk_country
  * Values: 'EG' | 'AE'
  * Expiry: 7 days
- * Flags: Secure, SameSite=Lax
+ * Flags: Secure, SameSite=Lax, HttpOnly
  */
 
 import type { MiddlewareHandler } from 'astro';
@@ -22,14 +25,9 @@ const COOKIE_NAME = 'sk_country';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 const VALID_COUNTRIES: CountryCode[] = ['EG', 'AE'];
 
-/**
- * Parse country from cookie string
- */
 function getCountryFromCookie(cookieHeader: string | null): CountryCode | null {
   if (!cookieHeader) return null;
-  
-  const cookies = cookieHeader.split(';');
-  for (const cookie of cookies) {
+  for (const cookie of cookieHeader.split(';')) {
     const [name, value] = cookie.trim().split('=');
     if (name === COOKIE_NAME) {
       const country = value as CountryCode;
@@ -40,88 +38,59 @@ function getCountryFromCookie(cookieHeader: string | null): CountryCode | null {
 }
 
 /**
- * Detect country from Vercel Edge geo data
+ * Vercel serverless functions expose geo data via request headers,
+ * NOT via request.geo (which is Edge Runtime only).
  */
 function detectCountryFromGeo(request: Request): CountryCode | null {
-  try {
-    // @ts-ignore - Vercel Edge Runtime injects geo data
-    const geoCountry = request.geo?.country?.toUpperCase?.();
-    
-    if (geoCountry === 'EG') return 'EG';
-    if (geoCountry === 'AE') return 'AE';
-    
-    return null;
-  } catch {
-    return null;
-  }
+  const geoCountry = request.headers.get('x-vercel-ip-country')?.toUpperCase();
+  if (geoCountry === 'EG') return 'EG';
+  if (geoCountry === 'AE') return 'AE';
+  return null;
 }
 
-/**
- * Create secure cookie string
- */
 function createCookie(country: CountryCode): string {
   const isProduction = process.env.NODE_ENV === 'production';
   const secure = isProduction ? 'Secure; ' : '';
-  
   return `${COOKIE_NAME}=${country}; Path=/; Max-Age=${COOKIE_MAX_AGE}; SameSite=Lax; ${secure}HttpOnly`;
 }
-
-/**
- * Route matcher - exclude static assets from middleware
- */
-export const config = {
-  matcher: [
-    '/',
-    '/ar',
-    '/ar/',
-    '/(en|ar)/:path*',
-    // Exclude static assets
-    '/((?!_astro|assets|images|favicon|robots|sitemap).*)'
-  ]
-};
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const url = new URL(context.request.url);
   const queryCountry = url.searchParams.get('c')?.toUpperCase() as CountryCode | null;
-  
-  // 1. Query param override - highest priority
+
+  // 1. Query param override — redirect to clean URL and bake cookie
   if (queryCountry && VALID_COUNTRIES.includes(queryCountry)) {
-    // Remove query param and redirect to clean URL
     url.searchParams.delete('c');
-    
     return new Response(null, {
       status: 302,
       headers: {
         'Location': url.toString(),
         'Set-Cookie': createCookie(queryCountry),
-        'Cache-Control': 'no-cache, no-store, must-revalidate'
-      }
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
     });
   }
-  
-  // 2. Check existing cookie
+
+  // 2. Existing cookie
   const cookieHeader = context.request.headers.get('cookie');
-  const existingCountry = getCountryFromCookie(cookieHeader);
-  
-  if (existingCountry) {
-    // Cookie exists, proceed without modification
-    const response = await next();
-    // Prevent caching of country-specific HTML
-    response.headers.set('Cache-Control', 'private, no-store, must-revalidate');
-    return response;
-  }
-  
-  // 3. Detect from Vercel Edge geo
+  const cookieCountry = getCountryFromCookie(cookieHeader);
+
+  // 3. Vercel geo header (serverless-compatible)
   const geoCountry = detectCountryFromGeo(context.request);
-  
+
   // 4. Fallback to AE
-  const resolvedCountry: CountryCode = geoCountry || 'AE';
-  
-  // Set cookie and proceed
+  const resolvedCountry: CountryCode = cookieCountry ?? geoCountry ?? 'AE';
+
+  // Write to locals BEFORE next() so pages always have the correct value
+  context.locals.country = resolvedCountry;
+
   const response = await next();
-  response.headers.append('Set-Cookie', createCookie(resolvedCountry));
-  // Prevent caching of country-specific HTML
+
+  // Set cookie if it wasn't already set (first visit or geo-detected)
+  if (!cookieCountry) {
+    response.headers.append('Set-Cookie', createCookie(resolvedCountry));
+  }
+
   response.headers.set('Cache-Control', 'private, no-store, must-revalidate');
-  
   return response;
 };
