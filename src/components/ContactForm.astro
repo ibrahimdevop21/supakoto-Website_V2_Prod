@@ -1,4 +1,6 @@
 ---
+import { getCountryFromCookie } from '../utils/serverRouting';
+
 export interface Props {
   selectedBranch: {
     id: string;
@@ -8,9 +10,10 @@ export interface Props {
 }
 
 const { selectedBranch, currentLang } = Astro.props;
+const routingCountry = getCountryFromCookie(Astro);
 ---
 
-<form id="contact-form" method="POST" action="/api/contact" data-vercel="true" data-lang={currentLang} class="space-y-6">
+<form id="contact-form" method="POST" action="/api/contact" data-vercel="true" data-lang={currentLang} data-country={routingCountry} class="space-y-6">
   <!-- Test Mode Banner -->
   <div id="dry-run-banner" class="hidden rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm" role="status">
     {currentLang === 'ar' ? 'وضع الاختبار: سيتم محاكاة هذا الإرسال (لن يتم إرسال رسالة).' : 'Test Mode: This submission will be mocked (no message will be sent).'}
@@ -780,7 +783,7 @@ const { selectedBranch, currentLang } = Astro.props;
 
         if (ok) {
           // Analytics hooks (graceful if not present)
-          try { if (typeof (window as any).fbq !== 'undefined') (window as any).fbq('track', 'Lead', { source: 'contact_form' }); } catch {}
+          try { if (typeof (window as any).fbq !== 'undefined') { const _c = (form as HTMLFormElement).dataset.country || 'AE'; (window as any).fbq('track', 'Lead', { source: 'contact_form', country: _c, market: _c === 'EG' ? 'egypt' : 'uae' }); } } catch {}
           try { if (typeof (window as any).gtag !== 'undefined') (window as any).gtag('event', 'form_submit', { form: 'contact' }); } catch {}
           try { if (typeof (window as any).ttq !== 'undefined') (window as any).ttq.track('SubmitForm', { form: 'contact' }); } catch {}
 
