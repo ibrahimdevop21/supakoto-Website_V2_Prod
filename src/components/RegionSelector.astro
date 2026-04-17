@@ -102,8 +102,13 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 			if (d === digitsOnly(contacts.EG.tel) || d === digitsOnly(contacts.AE.tel)) return 'tel';
 			return null;
 		}
-		if (lower.startsWith('https://wa.me/') || lower.startsWith('http://wa.me/')) {
-			const rest = lower.replace(/^https?:\/\/wa\.me\//i, '');
+		if (
+			lower.startsWith('https://wa.me/') ||
+			lower.startsWith('http://wa.me/') ||
+			lower.startsWith('https://www.wa.me/') ||
+			lower.startsWith('http://www.wa.me/')
+		) {
+			const rest = lower.replace(/^https?:\/\/(www\.)?wa\.me\//i, '');
 			const pathPart = rest.split(/[?#]/)[0];
 			const d = digitsOnly(pathPart);
 			if (d === digitsOnly(contacts.EG.wa) || d === digitsOnly(contacts.AE.wa)) return 'wa';
@@ -124,8 +129,12 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 		const c = contacts[country];
 		if (kind === 'tel') {
 			window.location.href = 'tel:' + c.tel;
-		} else {
-			window.open('https://wa.me/' + c.wa, '_blank');
+			return;
+		}
+		const waUrl = 'https://wa.me/' + c.wa;
+		const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
+		if (!win) {
+			window.location.href = waUrl;
 		}
 	}
 
@@ -144,6 +153,14 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 		let selectedCountry = null;
 		let lastFocus = null;
 		let regionButtons = [];
+		let closeTimer = null;
+
+		function clearCloseTimer() {
+			if (closeTimer !== null) {
+				window.clearTimeout(closeTimer);
+				closeTimer = null;
+			}
+		}
 
 		function buildRadios() {
 			radiogroup.innerHTML = '';
@@ -192,6 +209,7 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 		}
 
 		function hideRootInstant() {
+			clearCloseTimer();
 			document.removeEventListener('keydown', onKeydown, true);
 			root.classList.add('hidden');
 			root.classList.remove('pointer-events-auto');
@@ -202,6 +220,7 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 		}
 
 		function openModal() {
+			clearCloseTimer();
 			syncCopy();
 			lastFocus = document.activeElement;
 			root.classList.remove('hidden');
@@ -218,13 +237,16 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 		}
 
 		function closeModal() {
+			clearCloseTimer();
+			document.removeEventListener('keydown', onKeydown, true);
+			// Let clicks reach the page immediately — root was blocking the full viewport while "invisible"
+			root.classList.remove('pointer-events-auto');
 			backdrop.classList.remove('opacity-100');
 			panel.classList.add('translate-y-full', 'opacity-0', 'md:translate-y-3', 'md:opacity-0');
 			panel.classList.remove('translate-y-0', 'opacity-100');
-			document.removeEventListener('keydown', onKeydown, true);
-			window.setTimeout(function () {
+			closeTimer = window.setTimeout(function () {
+				closeTimer = null;
 				root.classList.add('hidden');
-				root.classList.remove('pointer-events-auto');
 				root.setAttribute('aria-hidden', 'true');
 				pendingKind = null;
 				if (lastFocus && typeof lastFocus.focus === 'function') {
@@ -276,20 +298,21 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 
 		confirmBtn.addEventListener('click', function () {
 			if (!pendingKind || !selectedCountry) return;
-			try {
-				localStorage.setItem(STORAGE_KEY, selectedCountry);
-			} catch (_) {}
 			const kind = pendingKind;
 			const country = selectedCountry;
 			pendingKind = null;
 			selectedCountry = null;
+			try {
+				localStorage.setItem(STORAGE_KEY, country);
+			} catch (_) {}
+			// Open WhatsApp while still in the trusted click stack (helps popup blockers), then tear down UI
+			navigate(kind, country);
 			hideRootInstant();
-			if (lastFocus && typeof lastFocus.focus === 'function') {
+			if (kind === 'tel' && lastFocus && typeof lastFocus.focus === 'function') {
 				try {
 					lastFocus.focus();
 				} catch (_) {}
 			}
-			navigate(kind, country);
 		});
 
 		document.addEventListener(
