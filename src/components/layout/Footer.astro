@@ -242,6 +242,13 @@ const contactInfo = [
             <a href={getLocalizedUrl('/terms', currentLocale, Astro)} style="color: var(--footer-muted);" class="hover:text-primary transition-colors duration-300">
               {currentLocale === 'ar' ? 'شروط الخدمة' : 'Terms of Service'}
             </a>
+            <button
+              type="button"
+              data-reset-region
+              class="text-sm text-[color:var(--footer-muted)] bg-transparent border-0 cursor-pointer p-0 hover:text-primary transition-colors duration-300"
+            >
+              {currentLocale === 'ar' ? 'تغيير المنطقة' : 'Change Region'}
+            </button>
           </div>
         </div>
         

@@ -1,0 +1,336 @@
+---
+/**
+ * Client-side region picker for HQ tel / wa.me links only (matches COUNTRY_DEFAULTS digits).
+ * Does not replace middleware or sk_country cookie behavior.
+ */
+import { COUNTRY_DEFAULTS } from '../data/countryContacts';
+---
+
+<div
+	id="region-selector-root"
+	class="fixed inset-0 z-[10050] hidden flex flex-col justify-end md:flex-row md:items-center md:justify-center md:p-4 pointer-events-none"
+	aria-hidden="true"
+>
+	<button
+		type="button"
+		id="region-selector-backdrop"
+		class="absolute inset-0 bg-[color:var(--bg-overlay-medium)] opacity-0 transition-opacity duration-150 ease-out pointer-events-auto border-0 p-0 m-0 cursor-default"
+		aria-label="Close"
+		tabindex="-1"
+	></button>
+	<div
+		id="region-selector-panel"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="region-selector-title"
+		class="relative z-10 w-full max-w-none md:max-w-[360px] border border-[color:var(--border-default)] bg-[color:var(--bg-card)] text-[color:var(--text-secondary)] font-sans translate-y-full opacity-0 transition-all duration-150 ease-out md:translate-y-3 md:opacity-0 pointer-events-auto flex flex-col gap-4 p-5 md:rounded-lg"
+	>
+		<div class="flex flex-col gap-1">
+			<h2 id="region-selector-title" class="text-lg font-semibold text-[color:var(--text-primary)]"></h2>
+			<p id="region-selector-subtitle" class="text-sm text-[color:var(--text-muted)]"></p>
+		</div>
+		<div id="region-selector-radiogroup" role="radiogroup" class="flex flex-col gap-2" aria-label="Region"></div>
+		<button
+			type="button"
+			id="region-selector-confirm"
+			class="w-full py-3 px-4 text-center text-sm font-semibold text-white bg-[color:var(--brand-primary)] hover:bg-[color:var(--brand-primary-hover)] active:bg-[color:var(--brand-primary-active)] border-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+			disabled
+		></button>
+	</div>
+</div>
+
+<style>
+	#region-selector-panel .region-opt[aria-checked='true'] {
+		border-color: var(--brand-primary);
+		color: var(--brand-primary);
+	}
+</style>
+
+<script define:vars={{ COUNTRY_DEFAULTS }}>
+	const i18n = {
+		en: {
+			title: 'Select Your Region',
+			subtitle: 'Choose your location to connect with the right team',
+			egypt: 'Egypt',
+			uae: 'UAE',
+			confirm: 'Continue',
+			change: 'Change Region',
+		},
+		ar: {
+			title: 'اختار منطقتك',
+			subtitle: 'اختار موقعك عشان نوصلك بالفريق الصح',
+			egypt: 'مصر',
+			uae: 'الإمارات',
+			confirm: 'متابعة',
+			change: 'تغيير المنطقة',
+		},
+	};
+
+	const STORAGE_KEY = 'sk_country_manual';
+	const ROOT_ID = 'region-selector-root';
+	const BACKDROP_ID = 'region-selector-backdrop';
+	const PANEL_ID = 'region-selector-panel';
+	const TITLE_ID = 'region-selector-title';
+	const SUBTITLE_ID = 'region-selector-subtitle';
+	const RADIOGROUP_ID = 'region-selector-radiogroup';
+	const CONFIRM_ID = 'region-selector-confirm';
+
+	const contacts = COUNTRY_DEFAULTS;
+
+	function digitsOnly(s) {
+		return String(s || '').replace(/\D/g, '');
+	}
+
+	function getLocaleKey() {
+		const dir = document.documentElement.getAttribute('dir');
+		if (dir === 'rtl') return 'ar';
+		const lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+		if (lang.startsWith('ar')) return 'ar';
+		return 'en';
+	}
+
+	function getStrings() {
+		return i18n[getLocaleKey()] || i18n.en;
+	}
+
+	function parseInterceptKind(href) {
+		if (!href) return null;
+		const trimmed = href.trim();
+		const lower = trimmed.toLowerCase();
+		if (lower.startsWith('tel:')) {
+			const d = digitsOnly(trimmed.slice(4));
+			if (d === digitsOnly(contacts.EG.tel) || d === digitsOnly(contacts.AE.tel)) return 'tel';
+			return null;
+		}
+		if (lower.startsWith('https://wa.me/') || lower.startsWith('http://wa.me/')) {
+			const rest = lower.replace(/^https?:\/\/wa\.me\//i, '');
+			const pathPart = rest.split(/[?#]/)[0];
+			const d = digitsOnly(pathPart);
+			if (d === digitsOnly(contacts.EG.wa) || d === digitsOnly(contacts.AE.wa)) return 'wa';
+			return null;
+		}
+		return null;
+	}
+
+	function storedCountry() {
+		try {
+			const v = localStorage.getItem(STORAGE_KEY);
+			if (v === 'EG' || v === 'AE') return v;
+		} catch (_) {}
+		return null;
+	}
+
+	function navigate(kind, country) {
+		const c = contacts[country];
+		if (kind === 'tel') {
+			window.location.href = 'tel:' + c.tel;
+		} else {
+			window.open('https://wa.me/' + c.wa, '_blank');
+		}
+	}
+
+	const root = document.getElementById(ROOT_ID);
+	const backdrop = document.getElementById(BACKDROP_ID);
+	const panel = document.getElementById(PANEL_ID);
+	const titleEl = document.getElementById(TITLE_ID);
+	const subtitleEl = document.getElementById(SUBTITLE_ID);
+	const radiogroup = document.getElementById(RADIOGROUP_ID);
+	const confirmBtn = document.getElementById(CONFIRM_ID);
+
+	if (!root || !backdrop || !panel || !titleEl || !subtitleEl || !radiogroup || !confirmBtn) {
+		// Missing DOM — skip init
+	} else {
+		let pendingKind = null;
+		let selectedCountry = null;
+		let lastFocus = null;
+		let regionButtons = [];
+
+		function buildRadios() {
+			radiogroup.innerHTML = '';
+			const str = getStrings();
+			const opts = [
+				{ code: 'EG', label: str.egypt },
+				{ code: 'AE', label: str.uae },
+			];
+			regionButtons = opts.map(function (opt) {
+				const btn = document.createElement('button');
+				btn.type = 'button';
+				btn.setAttribute('role', 'radio');
+				btn.setAttribute('aria-checked', 'false');
+				btn.dataset.country = opt.code;
+				btn.className =
+					'region-opt w-full py-3 px-4 text-start text-sm font-medium border border-[color:var(--border-default)] bg-[color:var(--bg-input)] text-[color:var(--text-secondary)] transition-colors duration-150 hover:border-[color:var(--border-focus)]';
+				btn.textContent = opt.label;
+				btn.addEventListener('click', function () {
+					selectCountry(opt.code);
+				});
+				radiogroup.appendChild(btn);
+				return btn;
+			});
+		}
+
+		function selectCountry(code) {
+			selectedCountry = code;
+			regionButtons.forEach(function (b) {
+				const on = b.dataset.country === code;
+				b.setAttribute('aria-checked', on ? 'true' : 'false');
+			});
+			confirmBtn.disabled = false;
+		}
+
+		function syncCopy() {
+			const str = getStrings();
+			titleEl.textContent = str.title;
+			subtitleEl.textContent = str.subtitle;
+			confirmBtn.textContent = str.confirm;
+			const rtl = getLocaleKey() === 'ar';
+			panel.setAttribute('dir', rtl ? 'rtl' : 'ltr');
+			panel.setAttribute('lang', rtl ? 'ar' : 'en');
+			buildRadios();
+			selectedCountry = null;
+			confirmBtn.disabled = true;
+		}
+
+		function hideRootInstant() {
+			document.removeEventListener('keydown', onKeydown, true);
+			root.classList.add('hidden');
+			root.classList.remove('pointer-events-auto');
+			root.setAttribute('aria-hidden', 'true');
+			backdrop.classList.remove('opacity-100');
+			panel.classList.add('translate-y-full', 'opacity-0', 'md:translate-y-3', 'md:opacity-0');
+			panel.classList.remove('translate-y-0', 'opacity-100');
+		}
+
+		function openModal() {
+			syncCopy();
+			lastFocus = document.activeElement;
+			root.classList.remove('hidden');
+			root.classList.add('pointer-events-auto');
+			root.setAttribute('aria-hidden', 'false');
+			requestAnimationFrame(function () {
+				backdrop.classList.add('opacity-100');
+				panel.classList.remove('translate-y-full', 'opacity-0', 'md:translate-y-3', 'md:opacity-0');
+				panel.classList.add('translate-y-0', 'opacity-100');
+			});
+			document.addEventListener('keydown', onKeydown, true);
+			const first = regionButtons[0];
+			if (first) first.focus();
+		}
+
+		function closeModal() {
+			backdrop.classList.remove('opacity-100');
+			panel.classList.add('translate-y-full', 'opacity-0', 'md:translate-y-3', 'md:opacity-0');
+			panel.classList.remove('translate-y-0', 'opacity-100');
+			document.removeEventListener('keydown', onKeydown, true);
+			window.setTimeout(function () {
+				root.classList.add('hidden');
+				root.classList.remove('pointer-events-auto');
+				root.setAttribute('aria-hidden', 'true');
+				pendingKind = null;
+				if (lastFocus && typeof lastFocus.focus === 'function') {
+					try {
+						lastFocus.focus();
+					} catch (_) {}
+				}
+			}, 160);
+		}
+
+		function focusables() {
+			const sel =
+				'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+			return Array.prototype.slice
+				.call(panel.querySelectorAll(sel))
+				.filter(function (el) {
+					return el.offsetParent !== null || el === confirmBtn;
+				});
+		}
+
+		function onKeydown(e) {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeModal();
+				return;
+			}
+			if (e.key !== 'Tab') return;
+			if (!root.classList.contains('pointer-events-auto')) return;
+			const list = focusables();
+			if (!list.length) return;
+			const first = list[0];
+			const last = list[list.length - 1];
+			if (e.shiftKey) {
+				if (document.activeElement === first) {
+					e.preventDefault();
+					last.focus();
+				}
+			} else {
+				if (document.activeElement === last) {
+					e.preventDefault();
+					first.focus();
+				}
+			}
+		}
+
+		backdrop.addEventListener('click', function () {
+			closeModal();
+		});
+
+		confirmBtn.addEventListener('click', function () {
+			if (!pendingKind || !selectedCountry) return;
+			try {
+				localStorage.setItem(STORAGE_KEY, selectedCountry);
+			} catch (_) {}
+			const kind = pendingKind;
+			const country = selectedCountry;
+			pendingKind = null;
+			selectedCountry = null;
+			hideRootInstant();
+			if (lastFocus && typeof lastFocus.focus === 'function') {
+				try {
+					lastFocus.focus();
+				} catch (_) {}
+			}
+			navigate(kind, country);
+		});
+
+		document.addEventListener(
+			'click',
+			function (e) {
+				const t = e.target;
+				if (!(t instanceof Element)) return;
+
+				if (t.closest('[data-reset-region]')) {
+					e.preventDefault();
+					try {
+						localStorage.removeItem(STORAGE_KEY);
+					} catch (_) {}
+					window.location.reload();
+					return;
+				}
+
+				const anchor = t.closest('a[href]');
+				if (!anchor || !(anchor instanceof HTMLAnchorElement)) return;
+				if (anchor.closest('#' + PANEL_ID)) return;
+
+				const href = anchor.getAttribute('href') || '';
+				const kind = parseInterceptKind(href);
+				if (!kind) return;
+
+				if (e.defaultPrevented) return;
+				if (e.button !== 0) return;
+				if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+				const stored = storedCountry();
+				if (stored) {
+					e.preventDefault();
+					navigate(kind, stored);
+					return;
+				}
+
+				e.preventDefault();
+				pendingKind = kind;
+				openModal();
+			},
+			true
+		);
+	}
+</script>

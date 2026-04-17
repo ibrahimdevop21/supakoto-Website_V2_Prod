@@ -11,6 +11,7 @@ import Preload from '../components/shared/Preload.astro';
 import SEOHead from '../components/layout/SEOHead.astro';
 import TactfulWidget from '../components/TactfulWidget.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import RegionSelector from '../components/RegionSelector.astro';
 import { t, isRTL } from '../i18n/index';
 import { generateOrganizationSchema, generateWebsiteSchema } from '../utils/seo-schemas';
 import { getCountryFromCookie, getPhoneNumbers } from '../utils/serverRouting';
@@ -391,6 +392,8 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		
 		<!-- WhatsApp Float (Right Corner) -->
 		<WhatsAppFloat country={country} wa={phoneNumbers.wa} />
+
+		<RegionSelector />
 		
 		<!-- Vercel Analytics -->
 		<script>
