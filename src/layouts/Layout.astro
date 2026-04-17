@@ -376,15 +376,6 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		<!-- End Google Tag Manager (noscript) -->
 		
 		<Nav country={country} tel={phoneNumbers.tel} wa={phoneNumbers.wa} />
-
-		<!-- DEBUG BANNER: remove after confirming routing is correct -->
-		<div style="position:fixed;bottom:0;left:0;right:0;z-index:99999;background:#1e293b;border-top:2px solid #bf1e2e;color:#f8fafc;font-family:monospace;font-size:13px;padding:6px 16px;display:flex;gap:24px;align-items:center;">
-			<span style="color:#94a3b8;">SERVER ROUTING DEBUG</span>
-			<span>locals.country: <strong style="color:{country === 'EG' ? '#4ade80' : '#f87171'}">{country}</strong></span>
-			<span>tel: <strong style="color:#e2e8f0;">{phoneNumbers.tel}</strong></span>
-			<span>wa: <strong style="color:#e2e8f0;">{phoneNumbers.wa}</strong></span>
-			<span style="color:#64748b;">cookie header: <strong style="color:#cbd5e1;">{Astro.request.headers.get('cookie') ?? '(none)'}</strong></span>
-		</div>
 		
 		<!-- Full-width slot for hero sections and other full-width components -->
 		<slot name="hero" />
