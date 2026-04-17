@@ -1,5 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getCountryFromCookie, getPhoneNumbers } from '../../utils/serverRouting';
+
+const country = getCountryFromCookie(Astro);
+const { tel, wa } = getPhoneNumbers(country);
 ---
 
 <Layout title="شكراً لك - سوباكوتو" description="شكراً لاهتمامك بخدمات حماية السيارات من سوباكوتو">
@@ -79,21 +83,19 @@ import Layout from '../../layouts/Layout.astro';
         <div class="mt-12 p-6 bg-slate-800/30 rounded-xl border border-slate-700/30">
           <p class="text-neutral-400 text-sm mb-2">تحتاج مساعدة فورية؟</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a 
-              href="tel:+201103402446" 
-              class="text-red-400 hover:text-red-300 font-semibold" 
+            <a
+              href={`tel:${tel}`}
+              class="text-red-400 hover:text-red-300 font-semibold"
               dir="ltr"
-              onclick="if (typeof ttq !== 'undefined') ttq('track', 'ClickButton', { button: 'Call', region: 'UAE' });"
             >
-              📞 +20 11 03402446
+              📞 {tel}
             </a>
-            <a 
-              href="https://wa.me/201103402446" 
-              class="text-green-400 hover:text-green-300 font-semibold" 
+            <a
+              href={`https://wa.me/${wa}`}
+              class="text-green-400 hover:text-green-300 font-semibold"
               dir="ltr"
-              onclick="if (typeof ttq !== 'undefined') ttq('track', 'ClickButton', { button: 'WhatsApp', region: 'UAE' });"
             >
-              💬 واتساب: +20 11 03402446
+              💬 واتساب: {tel}
             </a>
           </div>
         </div>

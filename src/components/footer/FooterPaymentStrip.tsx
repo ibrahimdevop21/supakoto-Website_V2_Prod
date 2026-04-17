@@ -30,14 +30,6 @@ const LABEL = {
   ar: { title: "طرق الدفع",        local: "خيارات محلية",    cards: "البطاقات والمحافظ" },
 };
 
-function getCountryCookie(): Country {
-  if (typeof document !== "undefined") {
-    const m = document.cookie.match(/(?:^|;\s*)sk_country=(AE|EG)/);
-    if (m) return m[1] as Country;
-  }
-  return "AE";
-}
-
 function Row({ logos }: { logos: Logo[] }) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">

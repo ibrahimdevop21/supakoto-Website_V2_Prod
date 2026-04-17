@@ -1,5 +1,5 @@
 // src/components/business/BusinessForm.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 type Country = 'AE' | 'EG' | 'SA' | 'QA' | 'KW' | 'BH' | 'OM' | 'JO' | 'LB' | 'Other';
 type Lang = 'en' | 'ar';
@@ -7,6 +7,7 @@ type InquiryType = 'franchise' | 'partnership' | 'other';
 
 interface BusinessFormProps {
   currentLang: Lang;
+  country?: 'EG' | 'AE';
 }
 
 interface FormData {
@@ -123,8 +124,8 @@ const LABELS = {
   }
 };
 
-export default function BusinessForm({ currentLang }: BusinessFormProps) {
-  const [data, setData] = useState<FormData>(INITIAL_DATA);
+export default function BusinessForm({ currentLang, country: initialCountry = 'AE' }: BusinessFormProps) {
+  const [data, setData] = useState<FormData>({ ...INITIAL_DATA, country: initialCountry });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -134,16 +135,6 @@ export default function BusinessForm({ currentLang }: BusinessFormProps) {
 
   const t = LABELS[currentLang];
   const isRTL = currentLang === 'ar';
-
-  // Get country from cookie or default to AE
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const cookies = document.cookie.split(';');
-      const skCountry = cookies.find(c => c.trim().startsWith('sk_country='));
-      const country = skCountry?.split('=')[1] as Country || 'AE';
-      setData(prev => ({ ...prev, country }));
-    }
-  }, []);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

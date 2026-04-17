@@ -1,7 +1,7 @@
 // Enhanced ContactWizard (mobile-first, fixed toggles)
 // Drop-in replacement for your current file.
 
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, { useMemo, useReducer, useState } from 'react';
 import './contact-wizard-form.css';
 import PaymentStrip from './PaymentStrip';
 import { trackStepView, trackStepNext, trackServiceToggle, trackFormSubmit } from '@/lib/track';
@@ -13,6 +13,7 @@ type Step = 1 | 2 | 3;
 interface ContactWizardProps {
   branchId: string;
   currentLang: Lang;
+  country?: Country;
 }
 
 interface FormData {
@@ -201,9 +202,9 @@ function useFormValidation(data: FormData, currentLang: Lang) {
 const branchSlugFromId = (id: string) =>
   !id ? 'unknown' : id.toLowerCase().replace(/\s+/g, '_').replace(/[^\w_]/g, '');
 
-export default function ContactWizard({ branchId, currentLang }: ContactWizardProps) {
+export default function ContactWizard({ branchId, currentLang, country: initialCountry = 'AE' }: ContactWizardProps) {
   const [step, setStep] = useState<Step>(1);
-  const [data, dispatch] = useReducer(formReducer, INITIAL_DATA);
+  const [data, dispatch] = useReducer(formReducer, { ...INITIAL_DATA, country: initialCountry });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -217,15 +218,6 @@ export default function ContactWizard({ branchId, currentLang }: ContactWizardPr
   const { validatePhone, validateStep } = useFormValidation(data, currentLang);
 
   const showVehicleBlock = data.services.includes('ppf') || data.services.includes('window_tinting');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const cookies = document.cookie.split(';');
-      const skCountry = cookies.find((c) => c.trim().startsWith('sk_country='));
-      const country = (skCountry?.split('=')[1] as Country) || 'AE';
-      dispatch({ type: 'SET_COUNTRY', country });
-    }
-  }, []);
 
   useEffect(() => {
     trackStepView({ step, branch, lang: currentLang });

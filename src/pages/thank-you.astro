@@ -1,5 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getCountryFromCookie, getPhoneNumbers } from '../utils/serverRouting';
+
+const country = getCountryFromCookie(Astro);
+const { tel, wa } = getPhoneNumbers(country);
 ---
 
 <Layout title="Thank You - SupaKoto" description="Thank you for your interest in SupaKoto's automotive protection services">
@@ -79,21 +83,19 @@ import Layout from '../layouts/Layout.astro';
         <div class="mt-12 p-6 bg-slate-800/30 rounded-xl border border-slate-700/30">
           <p class="text-neutral-400 text-sm mb-2">Need immediate assistance?</p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a 
-              href="tel:+971506265404" 
-              class="text-red-400 hover:text-red-300 font-semibold" 
+            <a
+              href={`tel:${tel}`}
+              class="text-red-400 hover:text-red-300 font-semibold"
               dir="ltr"
-              onclick="if (typeof ttq !== 'undefined') ttq('track', 'ClickButton', { button: 'Call', region: 'UAE' });"
             >
-              📞 +971 50 626 5404
+              📞 {tel}
             </a>
-            <a 
-              href="https://wa.me/971521931358" 
-              class="text-green-400 hover:text-green-300 font-semibold" 
+            <a
+              href={`https://wa.me/${wa}`}
+              class="text-green-400 hover:text-green-300 font-semibold"
               dir="ltr"
-              onclick="if (typeof ttq !== 'undefined') ttq('track', 'ClickButton', { button: 'WhatsApp', region: 'UAE' });"
             >
-              💬 WhatsApp: +971 52 193 1358
+              💬 WhatsApp: {tel}
             </a>
           </div>
         </div>

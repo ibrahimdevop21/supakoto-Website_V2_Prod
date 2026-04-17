@@ -52,7 +52,7 @@ export function generateOrganizationSchema(locale: 'en' | 'ar' = 'en') {
     "url": "https://supakoto.com",
     "logo": "https://supakoto.com/assets/logo.png",
     "image": "https://supakoto.com/assets/og-image.png",
-    "telephone": "+20123456789",
+    "telephone": "+201103402446",
     "email": "info@supakoto.com",
     "sameAs": [
       "https://www.instagram.com/supakoto",

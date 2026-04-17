@@ -4,9 +4,11 @@ import BusinessForm from '../../components/business/BusinessForm';
 import { BRANCHES } from '../../data/branches';
 import { getSEOData } from '../../utils/seo-content';
 import { generateBreadcrumbSchema } from '../../utils/seo-schemas';
+import { getCountryFromCookie } from '../../utils/serverRouting';
 
 const currentLang = 'ar' as const;
 const isRTL = true;
+const country = getCountryFromCookie(Astro);
 
 // Get SEO-optimized content using existing key, then override for Franchise
 const seoData = getSEOData('business', currentLang);
@@ -400,7 +402,7 @@ const franchiseSEO = {
           </div>
           
           <div class="bg-card backdrop-blur-sm rounded-2xl border border-slate-700 p-8">
-            <BusinessForm client:load currentLang={currentLang} />
+            <BusinessForm client:load currentLang={currentLang} country={country} />
           </div>
         </div>
       </div>
