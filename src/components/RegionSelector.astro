@@ -1,6 +1,8 @@
 ---
 /**
- * Client-side region picker for HQ tel / wa.me links only (matches COUNTRY_DEFAULTS digits).
+ * Client-side region picker for HQ tel / wa.me links (matches COUNTRY_DEFAULTS digits).
+ * Modal runs on every intercept click; localStorage only pre-selects Egypt/UAE in the sheet.
+ * Opt-in `data-sk-region-picker` on hero / float / nav call enables data-phone fallback.
  * Does not replace middleware or sk_country cookie behavior.
  */
 import { COUNTRY_DEFAULTS } from '../data/countryContacts';
@@ -114,6 +116,36 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 			if (d === digitsOnly(contacts.EG.wa) || d === digitsOnly(contacts.AE.wa)) return 'wa';
 			return null;
 		}
+		// e.g. https://api.whatsapp.com/send?phone=971552054478
+		if (lower.includes('api.whatsapp.com') && lower.includes('phone=')) {
+			const m = lower.match(/[?&]phone=([^&]+)/);
+			if (m) {
+				const d = digitsOnly(decodeURIComponent(m[1]));
+				if (d === digitsOnly(contacts.EG.wa) || d === digitsOnly(contacts.AE.wa)) return 'wa';
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * href match first; if link has data-sk-region-picker (opt-in HQ CTAs),
+	 * fall back to data-phone / tel: digits so the sheet always runs even with unusual hrefs.
+	 */
+	function interceptKindForAnchor(anchor) {
+		const href = anchor.getAttribute('href') || '';
+		const fromHref = parseInterceptKind(href);
+		if (fromHref) return fromHref;
+		if (!anchor.hasAttribute('data-sk-region-picker')) return null;
+		const rawPhone = anchor.getAttribute('data-phone');
+		if (rawPhone) {
+			const d = digitsOnly(rawPhone);
+			if (d === digitsOnly(contacts.EG.wa) || d === digitsOnly(contacts.AE.wa)) return 'wa';
+		}
+		const low = href.trim().toLowerCase();
+		if (low.startsWith('tel:')) {
+			const d = digitsOnly(href.slice(4));
+			if (d === digitsOnly(contacts.EG.tel) || d === digitsOnly(contacts.AE.tel)) return 'tel';
+		}
 		return null;
 	}
 
@@ -222,6 +254,8 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 		function openModal() {
 			clearCloseTimer();
 			syncCopy();
+			const pre = storedCountry();
+			if (pre) selectCountry(pre);
 			lastFocus = document.activeElement;
 			root.classList.remove('hidden');
 			root.classList.add('pointer-events-auto');
@@ -334,20 +368,12 @@ import { COUNTRY_DEFAULTS } from '../data/countryContacts';
 				if (!anchor || !(anchor instanceof HTMLAnchorElement)) return;
 				if (anchor.closest('#' + PANEL_ID)) return;
 
-				const href = anchor.getAttribute('href') || '';
-				const kind = parseInterceptKind(href);
+				const kind = interceptKindForAnchor(anchor);
 				if (!kind) return;
 
 				if (e.defaultPrevented) return;
 				if (e.button !== 0) return;
 				if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
-				const stored = storedCountry();
-				if (stored) {
-					e.preventDefault();
-					navigate(kind, stored);
-					return;
-				}
 
 				e.preventDefault();
 				pendingKind = kind;

@@ -80,6 +80,7 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang, 
       {/* Luxury Call Button */}
       <a 
         href={`tel:${tel}`} 
+        data-sk-region-picker
         aria-label="Call Now" 
         className={luxuryCallButton}
         onClick={() => {
