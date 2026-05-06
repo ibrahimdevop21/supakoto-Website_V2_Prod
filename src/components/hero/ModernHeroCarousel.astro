@@ -222,6 +222,7 @@ const whatsappLink = `https://wa.me/${wa}`;
 
 <script>
   import { track } from '@vercel/analytics';
+  import { fireGoogleAdsConversion } from '../../lib/googleAdsConversion';
 
   document.addEventListener('DOMContentLoaded', () => {
     // Get WhatsApp button - NO routing logic, only analytics
@@ -230,7 +231,7 @@ const whatsappLink = `https://wa.me/${wa}`;
       // Get server-rendered values from data attributes
       const country = whatsappBtn.getAttribute('data-country') || 'AE';
       const phone = whatsappBtn.getAttribute('data-phone') || '';
-      
+
       // Track WhatsApp CTA click
       whatsappBtn.addEventListener('click', () => {
         // Vercel Analytics
@@ -245,7 +246,7 @@ const whatsappLink = `https://wa.me/${wa}`;
         } catch (error) {
           console.error('Vercel Analytics tracking error:', error);
         }
-        
+
         // GTM dataLayer
         try {
           if (typeof window !== 'undefined') {
@@ -264,6 +265,9 @@ const whatsappLink = `https://wa.me/${wa}`;
         } catch (error) {
           console.error('GTM tracking error:', error);
         }
+
+        // Google Ads conversion
+        fireGoogleAdsConversion('whatsapp');
       });
     }
 

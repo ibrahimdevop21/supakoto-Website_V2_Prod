@@ -40,16 +40,17 @@ const whatsappLink = `https://wa.me/${wa}`;
 
 <script>
   import { track } from '@vercel/analytics';
+  import { fireGoogleAdsConversion } from '../lib/googleAdsConversion';
 
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.querySelector('.whatsapp-float-btn') as HTMLAnchorElement;
     if (!btn) return;
-    
+
     // Get server-rendered values from data attributes
     const country = btn.getAttribute('data-country') || 'AE';
     const phone = btn.getAttribute('data-phone') || '';
     const lang = btn.getAttribute('data-lang') || 'en';
-    
+
     // Track clicks - NO routing logic, only analytics
     btn.addEventListener('click', () => {
       // Vercel Analytics
@@ -65,7 +66,7 @@ const whatsappLink = `https://wa.me/${wa}`;
       } catch (error) {
         console.error('Vercel Analytics tracking error:', error);
       }
-      
+
       // GTM dataLayer
       try {
         if (typeof window !== 'undefined') {
@@ -85,6 +86,9 @@ const whatsappLink = `https://wa.me/${wa}`;
       } catch (error) {
         console.error('GTM tracking error:', error);
       }
+
+      // Google Ads conversion (no-op when PUBLIC_GOOGLE_ADS_ID is unset)
+      fireGoogleAdsConversion('whatsapp');
     });
   });
 </script>

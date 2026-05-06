@@ -55,6 +55,9 @@ const websiteSchema = generateWebsiteSchema(currentLang);
 
 // Combine schemas
 const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [organizationSchema, websiteSchema];
+
+// Google Ads global tag — only emitted when PUBLIC_GOOGLE_ADS_ID is set at build time.
+const googleAdsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 ---
 
 <!doctype html>
@@ -359,6 +362,21 @@ const combinedSchema = schema ? [organizationSchema, websiteSchema, schema] : [o
 		  "url": "https://supakoto.com"
 		}
 		</script>
+
+		<!-- Google tag (gtag.js) — Google Ads conversion tracking -->
+		{googleAdsId && (
+			<Fragment>
+				<script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}></script>
+				<script is:inline define:vars={{ googleAdsId }}>
+					window.dataLayer = window.dataLayer || [];
+					function gtag(){window.dataLayer.push(arguments);}
+					window.gtag = gtag;
+					gtag('js', new Date());
+					gtag('config', googleAdsId);
+				</script>
+			</Fragment>
+		)}
+		<!-- End Google tag (gtag.js) -->
 
 		<!-- Google Tag Manager - Container ID: GTM-PKSH2C5K -->
 		<script is:inline>

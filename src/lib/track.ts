@@ -1,8 +1,9 @@
 // src/lib/track.ts
 // Drop-in tracking helper for SupaKoto analytics
-// Pushes events to both GTM dataLayer and Vercel Analytics
+// Pushes events to GTM dataLayer + Vercel Analytics + (for lead-intent events) Google Ads conversion.
 
 import { track as vercelTrack } from '@vercel/analytics';
+import { fireGoogleAdsConversion, type AdsConversionKind } from './googleAdsConversion';
 
 type Ctx = {
   branch?: string;           // e.g. 'dubai' | 'cairo_maadi' | ...
@@ -21,17 +22,20 @@ const pushDL = (event: string, ctx: Ctx = {}) => {
   (window as any).dataLayer.push({ event, ...ctx, page_location: location.href });
 };
 
-// Dual tracking: GTM + Vercel Analytics
-const track = (event: string, ctx: Ctx = {}) => {
+// Dual tracking: GTM + Vercel Analytics, with optional Google Ads conversion fan-out.
+const track = (event: string, ctx: Ctx = {}, adsConversion?: AdsConversionKind) => {
   // GTM tracking
   pushDL(event, ctx);
-  
+
   // Vercel Analytics tracking
   try {
     vercelTrack(event, ctx);
   } catch (error) {
     console.error('Vercel Analytics tracking error:', error);
   }
+
+  // Google Ads conversion (no-op when PUBLIC_GOOGLE_ADS_ID / label is missing)
+  if (adsConversion) fireGoogleAdsConversion(adsConversion);
 };
 
 // Contact Wizard Events
@@ -39,23 +43,23 @@ export const trackStepView = (ctx: Ctx) => track('contact_wizard_step_view', ctx
 export const trackStepNext = (ctx: Ctx) => track('contact_wizard_step_next', ctx);
 export const trackServiceToggle = (ctx: Ctx) => track('contact_wizard_service_toggle', ctx);
 
-// Form Submission Events
-export const trackFormSubmit = (ctx: Ctx) => track('form_submit', ctx);
-export const trackLeadSubmit = (ctx: Ctx) => track('lead_submit', ctx);
-export const trackBusinessContactSubmit = (ctx: Ctx) => track('business_contact_submit', ctx);
+// Form Submission Events (each fires Google Ads "form" conversion)
+export const trackFormSubmit = (ctx: Ctx) => track('form_submit', ctx, 'form');
+export const trackLeadSubmit = (ctx: Ctx) => track('lead_submit', ctx, 'form');
+export const trackBusinessContactSubmit = (ctx: Ctx) => track('business_contact_submit', ctx, 'form');
 
-// WhatsApp Events
-export const trackWhatsApp = (ctx: Ctx) => track('whatsapp_click', ctx);
-export const trackWhatsAppFloat = (ctx: Ctx) => track('whatsapp_float_click', ctx);
-export const trackWhatsAppHero = (ctx: Ctx) => track('whatsapp_hero_click', ctx);
-export const trackWhatsAppFooter = (ctx: Ctx) => track('whatsapp_footer_click', ctx);
-export const trackWhatsAppBranch = (ctx: Ctx) => track('whatsapp_branch_click', ctx);
+// WhatsApp Events (each fires Google Ads "whatsapp" conversion)
+export const trackWhatsApp = (ctx: Ctx) => track('whatsapp_click', ctx, 'whatsapp');
+export const trackWhatsAppFloat = (ctx: Ctx) => track('whatsapp_float_click', ctx, 'whatsapp');
+export const trackWhatsAppHero = (ctx: Ctx) => track('whatsapp_hero_click', ctx, 'whatsapp');
+export const trackWhatsAppFooter = (ctx: Ctx) => track('whatsapp_footer_click', ctx, 'whatsapp');
+export const trackWhatsAppBranch = (ctx: Ctx) => track('whatsapp_branch_click', ctx, 'whatsapp');
 
-// Call/Phone Events
-export const trackCallClick = (ctx: Ctx) => track('call_click', ctx);
-export const trackCallHero = (ctx: Ctx) => track('call_hero_click', ctx);
-export const trackCallFooter = (ctx: Ctx) => track('call_footer_click', ctx);
-export const trackCallBranch = (ctx: Ctx) => track('call_branch_click', ctx);
+// Call/Phone Events (each fires Google Ads "call" conversion)
+export const trackCallClick = (ctx: Ctx) => track('call_click', ctx, 'call');
+export const trackCallHero = (ctx: Ctx) => track('call_hero_click', ctx, 'call');
+export const trackCallFooter = (ctx: Ctx) => track('call_footer_click', ctx, 'call');
+export const trackCallBranch = (ctx: Ctx) => track('call_branch_click', ctx, 'call');
 
 // CTA Events
 export const trackCTAClick = (ctx: Ctx) => track('cta_click', ctx);

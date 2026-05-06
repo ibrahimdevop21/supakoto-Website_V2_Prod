@@ -1,4 +1,5 @@
 import React from 'react';
+import { fireGoogleAdsConversion } from '../../lib/googleAdsConversion';
 import type { Branch } from '../../data/branches';
 
 // No-op function for TikTok tracking while disabled
@@ -118,7 +119,7 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                       onClick={() => {
                         // TikTok tracking
                         trackTikTok('ClickButton', { button: 'WhatsApp', region: 'UAE' });
-                        
+
                         // GTM dataLayer tracking - includes parameters for GA4_WhatsApp_click tag
                         try {
                           if (typeof window !== 'undefined') {
@@ -136,6 +137,9 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                         } catch (error) {
                           console.error('GTM tracking error:', error);
                         }
+
+                        // Google Ads conversion
+                        fireGoogleAdsConversion('whatsapp');
                       }}
                     >
                       +{branch.whatsapp.replace(/(\d{1,3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')}

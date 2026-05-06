@@ -14,10 +14,6 @@ const routingCountry = getCountryFromCookie(Astro);
 ---
 
 <form id="contact-form" method="POST" action="/api/contact" data-vercel="true" data-lang={currentLang} data-country={routingCountry} class="space-y-6">
-  <!-- Test Mode Banner -->
-  <div id="dry-run-banner" class="hidden rounded-md border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm" role="status">
-    {currentLang === 'ar' ? 'وضع الاختبار: سيتم محاكاة هذا الإرسال (لن يتم إرسال رسالة).' : 'Test Mode: This submission will be mocked (no message will be sent).'}
-  </div>
   <!-- Honeypot field (hidden) -->
   <input type="text" name="_hp" class="hidden" tabindex="-1" autocomplete="off">
   
@@ -34,11 +30,6 @@ const routingCountry = getCountryFromCookie(Astro);
   <input type="hidden" name="utm_campaign" id="utm_campaign">
   <input type="hidden" name="referrer" id="referrer">
   <input type="hidden" name="page_path" value={Astro.url.pathname}>
-
-  <!-- Dry Run/Test Mode Banner (shown when ?dryRun=1) -->
-  <div id="dryrun-banner" class="hidden p-3 rounded-lg border border-yellow-600/50 bg-yellow-900/20 text-yellow-200 text-sm">
-    {currentLang === 'ar' ? 'وضع الاختبار: لن يتم حفظ البيانات بشكل دائم.' : 'Test mode: Submissions will not be stored permanently.'}
-  </div>
 
   <!-- Name and Phone Row -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -297,6 +288,8 @@ const routingCountry = getCountryFromCookie(Astro);
 
 <!-- Contact Form JavaScript -->
 <script>
+  import { fireGoogleAdsConversion } from '../lib/googleAdsConversion';
+
   // Add at top of the component file
   function trackTikTok(_event: string, _props: Record<string, unknown> = {}) {
     // Intentionally a no-op while TikTok is disabled.
@@ -326,19 +319,10 @@ const routingCountry = getCountryFromCookie(Astro);
   const errorMessage = document.getElementById('error-message');
   const errorText = document.getElementById('error-text');
   const loadTimeInput = document.getElementById('load-time');
-  const dryRunBanner = document.getElementById('dry-run-banner');
   const utmSource = document.getElementById('utm_source') as HTMLInputElement | null;
   const utmMedium = document.getElementById('utm_medium') as HTMLInputElement | null;
   const utmCampaign = document.getElementById('utm_campaign') as HTMLInputElement | null;
   const referrerInput = document.getElementById('referrer') as HTMLInputElement | null;
-  
-  // Detect dryRun mode
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('dryRun') === '1' && dryRunBanner) {
-      dryRunBanner.classList.remove('hidden');
-    }
-  } catch {}
 
   // Track form load time
   const loadTime = Date.now();
@@ -375,12 +359,6 @@ const routingCountry = getCountryFromCookie(Astro);
     { iso2:'PK', name:'Pakistan',      dial:'92',  flag:'🇵🇰' },
   ];
 
-  // Check for dryRun mode and show banner if enabled
-  const isDryRunMode = new URLSearchParams(location.search).get('dryRun') === '1';
-  if (isDryRunMode && dryRunBanner) {
-    dryRunBanner.classList.remove('hidden');
-  }
-  
   // Phone validation patterns
   const phoneValidationPatterns = {
     EG: {
@@ -731,61 +709,31 @@ const routingCountry = getCountryFromCookie(Astro);
           formData.set('contact_pref', 'phone');
         }
         
-        // Pass dryRun if enabled
-        try {
-          const params = new URLSearchParams(window.location.search);
-          if (params.get('dryRun') === '1') formData.set('_dryRun', '1');
-        } catch {}
-        
-        // Get selected services
-        const selectedServices = Array.from(document.querySelectorAll('input[name="services"]:checked'))
-          .map(cb => (cb as HTMLInputElement).value);
-        
-        const carMake = (document.getElementById('car-make') as HTMLInputElement)?.value?.trim() || null;
-        const carYear = (document.getElementById('car-year') as HTMLInputElement)?.value || null;
-        
-        // If test mode (see section 3), short-circuit the request
-        const isDryRun = new URLSearchParams(location.search).get('dryRun') === '1';
-        let ok = true;
-        let result: any = {};
-
-        if (!isDryRun) {
-          // Submit to API with timeout protection
-          const controller = new AbortController();
-          const timer = window.setTimeout(() => controller.abort(), 10000);
-          const response = await fetch('/api/contact', {
-            method: 'POST',
-            body: formData,
-            signal: controller.signal
-          }).catch((err) => {
-            if ((err as any)?.name === 'AbortError') {
-              throw new Error('Network timeout. Please try again.');
-            }
-            throw err;
-          });
-          ok = response.ok;
-          result = await response.json();
-          window.clearTimeout(timer);
-        } else {
-          // Simulate latency + success
-          await new Promise(r => setTimeout(r, 300));
-          console.info('[ContactForm] DRY RUN: submission mocked OK', {
-            name: formData.get('name'),
-            phone: phoneValidation.formatted,
-            country: country,
-            services: selectedServices,
-            carMake,
-            carYear,
-            message: formData.get('message'),
-            pagePath: location.pathname
-          });
-        }
+        // Submit to API with timeout protection
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), 10000);
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        }).catch((err) => {
+          if ((err as any)?.name === 'AbortError') {
+            throw new Error('Network timeout. Please try again.');
+          }
+          throw err;
+        });
+        const ok = response.ok;
+        const result = await response.json();
+        window.clearTimeout(timer);
 
         if (ok) {
           // Analytics hooks (graceful if not present)
           try { if (typeof (window as any).fbq !== 'undefined') { const _c = (form as HTMLFormElement).dataset.country || 'AE'; (window as any).fbq('track', 'Lead', { source: 'contact_form', country: _c, market: _c === 'EG' ? 'egypt' : 'uae' }); } } catch {}
           try { if (typeof (window as any).gtag !== 'undefined') (window as any).gtag('event', 'form_submit', { form: 'contact' }); } catch {}
           try { if (typeof (window as any).ttq !== 'undefined') (window as any).ttq.track('SubmitForm', { form: 'contact' }); } catch {}
+
+          // Google Ads conversion (no-op when env unset; when set, drives Google Ads "form" conversion attribution)
+          fireGoogleAdsConversion('form');
 
           // Show success message and reset form
           if (successMessage) successMessage.classList.remove('hidden');
