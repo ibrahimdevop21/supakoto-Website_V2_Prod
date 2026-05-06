@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, Globe } from 'lucide-react';
 import { track } from '@vercel/analytics';
+import { fireGoogleAdsConversion } from '../../lib/googleAdsConversion';
 import type { CountryCode } from "../../data/countryContacts";
 
 // No-op function for TikTok tracking while disabled
@@ -99,6 +100,9 @@ export default function ActionPills({ locale = "en", currentPath, onToggleLang, 
           } catch (error) {
             console.error('Tracking error:', error);
           }
+
+          // Google Ads conversion
+          fireGoogleAdsConversion('call');
         }}
       >
         {/* Pulsing ring animation */}
