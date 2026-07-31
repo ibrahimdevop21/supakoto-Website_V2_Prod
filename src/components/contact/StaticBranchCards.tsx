@@ -89,6 +89,27 @@ export default function StaticBranchCards({ branches, locale = 'en' }: StaticBra
                         onClick={() => {
                           // Fire tracking as NO-OP for now (kept for future parity)
                           trackTikTok('ClickButton', { button: 'Call', region: 'UAE' });
+
+                          // GTM dataLayer tracking
+                          try {
+                            if (typeof window !== 'undefined') {
+                              (window as any).dataLayer = (window as any).dataLayer || [];
+                              (window as any).dataLayer.push({
+                                event: 'call_click',
+                                phone_number: phone,
+                                button_class: 'branch-call-btn',
+                                button_text: 'Call',
+                                location: 'branch_card',
+                                branch_name: branch.name,
+                                page_location: location.href
+                              });
+                            }
+                          } catch (error) {
+                            console.error('GTM tracking error:', error);
+                          }
+
+                          // Google Ads conversion
+                          fireGoogleAdsConversion('call');
                         }}
                       >
                         {phone}

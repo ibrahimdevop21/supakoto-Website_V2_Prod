@@ -200,8 +200,9 @@ const contactInfo = [
         <!-- Contact Links -->
         <div class="space-y-3">
           {contactInfo.map((contact) => (
-            <a 
-              href={contact.href} 
+            <a
+              href={contact.href}
+              data-footer-tel={contact.href.startsWith('tel:') ? 'true' : undefined}
               style="background-color: var(--footer-card-bg); border-color: var(--footer-border);"
               class={`group flex items-start gap-3 p-3 hover:from-primary/15 hover:to-primary/5 rounded-lg border hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] ${rtl ? 'flex-row-reverse text-right' : ''}`}
             >
@@ -274,3 +275,47 @@ const contactInfo = [
     </div>
   </div>
 </footer>
+
+<script>
+  import { track } from '@vercel/analytics';
+  import { fireGoogleAdsConversion } from '../../lib/googleAdsConversion';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const telLink = document.querySelector('a[data-footer-tel]') as HTMLAnchorElement | null;
+    if (!telLink) return;
+
+    const phone = (telLink.getAttribute('href') || '').replace(/^tel:/, '');
+
+    telLink.addEventListener('click', () => {
+      // Vercel Analytics
+      try {
+        track('call_footer_click', {
+          phone_number: phone,
+          location: 'footer',
+          cta_position: 'footer',
+          source: 'server_authoritative'
+        });
+      } catch (error) {
+        console.error('Vercel Analytics tracking error:', error);
+      }
+
+      // GTM dataLayer
+      try {
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push({
+          event: 'call_click',
+          phone_number: phone,
+          button_class: 'footer-call-link',
+          location: 'footer',
+          source: 'server_authoritative',
+          page_location: location.href
+        });
+      } catch (error) {
+        console.error('GTM tracking error:', error);
+      }
+
+      // Google Ads conversion (no-op when PUBLIC_GOOGLE_ADS_ID is unset)
+      fireGoogleAdsConversion('call');
+    });
+  });
+</script>
